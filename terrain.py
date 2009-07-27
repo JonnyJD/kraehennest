@@ -9,7 +9,7 @@ import util
 
 print "Content-type: text/plain\n"
 
-def add_to_query(fields, sql):
+def add_to_query(sql, fields):
     if len(fields) >= 4:
         level = fields[0]
         x = fields[1]
@@ -27,12 +27,11 @@ if form.has_key("data"):
     lines = form["data"].value.splitlines()
     for line in lines:
         fields = line.split()
-        sql = add_to_query(fields, sql)
+        sql = add_to_query(sql, fields)
     sql = sql.rstrip(',')
-    print sql, '\n'
     try:
-        pass
-        #cursor.execute(sql)
+        cursor.execute(sql)
+        print len(lines), 'Felder wurden eingetragen'
     except rbdb.Error, e:
         util.print_error(e)
 

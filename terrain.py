@@ -55,10 +55,11 @@ class Terrain:
             x = fields[1]
             y = fields[2]
             terrain = fields[3]
-            if (    x.isdigit() and y.isdigit() and terrain.isdigit()
+            if (    x.isdigit() and y.isdigit()
+                    and terrain.isalnum() and len(terrain) <= 4
                     and level.isalnum() and len(level) <= 2):
                 self.query += "(" + x + "," + y + ",'"
-                self.query += level + "'," + terrain + "),"
+                self.query += level + "','" + terrain + "'),"
                 self.queryitems += 1
                 return True
 
@@ -76,7 +77,7 @@ class Terrain:
             return number
         except rbdb.Error, e:
             util.print_error(e)
-            return False
+            return 0
 
     def _get_border(self):
         sql = "SELECT MIN(X), MAX(x), MIN(y), MAX(y) FROM felder"
@@ -104,7 +105,7 @@ class Terrain:
         return (x,y) in self.entries
 
     def get(self, x, y):
-        return str(self.entries[x,y])
+        return self.entries[x,y]
 
 
 # Aufruf als Skript: Landschaftsaktualisierung

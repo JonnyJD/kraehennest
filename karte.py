@@ -15,7 +15,8 @@ else:
     level = 'N'
 
 terrain = Terrain()
-terrain.fetch_data(level, 273)
+terrain.fetch_data(level)
+#terrain.fetch_data(level, 273)
 width = 32 * (terrain.xmax - terrain.xmin + 1)
 print '<table width="' + str(width) + '" cellspacing="0">'
 for y in range(terrain.ymin, terrain.ymax + 1):

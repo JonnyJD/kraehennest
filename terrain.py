@@ -10,23 +10,41 @@ import util
 class Terrain:
     def __init__(self):
         self.__entries = dict()
-        self.__new_entries = []         # 
-    
-    def __connect(self):
+        self.__new_entries = []
         self.__conn = rbdb.connect()
         self.__cursor = self.__conn.cursor()
 
-    def __disconnect(self):
+    def disconnect(self):
         self.__cursor.close()
         self.__conn.close()
 
-    def fetch_data(self, level='N', xmin=None, xmax=None, ymin=None, ymax=None):
+
+    def __try_execute(self, sql):
+        try:
+            self.__cursor.execute(sql)
+            return self.__cursor.rowcount
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return 0
+
+    def __try_execute_secondary(self, sql):
+        try:
+            cursor = self.__conn.cursor()
+            cursor.execute(sql)
+            cursor.close()
+            return self.__cursor.rowcount
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return 0
+
+
+    def fetch_data(self, level='N',
+            xmin=None, xmax=None, ymin=None, ymax=None):
         self.level = level
         self.__crop(xmin, xmax, ymin, ymax)
-        self.__connect()
         self.__get_border()
         self.__get_entries()
-        self.__disconnect()
+
 
     def __crop(self, xmin, xmax, ymin, ymax):
         self.__crop_clause = ""
@@ -42,101 +60,151 @@ class Terrain:
         if len(clauses) > 0:
             self.__crop_clause = " AND " + " AND ".join(clauses)
 
-    def start_query(self):
-        self.__query = "REPLACE INTO felder (x, y, level, terrain) VALUES "
-        self.__query_items = 0;
 
-    def _type(self, fields):
+    def __type(self, fields):
         if len(fields) >= 5:
             type = fields[len(fields)-1]
-            print type, '<br />'
             if type == "IV":
-                typenum = "4"
+                return "4"
             elif type == "IIII":
-                typenum = "4"
+                return "4"
             elif type == "III":
-                typenum = "3"
+                return "3"
             elif type == "II":
-                typenum = "2"
+                return "2"
             elif type == "I":
-                typenum = "1"
+                return "1"
             else:
-                typenum = "1"
-            try:
-                conn = rbdb.connect()
-                cursor2 = conn.cursor()
-                sql = "REPLACE INTO felder (x, y, level, terrain, typ) VALUES "
-                sql += "(" + fields[1] + "," + fields[2] + ",'"
-                sql += fields[0] + "','" + fields[3] + "'," + typenum + ")"
-                #print sql, "<br />"
-                cursor2.execute(sql)
-                cursor2.close()
-                conn.close()
-                return True
-            except rbdb.Error, e:
-                util.print_error(e)
-                return False
+                return "1"
         else:
-            return False
+            return None
 
-    def add_to_query(self, fields):
-        if len(self.__query) == 0:
-            print 'Noch keine Query gestartet'
-            return False
 
+    def queue_entry(self, fields):
         if len(fields) >= 4:
-            level = fields[0]
-            x = fields[1]
-            y = fields[2]
-            terrain = fields[3]
-            if (    x.isdigit() and y.isdigit()
-                    and terrain.isalnum() and len(terrain) <= 4
-                    and level.isalnum() and len(level) <= 2):
-                self.__new_entries.append(fields)
-                #self.__type(fields) # Untertyp eintragen
-                self.__query += "(" + x + "," + y + ",'"
-                self.__query += level + "','" + terrain + "'),"
-                self.__query_items += 1
+            f = {"level": fields[0], "x": fields[1], "y": fields[2],
+                    "terrain": fields[3], "typ": self.__type(fields)}
+            if (    f["x"].isdigit() and f["y"].isdigit()
+                    and f["terrain"].isalnum() and len(f["terrain"]) <= 4
+                    and f["level"].isalnum() and len(f["level"]) <= 2):
+                self.__new_entries.append(f)
                 return True
 
         return False
 
-    def exec_query(self):
-        try:
-            self.__connect()
-            #print self.__query.rstrip(','), "<br />"
-            self.__cursor.execute(self.__query.rstrip(','))
-            self.__disconnect()
-            number = self.__query_items
-            # reset query
-            self.__query = 0;
-            self.__query_items = 0;
-            return number
-        except rbdb.Error, e:
-            util.print_error(e)
-            return 0
+
+    def __update(self, feld):
+        sql = "UPDATE felder "
+        sql += "SET terrain = '" + feld["terrain"] + "'"
+        if feld["typ"] != None:
+            sql += ", typ = " + feld["typ"]
+        sql += " WHERE level = '" + feld["level"] + "' AND "
+        sql += "x = " + feld["x"] + " AND y = " + feld["y"]
+        return self.__try_execute_secondary(sql)
+
+
+    def __check_old(self):
+        """Gleicht die einzufuegenden Felder mit in der DB vorhandenen ab."""
+
+        new = self.__new_entries
+        num_updated = 0
+        sql = "SELECT level, x, y, terrain, typ FROM felder WHERE "
+        for f in new:
+            sql += "(level = '" + f["level"] + "' AND "
+            sql += "x = " + f["x"] + " AND y = " + f["y"] + ")"
+            sql += " OR "
+        self.__cursor.execute(sql.rstrip(" OR "))
+        row = self.__cursor.fetchone()
+        while row != None:
+            i = 0
+            while i < len(new):
+                if (    new[i]["level"] == row[0] and
+                        new[i]["x"] == str(row[1]) and
+                        new[i]["y"] == str(row[2])      ):
+                    if (    new[i]["terrain"] != row[3] or
+                            (   new[i]["typ"] != None and
+                                new[i]["typ"] != str(row[4])    )    ):
+                        print new, "<br />"
+                        print row, "<br />"
+                        if self.__update(new[i]):
+                            num_updated += 1
+                    # jetzt in jedem Fall schon (voll) drin
+                    del new[i]
+                else:
+                    i += 1
+            row = self.__cursor.fetchone()
+        return num_updated
+
+
+    def __insert_type(self):
+        sql = "INSERT INTO felder (x, y, level, terrain, typ) VALUES "
+        new = self.__new_entries
+        num = 0
+        i = 0
+        while i < len(new):
+            if new[i]["typ"] != None:
+                sql += "(" + new[i]["x"] + "," + new[i]["y"] + ",'"
+                sql += new[i]["level"] + "','" + new[i]["terrain"] + "'),"
+                del new[i]
+                num += 1
+            else:
+                i += 1
+        if num > 0:
+            if self.__try_execute(sql.rstrip(',')):
+                return self.__cursor.rowcount
+        return 0
+
+    def __insert(self):
+        typenum = self.__insert_type()
+        if len(self.__new_entries) > 0:
+            sql = "INSERT INTO felder (x, y, level, terrain) VALUES "
+            for new in self.__new_entries:
+                sql += "(" + new["x"] + "," + new["y"] + ",'"
+                sql += new["level"] + "','" + new["terrain"] + "'),"
+            self.__new_entries = []
+            if self.__try_execute(sql.rstrip(',')):
+                return self.__cursor.rowcount + typenum
+        return 0
+
+
+    def exec_queue(self):
+        update_count = self.__check_old()
+        insert_count = self.__insert()
+        return update_count, insert_count
+
 
     def _get_border(self):
+        self.xmin, self.xmax, self.ymin, self.ymax = 0, 0, 0, 0
         sql = "SELECT MIN(X), MAX(x), MIN(y), MAX(y) FROM felder"
         sql += " WHERE level='" + self.level + "'"
         sql += self.__crop_clause
-        self.__cursor.execute(sql)
-        row = self.__cursor.fetchone()
-        if row[0] != None:
-            self.xmin, self.xmax = row[0], row[1]
-            self.ymin, self.ymax = row[2], row[3]
-        else:
-            self.xmin, self.xmax, self.ymin, self.ymax = 0, 0, 0, 0
+        try:
+            self.__cursor.execute(sql)
+            row = self.__cursor.fetchone()
+            if row[0] != None:
+                self.xmin, self.xmax = row[0], row[1]
+                self.ymin, self.ymax = row[2], row[3]
+                return True
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return False
+
 
     def _get_entries(self):
         sql = "SELECT x, y, terrain FROM felder"
         sql += " WHERE level='" + self.level + "'"
         sql += self.__crop_clause
-        self.__cursor.execute(sql)
-        row = self.__cursor.fetchone()
-        while row != None:
-            self.__entries[row[0],row[1]] = row[2]
+        try:
+            self.__cursor.execute(sql)
             row = self.__cursor.fetchone()
+            while row != None:
+                self.__entries[row[0],row[1]] = row[2]
+                row = self.__cursor.fetchone()
+            return True
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return False
+
 
     def has(self, x, y):
         return (x,y) in self.__entries
@@ -152,17 +220,18 @@ if __name__ == '__main__':
 
     if form.has_key("data"):
         terrain = Terrain()
-        terrain.start_query()
 
         lines = form["data"].value.splitlines()
-        correct = 0
         for line in lines:
             fields = line.split()
-            if terrain.add_to_query(fields):
-                correct += 1
-            else:
+            if not terrain.queue_entry(fields):
                 print '"', line, '" enthielt Fehler <br />'
-        print terrain.exec_query(), 'Felder wurden eingetragen'
+        updated, added = terrain.exec_queue()
+        if (updated + added) > 0:
+            print "Es wurden", updated, "Felder aktualisiert und",
+            print added, "neu hinzugefuegt"
+        else:
+            print "Terrain ist schon bekannt."
 
     else:
         # Hier spaeter selbst ein Formular

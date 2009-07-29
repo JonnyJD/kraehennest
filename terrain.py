@@ -9,26 +9,27 @@ import util
 
 class Terrain:
     def __init__(self):
-        self.entries = dict()
+        self.__entries = dict()
+        self.__new_entries = []         # 
     
-    def _connect(self):
-        self.conn = rbdb.connect()
-        self.cursor = self.conn.cursor()
+    def __connect(self):
+        self.__conn = rbdb.connect()
+        self.__cursor = self.__conn.cursor()
 
-    def _disconnect(self):
-        self.cursor.close()
-        self.conn.close()
+    def __disconnect(self):
+        self.__cursor.close()
+        self.__conn.close()
 
     def fetch_data(self, level='N', xmin=None, xmax=None, ymin=None, ymax=None):
         self.level = level
-        self._crop(xmin, xmax, ymin, ymax)
-        self._connect()
-        self._get_border()
-        self._get_entries()
-        self._disconnect()
+        self.__crop(xmin, xmax, ymin, ymax)
+        self.__connect()
+        self.__get_border()
+        self.__get_entries()
+        self.__disconnect()
 
-    def _crop(self, xmin, xmax, ymin, ymax):
-        self.cropclause = ""
+    def __crop(self, xmin, xmax, ymin, ymax):
+        self.__crop_clause = ""
         clauses = []
         if xmin != None:
             clauses.append(" x >= " + str(xmin))
@@ -39,11 +40,11 @@ class Terrain:
         if ymax != None:
             clauses.append(" y <= " + str(ymax))
         if len(clauses) > 0:
-            self.cropclause = " AND " + " AND ".join(clauses)
+            self.__crop_clause = " AND " + " AND ".join(clauses)
 
     def start_query(self):
-        self.query = "REPLACE INTO felder (x, y, level, terrain) VALUES "
-        self.queryitems = 0;
+        self.__query = "REPLACE INTO felder (x, y, level, terrain) VALUES "
+        self.__query_items = 0;
 
     def _type(self, fields):
         if len(fields) >= 5:
@@ -79,7 +80,7 @@ class Terrain:
             return False
 
     def add_to_query(self, fields):
-        if len(self.query) == 0:
+        if len(self.__query) == 0:
             print 'Noch keine Query gestartet'
             return False
 
@@ -91,24 +92,25 @@ class Terrain:
             if (    x.isdigit() and y.isdigit()
                     and terrain.isalnum() and len(terrain) <= 4
                     and level.isalnum() and len(level) <= 2):
-                #self._type(fields) # Untertyp eintragen
-                self.query += "(" + x + "," + y + ",'"
-                self.query += level + "','" + terrain + "'),"
-                self.queryitems += 1
+                self.__new_entries.append(fields)
+                #self.__type(fields) # Untertyp eintragen
+                self.__query += "(" + x + "," + y + ",'"
+                self.__query += level + "','" + terrain + "'),"
+                self.__query_items += 1
                 return True
 
         return False
 
     def exec_query(self):
         try:
-            self._connect()
-            #print self.query.rstrip(','), "<br />"
-            self.cursor.execute(self.query.rstrip(','))
-            self._disconnect()
-            number = self.queryitems
+            self.__connect()
+            #print self.__query.rstrip(','), "<br />"
+            self.__cursor.execute(self.__query.rstrip(','))
+            self.__disconnect()
+            number = self.__query_items
             # reset query
-            self.query = 0;
-            self.queryitems = 0;
+            self.__query = 0;
+            self.__query_items = 0;
             return number
         except rbdb.Error, e:
             util.print_error(e)
@@ -117,9 +119,9 @@ class Terrain:
     def _get_border(self):
         sql = "SELECT MIN(X), MAX(x), MIN(y), MAX(y) FROM felder"
         sql += " WHERE level='" + self.level + "'"
-        sql += self.cropclause
-        self.cursor.execute(sql)
-        row = self.cursor.fetchone()
+        sql += self.__crop_clause
+        self.__cursor.execute(sql)
+        row = self.__cursor.fetchone()
         if row[0] != None:
             self.xmin, self.xmax = row[0], row[1]
             self.ymin, self.ymax = row[2], row[3]
@@ -129,18 +131,18 @@ class Terrain:
     def _get_entries(self):
         sql = "SELECT x, y, terrain FROM felder"
         sql += " WHERE level='" + self.level + "'"
-        sql += self.cropclause
-        self.cursor.execute(sql)
-        row = self.cursor.fetchone()
+        sql += self.__crop_clause
+        self.__cursor.execute(sql)
+        row = self.__cursor.fetchone()
         while row != None:
-            self.entries[row[0],row[1]] = row[2]
-            row = self.cursor.fetchone()
+            self.__entries[row[0],row[1]] = row[2]
+            row = self.__cursor.fetchone()
 
     def has(self, x, y):
-        return (x,y) in self.entries
+        return (x,y) in self.__entries
 
     def get(self, x, y):
-        return self.entries[x,y]
+        return self.__entries[x,y]
 
 
 # Aufruf als Skript: Landschaftsaktualisierung

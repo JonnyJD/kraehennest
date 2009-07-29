@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-#import cgitb
-#cgitb.enable()
+import cgitb
+cgitb.enable()
 
 import cgi
 import rbdb
@@ -42,25 +42,41 @@ class Terrain:
             self.cropclause = " AND " + " AND ".join(clauses)
 
     def start_query(self):
-        self.query = "REPLACE INTO felder (x, y, level, terrain, typ) VALUES "
+        self.query = "REPLACE INTO felder (x, y, level, terrain) VALUES "
         self.queryitems = 0;
 
     def _type(self, fields):
         if len(fields) >= 5:
-            if fields[4].endswith(" IV"):
-                return "4"
-            elif fields[4].endswith(" IIII"):
-                return "4"
-            elif fields[4].endswith(" III"):
-                return "3"
-            elif fields[4].endswith(" II"):
-                return "2"
-            elif fields[4].endswith(" I"):
-                return "1"
+            type = fields[len(fields)-1]
+            print type, '<br />'
+            if type == "IV":
+                typenum = "4"
+            elif type == "IIII":
+                typenum = "4"
+            elif type == "III":
+                typenum = "3"
+            elif type == "II":
+                typenum = "2"
+            elif type == "I":
+                typenum = "1"
             else:
-                return "1"
+                typenum = "1"
+            try:
+                conn = rbdb.connect()
+                cursor2 = conn.cursor()
+                sql = "REPLACE INTO felder (x, y, level, terrain, typ) VALUES "
+                sql += "(" + fields[1] + "," + fields[2] + ",'"
+                sql += fields[0] + "','" + fields[3] + "'," + typenum + ")"
+                #print sql, "<br />"
+                cursor2.execute(sql)
+                cursor2.close()
+                conn.close()
+                return True
+            except rbdb.Error, e:
+                util.print_error(e)
+                return False
         else:
-            return "NULL"
+            return False
 
     def add_to_query(self, fields):
         if len(self.query) == 0:
@@ -72,12 +88,12 @@ class Terrain:
             x = fields[1]
             y = fields[2]
             terrain = fields[3]
-            type = self._type(fields)
             if (    x.isdigit() and y.isdigit()
                     and terrain.isalnum() and len(terrain) <= 4
                     and level.isalnum() and len(level) <= 2):
+                #self._type(fields) # Untertyp eintragen
                 self.query += "(" + x + "," + y + ",'"
-                self.query += level + "','" + terrain + "'," + type + "),"
+                self.query += level + "','" + terrain + "'),"
                 self.queryitems += 1
                 return True
 
@@ -86,6 +102,7 @@ class Terrain:
     def exec_query(self):
         try:
             self._connect()
+            #print self.query.rstrip(','), "<br />"
             self.cursor.execute(self.query.rstrip(','))
             self._disconnect()
             number = self.queryitems

@@ -15,8 +15,15 @@ else:
     level = 'N'
 
 terrain = Terrain()
-terrain.fetch_data(level)
-#terrain.fetch_data(level, 273)
+if form.has_key("name"):
+    if form["name"].value == "osten":
+        terrain.fetch_data(level, 273)
+    elif form["name"].value == "neu":
+        terrain.add_cond("typ is not NULL")
+        terrain.fetch_data(level)
+else:
+    terrain.fetch_data(level)
+
 width = 32 * (terrain.xmax - terrain.xmin + 1)
 print '<table width="' + str(width) + '" cellspacing="0">'
 for y in range(terrain.ymin, terrain.ymax + 1):

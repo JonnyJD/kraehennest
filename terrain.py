@@ -8,11 +8,26 @@ import rbdb
 import util
 
 class Terrain:
-    """Eine Klasse um Terraindaten ein- und auszulesen."""
+    """Eine Klasse um Terraindaten ein- und auszulesen.
+    
+    Einlesen:
+        Mit queue_entry(fields) werden die Felder einzeln uebergeben.
+        Mit exec_queue() werden dann alle eingetragen, falls nicht vorhanden.
+
+    Auslesen:
+        Mit add_cond() kann man eine weitere Bedingung vorgeben.
+        Danach wird mit fetch_data([level[, xmin[, xmax[, ymin[, ymax]]]]])
+        alles passende von der Datenbank geladen.
+        Mit has(x,y) und get(x,y) kann man dann einzeln zugreifen.
+    
+    Beenden:
+        Mit disconnect() kann die Datenbankverbindung beendet werden.
+        Danach koennen nurnoch die bereits geladenen Daten geholt werden."""
 
     def __init__(self):
         self.__entries = dict()
         self.__new_entries = []
+        self.__add_cond = ""
         self.__conn = rbdb.connect()
         self.__cursor = self.__conn.cursor()
 
@@ -174,6 +189,15 @@ class Terrain:
         return update_count, insert_count
 
 
+    def add_cond(self, sql):
+        """Definiert eine zusaetzliche Bedingung fuer die Felder."""
+
+        if sql != None:
+            self.__add_cond = " AND " + sql
+        else:
+            self.__add_cond = ""
+
+
     def fetch_data(self, level='N',
             xmin=None, xmax=None, ymin=None, ymax=None):
         """Liest die Terraindaten von der Datenbank aus."""
@@ -208,6 +232,7 @@ class Terrain:
         sql = "SELECT MIN(X), MAX(x), MIN(y), MAX(y) FROM felder"
         sql += " WHERE level='" + self.level + "'"
         sql += self.__crop_clause
+        sql += self.__add_cond
         try:
             self.__cursor.execute(sql)
             row = self.__cursor.fetchone()
@@ -226,6 +251,7 @@ class Terrain:
         sql = "SELECT x, y, terrain FROM felder"
         sql += " WHERE level='" + self.level + "'"
         sql += self.__crop_clause
+        sql += self.__add_cond
         try:
             self.__cursor.execute(sql)
             row = self.__cursor.fetchone()

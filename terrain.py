@@ -1,13 +1,15 @@
 #!/usr/bin/python
 
-import cgitb
-cgitb.enable()
+#import cgitb
+#cgitb.enable()
 
 import cgi
 import rbdb
 import util
 
 class Terrain:
+    """Eine Klasse um Terraindaten ein- und auszulesen."""
+
     def __init__(self):
         self.__entries = dict()
         self.__new_entries = []
@@ -38,30 +40,9 @@ class Terrain:
             return 0
 
 
-    def fetch_data(self, level='N',
-            xmin=None, xmax=None, ymin=None, ymax=None):
-        self.level = level
-        self.__crop(xmin, xmax, ymin, ymax)
-        self.__get_border()
-        self.__get_entries()
-
-
-    def __crop(self, xmin, xmax, ymin, ymax):
-        self.__crop_clause = ""
-        clauses = []
-        if xmin != None:
-            clauses.append(" x >= " + str(xmin))
-        if xmax != None:
-            clauses.append(" x <= " + str(xmax))
-        if ymin != None:
-            clauses.append(" y >= " + str(ymin))
-        if ymax != None:
-            clauses.append(" y <= " + str(ymax))
-        if len(clauses) > 0:
-            self.__crop_clause = " AND " + " AND ".join(clauses)
-
-
     def __type(self, fields):
+        """Findet den Untertyp (I,II,III) eines Feldes heraus."""
+
         if len(fields) >= 5:
             type = fields[len(fields)-1]
             if type == "IV":
@@ -81,6 +62,10 @@ class Terrain:
 
 
     def queue_entry(self, fields):
+        """Nimmt ein Feld zum Eintragen erstmal in einer TODO-Liste auf.
+        
+        Es wird zurueckgegeben ob die Daten syntaktisch korrekt sind."""
+
         if len(fields) >= 4:
             f = {"level": fields[0], "x": fields[1], "y": fields[2],
                     "terrain": fields[3], "typ": self.__type(fields)}
@@ -104,7 +89,10 @@ class Terrain:
 
 
     def __check_old(self):
-        """Gleicht die einzufuegenden Felder mit in der DB vorhandenen ab."""
+        """Gleicht die einzufuegenden Felder mit in der DB vorhandenen ab.
+        
+        Identische Eintragungen werden aus der TODO-Liste entnommen
+        und Aenderungen werden sofort ausgefuehrt."""
 
         new = self.__new_entries
         num_updated = 0
@@ -124,8 +112,6 @@ class Terrain:
                     if (    new[i]["terrain"] != row[3] or
                             (   new[i]["typ"] != None and
                                 new[i]["typ"] != str(row[4])    )    ):
-                        print new, "<br />"
-                        print row, "<br />"
                         if self.__update(new[i]):
                             num_updated += 1
                     # jetzt in jedem Fall schon (voll) drin
@@ -137,6 +123,8 @@ class Terrain:
 
 
     def __insert_type(self):
+        """Fuegt einen Eintrag mit einer Untertypangabe zur Datenbank hinzu."""
+
         sql = "INSERT INTO felder (x, y, level, terrain, typ) VALUES "
         new = self.__new_entries
         num = 0
@@ -155,6 +143,11 @@ class Terrain:
         return 0
 
     def __insert(self):
+        """Fuegt alle in der TODO-Liste verbliebenen Eintraege in die DB ein.
+
+        Es wird hier davon ausgegangen, dass diese Eintraege
+        noch nicht in der Datenbank vorhanden sind."""
+
         typenum = self.__insert_type()
         if len(self.__new_entries) > 0:
             sql = "INSERT INTO felder (x, y, level, terrain) VALUES "
@@ -168,12 +161,49 @@ class Terrain:
 
 
     def exec_queue(self):
+        """Die TODO-Liste wird abgearbeitet.
+
+        Die Eintraege werden als Aktualisierung oder Anfuegung
+        der Datenbank hinzugefuegt.
+        Es wird geprueft ob Eintraege nicht schon in der Datenbank sind.
+        Die Anzahl der aktualisierten und der neuen Eintraege
+        wird zurueckgegeben."""
+
         update_count = self.__check_old()
         insert_count = self.__insert()
         return update_count, insert_count
 
 
+    def fetch_data(self, level='N',
+            xmin=None, xmax=None, ymin=None, ymax=None):
+        """Liest die Terraindaten von der Datenbank aus."""
+
+        self.level = level
+        self.__crop(xmin, xmax, ymin, ymax)
+        self.__get_border()
+        self.__get_entries()
+
+
+    def __crop(self, xmin, xmax, ymin, ymax):
+        """Erstellt die SQL-Bedingung mit der der Bereich festgelegt wird."""
+
+        self.__crop_clause = ""
+        clauses = []
+        if xmin != None:
+            clauses.append(" x >= " + str(xmin))
+        if xmax != None:
+            clauses.append(" x <= " + str(xmax))
+        if ymin != None:
+            clauses.append(" y >= " + str(ymin))
+        if ymax != None:
+            clauses.append(" y <= " + str(ymax))
+        if len(clauses) > 0:
+            self.__crop_clause = " AND " + " AND ".join(clauses)
+
+
     def _get_border(self):
+        """Findet die tatsaechlichen Grenzen der aktuellen Karte heraus."""
+
         self.xmin, self.xmax, self.ymin, self.ymax = 0, 0, 0, 0
         sql = "SELECT MIN(X), MAX(x), MIN(y), MAX(y) FROM felder"
         sql += " WHERE level='" + self.level + "'"
@@ -191,6 +221,8 @@ class Terrain:
 
 
     def _get_entries(self):
+        """Holt alle Eintraege im Bereich von der Datenbank."""
+
         sql = "SELECT x, y, terrain FROM felder"
         sql += " WHERE level='" + self.level + "'"
         sql += self.__crop_clause

@@ -201,7 +201,7 @@ class Terrain:
             self.__crop_clause = " AND " + " AND ".join(clauses)
 
 
-    def _get_border(self):
+    def __get_border(self):
         """Findet die tatsaechlichen Grenzen der aktuellen Karte heraus."""
 
         self.xmin, self.xmax, self.ymin, self.ymax = 0, 0, 0, 0
@@ -220,7 +220,7 @@ class Terrain:
             return False
 
 
-    def _get_entries(self):
+    def __get_entries(self):
         """Holt alle Eintraege im Bereich von der Datenbank."""
 
         sql = "SELECT x, y, terrain FROM felder"

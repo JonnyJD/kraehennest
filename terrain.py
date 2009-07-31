@@ -85,7 +85,7 @@ class Terrain:
             f = {"level": fields[0], "x": fields[1], "y": fields[2],
                     "terrain": fields[3], "typ": self.__type(fields)}
             if (    f["x"].isdigit() and f["y"].isdigit()
-                    and f["terrain"].isalnum() and len(f["terrain"]) <= 4
+                    and f["terrain"].isalnum() and len(f["terrain"]) <= 5
                     and f["level"].isalnum() and len(f["level"]) <= 2):
                 self.__new_entries.append(f)
                 return True

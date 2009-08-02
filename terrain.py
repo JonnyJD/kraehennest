@@ -147,7 +147,8 @@ class Terrain:
         while i < len(new):
             if new[i]["typ"] != None:
                 sql += "(" + new[i]["x"] + "," + new[i]["y"] + ",'"
-                sql += new[i]["level"] + "','" + new[i]["terrain"] + "'),"
+                sql += new[i]["level"] + "','"
+                sql += new[i]["terrain"] + "'," + new[i]["typ"] + "),"
                 del new[i]
                 num += 1
             else:

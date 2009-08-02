@@ -17,7 +17,9 @@ else:
 terrain = Terrain()
 if form.has_key("name"):
     # benannte Kartenausschnitte
-    if form["name"].value == "osten":
+    if form["name"]. value == "kraehen":
+        terrain.fetch_data(level, 256, 288, 280, 302)
+    elif form["name"].value == "osten":
         if not form.has_key("level") or form["level"] == 'N':
             terrain.fetch_data(level, 273)
         else:

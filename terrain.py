@@ -6,8 +6,9 @@
 import cgi
 import rbdb
 import util
+from feld import Feld
 
-class Terrain:
+class Terrain(Feld):
     """Eine Klasse um Terraindaten ein- und auszulesen.
     
     Einlesen:
@@ -23,37 +24,6 @@ class Terrain:
     Beenden:
         Mit disconnect() kann die Datenbankverbindung beendet werden.
         Danach koennen nurnoch die bereits geladenen Daten geholt werden."""
-
-    def __init__(self):
-        self.__entries = dict()
-        self.__new_entries = []
-        self.__add_cond = ""
-        self.__conn = rbdb.connect()
-        self.__cursor = self.__conn.cursor()
-
-    def disconnect(self):
-        self.__cursor.close()
-        self.__conn.close()
-
-
-    def __try_execute(self, sql):
-        try:
-            self.__cursor.execute(sql)
-            return self.__cursor.rowcount
-        except rbdb.Error, e:
-            util.print_html_error(e)
-            return 0
-
-    def __try_execute_secondary(self, sql):
-        try:
-            cursor = self.__conn.cursor()
-            cursor.execute(sql)
-            cursor.close()
-            return self.__cursor.rowcount
-        except rbdb.Error, e:
-            util.print_html_error(e)
-            return 0
-
 
     def __type(self, fields):
         """Findet den Untertyp (I,II,III) eines Feldes heraus."""
@@ -87,7 +57,7 @@ class Terrain:
             if (    f["x"].isdigit() and f["y"].isdigit()
                     and f["terrain"].isalnum() and len(f["terrain"]) <= 5
                     and f["level"].isalnum() and len(f["level"]) <= 2):
-                self.__new_entries.append(f)
+                self.new_entries.append(f)
                 return True
 
         return False
@@ -100,7 +70,7 @@ class Terrain:
             sql += ", typ = " + feld["typ"]
         sql += " WHERE level = '" + feld["level"] + "' AND "
         sql += "x = " + feld["x"] + " AND y = " + feld["y"]
-        return self.__try_execute_secondary(sql)
+        return self.try_execute_secondary(sql)
 
 
     def __check_old(self):
@@ -109,15 +79,15 @@ class Terrain:
         Identische Eintragungen werden aus der TODO-Liste entnommen
         und Aenderungen werden sofort ausgefuehrt."""
 
-        new = self.__new_entries
+        new = self.new_entries
         num_updated = 0
         sql = "SELECT level, x, y, terrain, typ FROM felder WHERE "
         for f in new:
             sql += "(level = '" + f["level"] + "' AND "
             sql += "x = " + f["x"] + " AND y = " + f["y"] + ")"
             sql += " OR "
-        self.__cursor.execute(sql.rstrip(" OR "))
-        row = self.__cursor.fetchone()
+        self.cursor.execute(sql.rstrip(" OR "))
+        row = self.cursor.fetchone()
         while row != None:
             i = 0
             while i < len(new):
@@ -133,7 +103,7 @@ class Terrain:
                     del new[i]
                 else:
                     i += 1
-            row = self.__cursor.fetchone()
+            row = self.cursor.fetchone()
         return num_updated
 
 
@@ -141,7 +111,7 @@ class Terrain:
         """Fuegt einen Eintrag mit einer Untertypangabe zur Datenbank hinzu."""
 
         sql = "INSERT INTO felder (x, y, level, terrain, typ) VALUES "
-        new = self.__new_entries
+        new = self.new_entries
         num = 0
         i = 0
         while i < len(new):
@@ -154,8 +124,8 @@ class Terrain:
             else:
                 i += 1
         if num > 0:
-            if self.__try_execute(sql.rstrip(',')):
-                return self.__cursor.rowcount
+            if self.try_execute(sql.rstrip(',')):
+                return self.cursor.rowcount
         return 0
 
     def __insert(self):
@@ -165,14 +135,14 @@ class Terrain:
         noch nicht in der Datenbank vorhanden sind."""
 
         typenum = self.__insert_type()
-        if len(self.__new_entries) > 0:
+        if len(self.new_entries) > 0:
             sql = "INSERT INTO felder (x, y, level, terrain) VALUES "
-            for new in self.__new_entries:
+            for new in self.new_entries:
                 sql += "(" + new["x"] + "," + new["y"] + ",'"
                 sql += new["level"] + "','" + new["terrain"] + "'),"
-            self.__new_entries = []
-            if self.__try_execute(sql.rstrip(',')):
-                return self.__cursor.rowcount + typenum
+            self.new_entries = []
+            if self.try_execute(sql.rstrip(',')):
+                return self.cursor.rowcount + typenum
         return 0
 
 
@@ -190,40 +160,14 @@ class Terrain:
         return update_count, insert_count
 
 
-    def add_cond(self, sql):
-        """Definiert eine zusaetzliche Bedingung fuer die Felder."""
-
-        if sql != None:
-            self.__add_cond = " AND " + sql
-        else:
-            self.__add_cond = ""
-
-
     def fetch_data(self, level='N',
             xmin=None, xmax=None, ymin=None, ymax=None):
         """Liest die Terraindaten von der Datenbank aus."""
 
         self.level = level
-        self.__crop(xmin, xmax, ymin, ymax)
+        self.crop(xmin, xmax, ymin, ymax)
         self.__get_border()
         self.__get_entries()
-
-
-    def __crop(self, xmin, xmax, ymin, ymax):
-        """Erstellt die SQL-Bedingung mit der der Bereich festgelegt wird."""
-
-        self.__crop_clause = ""
-        clauses = []
-        if xmin != None:
-            clauses.append(" x >= " + str(xmin))
-        if xmax != None:
-            clauses.append(" x <= " + str(xmax))
-        if ymin != None:
-            clauses.append(" y >= " + str(ymin))
-        if ymax != None:
-            clauses.append(" y <= " + str(ymax))
-        if len(clauses) > 0:
-            self.__crop_clause = " AND " + " AND ".join(clauses)
 
 
     def __get_border(self):
@@ -232,11 +176,11 @@ class Terrain:
         self.xmin, self.xmax, self.ymin, self.ymax = 0, 0, 0, 0
         sql = "SELECT MIN(X), MAX(x), MIN(y), MAX(y) FROM felder"
         sql += " WHERE level='" + self.level + "'"
-        sql += self.__crop_clause
-        sql += self.__add_cond
+        sql += self.crop_clause
+        sql += self.add_cond
         try:
-            self.__cursor.execute(sql)
-            row = self.__cursor.fetchone()
+            self.cursor.execute(sql)
+            row = self.cursor.fetchone()
             if row[0] != None:
                 self.xmin, self.xmax = row[0], row[1]
                 self.ymin, self.ymax = row[2], row[3]
@@ -251,25 +195,18 @@ class Terrain:
 
         sql = "SELECT x, y, terrain FROM felder"
         sql += " WHERE level='" + self.level + "'"
-        sql += self.__crop_clause
-        sql += self.__add_cond
+        sql += self.crop_clause
+        sql += self.add_cond
         try:
-            self.__cursor.execute(sql)
-            row = self.__cursor.fetchone()
+            self.cursor.execute(sql)
+            row = self.cursor.fetchone()
             while row != None:
-                self.__entries[row[0],row[1]] = row[2]
-                row = self.__cursor.fetchone()
+                self.entries[row[0],row[1]] = row[2]
+                row = self.cursor.fetchone()
             return True
         except rbdb.Error, e:
             util.print_html_error(e)
             return False
-
-
-    def has(self, x, y):
-        return (x,y) in self.__entries
-
-    def get(self, x, y):
-        return self.__entries[x,y]
 
 
 # Aufruf als Skript: Landschaftsaktualisierung

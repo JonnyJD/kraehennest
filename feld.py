@@ -4,7 +4,7 @@ import rbdb
 import util
 
 class Feld:
-    """Eine Klasse um Terraindaten ein- und auszulesen.
+    """Eine abstrakte Klasse um Felddaten ein- und auszulesen.
     
     Einlesen:
         Mit queue_entry(fields) werden die Felder einzeln uebergeben.

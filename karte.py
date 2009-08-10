@@ -5,6 +5,7 @@
 
 import cgi
 from terrain import Terrain
+from dorf import Dorf
 
 print 'Content-type: text/html\n'
 
@@ -15,6 +16,7 @@ else:
     level = 'N'
 
 terrain = Terrain()
+dorf = Dorf()
 if form.has_key("name"):
     # benannte Kartenausschnitte
     if form["name"]. value == "kraehen":
@@ -39,7 +41,11 @@ if form.has_key("name"):
         terrain.fetch_data(level)
 else:
     terrain.fetch_data(level)
+dorf.fetch_data()
 
+print '<style type="text/css">'
+print 'td { font-size: 12px; height:32px; width:32px; text-align:center; }'
+print '</style>'
 width = 32 * (terrain.xmax - terrain.xmin + 1)
 print '<table width="' + str(width) + '" cellspacing="0">'
 # X - Achse
@@ -51,8 +57,10 @@ for y in range(terrain.ymin, terrain.ymax + 1):
     for x in range(terrain.xmin, terrain.xmax + 1):
         if terrain.has(x,y):
             row = '<td background="/img/terrain/'
-            row += terrain.get(x,y) + '.gif" '
-            row += 'style="width:32px;"></td>'
+            row += terrain.get(x,y) + '.gif">'
+            if dorf.has(x,y):
+                row += dorf.get(x,y)[0:3]
+            row +='</td>'
             print row
         else:
             print '<td></td>'

@@ -16,7 +16,9 @@ else:
     level = 'N'
 
 terrain = Terrain()
-dorf = Dorf()
+if level == 'N':
+    dorf = Dorf()
+    dorf.fetch_data()
 if form.has_key("name"):
     # benannte Kartenausschnitte
     if form["name"]. value == "kraehen":
@@ -41,7 +43,6 @@ if form.has_key("name"):
         terrain.fetch_data(level)
 else:
     terrain.fetch_data(level)
-dorf.fetch_data()
 
 print '<style type="text/css">'
 print 'td { font-size: 12px; height:32px; width:32px; text-align:center; }'
@@ -58,7 +59,7 @@ for y in range(terrain.ymin, terrain.ymax + 1):
         if terrain.has(x,y):
             row = '<td background="/img/terrain/'
             row += terrain.get(x,y) + '.gif"'
-            if dorf.has(x,y):
+            if level == 'N' and dorf.has(x,y):
                 dorf.get(x,y)
                 row += ' style="color:' + dorf.entry['allyfarbe'] + ';">'
                 row += dorf.entry['rittername'][0:3]

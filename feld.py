@@ -118,7 +118,8 @@ class Feld:
         return (x,y) in self.entries
 
     def get(self, x, y):
-        return self.entries[x,y]
+        self.entry = self.entries[x,y]
+        return self.entry
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

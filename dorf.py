@@ -53,7 +53,8 @@ class Dorf(Feld):
                 if match:
                     x = int(match.group(1))
                     y = int(match.group(2))
-                    self.entries[x,y] = row[5]
+                    self.entries[x,y] = {'rittername': row[5],
+                                        'allyfarbe': row[8]}
                 row = self.cursor.fetchone()
             return True
         except rbdb.Error, e:

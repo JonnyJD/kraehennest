@@ -57,10 +57,14 @@ for y in range(terrain.ymin, terrain.ymax + 1):
     for x in range(terrain.xmin, terrain.xmax + 1):
         if terrain.has(x,y):
             row = '<td background="/img/terrain/'
-            row += terrain.get(x,y) + '.gif">'
+            row += terrain.get(x,y) + '.gif"'
             if dorf.has(x,y):
-                row += dorf.get(x,y)[0:3]
-            row +='</td>'
+                dorf.get(x,y)
+                row += ' style="color:' + dorf.entry['allyfarbe'] + ';">'
+                row += dorf.entry['rittername'][0:3]
+            else:
+                row += '>'
+            row += '</td>'
             print row
         else:
             print '<td></td>'

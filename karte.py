@@ -62,7 +62,10 @@ for y in range(terrain.ymin, terrain.ymax + 1):
             if level == 'N' and dorf.has(x,y):
                 dorf.get(x,y)
                 row += ' style="color:' + dorf.entry['allyfarbe'] + ';">'
-                row += dorf.entry['rittername'][0:3]
+                if dorf.entry['rittername'] != ".":
+                    row += dorf.entry['rittername'][0:3]
+                else:
+                    row += "_"
             else:
                 row += '>'
             row += '</td>'

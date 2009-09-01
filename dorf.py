@@ -17,7 +17,7 @@ class Dorf(Feld):
         Mit exec_queue() werden dann alle eingetragen, falls nicht vorhanden.
 
     Auslesen:
-        Mit add_cond() kann man eine weitere Bedingung vorgeben.
+        Mit set_add_cond() kann man eine weitere Bedingung vorgeben.
         Danach wird mit fetch_data([level[, xmin[, xmax[, ymin[, ymax]]]]])
         alles passende von der Datenbank geladen.
         Mit has(x,y) und get(x,y) kann man dann einzeln zugreifen.

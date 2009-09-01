@@ -36,7 +36,7 @@ if form.has_key("name"):
     elif form["name"].value == "drache":
         terrain.fetch_data(level, 206, 217, 351, 360)
     elif form["name"].value == "neu":
-        terrain.add_cond("typ is not NULL")
+        terrain.set_add_cond("typ is not NULL")
         terrain.fetch_data(level)
 else:
     terrain.fetch_data(level)

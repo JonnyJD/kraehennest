@@ -16,9 +16,6 @@ else:
     level = 'N'
 
 terrain = Terrain()
-if level == 'N':
-    dorf = Dorf()
-    dorf.fetch_data()
 if form.has_key("name"):
     # benannte Kartenausschnitte
     if form["name"]. value == "kraehen":
@@ -44,22 +41,40 @@ if form.has_key("name"):
 else:
     terrain.fetch_data(level)
 
+if not form.has_key("clean") and level == 'N':
+    show_dorf = True
+    dorf = Dorf()
+    dorf.fetch_data()
+else:
+    show_dorf = False
+
+size = 32 
+fontsize = 9
+if form.has_key("size"):
+    if form["size"].value == "small":
+        size = 16
+        fontsize = 5
+
 print '<style type="text/css">'
-print 'td { font-size: 12px; height:32px; width:32px; text-align:center; }'
+print 'td {'
+print 'font-size: ' + str(fontsize) + 'pt;'
+print 'height: ' + str(size) + 'px;'
+print 'width: ' + str(size) + 'px;'
+print 'text-align:center; }'
 print '</style>'
-width = 32 * (terrain.xmax - terrain.xmin + 1)
-print '<table width="' + str(width) + '" cellspacing="0">'
+width = size * (terrain.xmax - terrain.xmin + 1)
+print '<table width="' + str(width) + '" cellspacing="0" cellpadding="0">'
 # X - Achse
-print '<tr style="height:32px;"><td></td>'
+print '<tr style="height:' + str(size) + 'px;"><td></td>'
 for x in range(terrain.xmin, terrain.xmax + 1):
     print '<td>' + str(x) + '</td>'
 for y in range(terrain.ymin, terrain.ymax + 1):
-    print '<tr style="height:32px;"><td>' + str(y)  + '</td>'
+    print '<tr style="height:' + str(size) + 'px;"><td>' + str(y)  + '</td>'
     for x in range(terrain.xmin, terrain.xmax + 1):
         if terrain.has(x,y):
-            row = '<td background="/img/terrain/'
+            row = '<td background="/img/terrain/' + str(size) + '/'
             row += terrain.get(x,y) + '.gif"'
-            if level == 'N' and dorf.has(x,y):
+            if show_dorf and dorf.has(x,y):
                 dorf.get(x,y)
                 row += ' style="color:' + dorf.entry['allyfarbe'] + ';">'
                 if dorf.entry['rittername'] != ".":
@@ -74,7 +89,7 @@ for y in range(terrain.ymin, terrain.ymax + 1):
             print '<td></td>'
     print '<td>' + str(y) + '</tr>'
 # X - Achse
-print '<tr style="height:32px;"><td></td>'
+print '<tr style="height:' + str(size) + 'px;"><td></td>'
 for x in range(terrain.xmin, terrain.xmax + 1):
     print '<td>' + str(x) + '</td>'
 print '</table>'

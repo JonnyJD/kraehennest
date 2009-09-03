@@ -14,6 +14,9 @@ class Terrain(Feld):
     Einlesen:
         Mit queue_entry(fields) werden die Felder einzeln uebergeben.
         Mit exec_queue() werden dann alle eingetragen, falls nicht vorhanden.
+        Mit replace_uniform_area(level, x1, y1, x2, y2, terrain)
+        und replace_line(level, x, y, terrain_list)
+        koennen Terraindaten manuell eingetragen werden
 
     Auslesen:
         Mit set_add_cond() kann man eine weitere Bedingung vorgeben.
@@ -45,6 +48,11 @@ class Terrain(Feld):
         else:
             return None
 
+    def __check_entry(self, entry):
+        return (entry["x"].isdigit() and entry["y"].isdigit()
+                and entry["terrain"].isalnum() and len(entry["terrain"]) <= 5
+                and entry["level"].isalnum() and len(entry["level"]) <= 2)
+
 
     def queue_entry(self, fields):
         """Nimmt ein Feld zum Eintragen erstmal in einer TODO-Liste auf.
@@ -54,9 +62,7 @@ class Terrain(Feld):
         if len(fields) >= 4:
             f = {"level": fields[0], "x": fields[1], "y": fields[2],
                     "terrain": fields[3], "typ": self.__type(fields)}
-            if (    f["x"].isdigit() and f["y"].isdigit()
-                    and f["terrain"].isalnum() and len(f["terrain"]) <= 5
-                    and f["level"].isalnum() and len(f["level"]) <= 2):
+            if self.__check_entry(f):
                 self.new_entries.append(f)
                 return True
 
@@ -158,6 +164,30 @@ class Terrain(Feld):
         update_count = self.__check_old()
         insert_count = self.__insert()
         return update_count, insert_count
+
+    def replace_uniform_area(self, level, x1, y1, x2, y2, terrain):
+        for x in range(x1,x2+1):
+            for y in range(y1,y2+1):
+                f = {"level": level, "x": str(x), "y": str(y),
+                        "terrain": str(terrain), "typ": None}
+                if self.__check_entry(f):
+                    self.new_entries.append(f)
+                else:
+                    print "Problem mit", f
+        updated, inserted = self.exec_queue()
+        print updated, "aktualisiert", inserted, "eingefuegt"
+
+    def replace_line(self, level, x, y, terrain_list):
+        for i in range(0,len(terrain_list)):
+            f = {"level": level, "x": str(x), "y": str(y),
+                    "terrain": str(terrain_list[i]), "typ": None}
+            if self.__check_entry(f):
+                self.new_entries.append(f)
+            else:
+                print "Problem mit", f
+            x += 1
+        updated, inserted = self.exec_queue()
+        print updated, "aktualisiert", inserted, "eingefuegt"
 
 
     def fetch_data(self, level='N',

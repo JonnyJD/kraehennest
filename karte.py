@@ -46,8 +46,7 @@ if form.has_key("list"):
     if form["list"].value == "ksk":
         print '<th colspan=3>alte PHP-Karte</th>'
         print '</tr><tr style="height:50%;"><td>'
-        url = "/karte/?x=0&y=226&b=999&h=999"
-        print '<a href="' + url + '">komplett ("Alles")</a><br />'
+        print_link("",                "komplette Karte")
         print "</td><td>"
         print '<a href="/karte">Kraehengebiet (navigierbar)</a><br />'
         print "</td><td>"

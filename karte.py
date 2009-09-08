@@ -30,7 +30,7 @@ if form.has_key("list"):
             area = "/" + area
         print_link(area, name);
         for level in levels:
-            link = area + "/U" + str(level)
+            link = area + "/u" + str(level)
             new_name = name + " Level U" + str(level)
             print_link(link, new_name)
         print "<br />"
@@ -57,8 +57,9 @@ if form.has_key("list"):
         print "</tr><tr><td>"
     else:
         print "<td>"
-    print_area_link("kraehen", [],     "Kraehengebiet")
-    print "<br />"
+    if form["list"].value == "ksk":
+        print_area_link("kraehen", [],     "Kraehengebiet")
+        print "<br />"
     print_area_link("", [1,2,3,4],      "komplett (Normalgroesse)")
     print_link("/clean",                "komplett (ohne Doerfer)")
     print_link("/small",                "komplett (kleine Felder)")

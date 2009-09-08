@@ -1,0 +1,15 @@
+body {
+	color: #FFFFCC;
+	background-color: #000000;
+}
+a:link, a:active, a:visited {
+	color: #FFCC00;
+	text-decoration: none;
+}
+a:hover {
+	color: #FFFFCC;
+	text-decoration: underline;
+}
+th {
+	color: #CC9900;
+}

@@ -54,6 +54,12 @@ if form.has_key("size"):
     if form["size"].value == "small":
         size = 16
         fontsize = 5
+    elif form["size"].value == "verysmall":
+        size = 8
+        fontsize = 0
+    elif form["size"].value == "tiny":
+        size = 5
+        fontsize = 0
 
 print '<style type="text/css">'
 print 'td {'

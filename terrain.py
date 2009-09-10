@@ -248,18 +248,20 @@ class Terrain(Feld):
             updated, added = self.exec_queue()
             if (updated + added) > 0:
                 print "Es wurden", updated, "Felder aktualisiert und",
-                print added, "neu hinzugefuegt"
+                print added, "neu hinzugefuegt.", "<br />"
             else:
-                print "Terrain ist schon bekannt."
+                print "Terrain ist schon bekannt.", "<br />"
         else:
             # Hier spaeter selbst ein Formular
-            print 'Es wurden keine Landschaftsdaten gesendet.'
+            print 'Es wurden keine Landschaftsdaten gesendet.', "<br />"
 
 
 # Aufruf als Skript: Landschaftsaktualisierung
 if __name__ == '__main__':
     form = cgi.FieldStorage()
     print "Content-type: text/plain\n"
+
+    util.track_client_version(form)
 
     if form.has_key("data"):
         terrain = Terrain()

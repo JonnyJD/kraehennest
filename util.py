@@ -35,10 +35,8 @@ def track_client_version(form):
             cursor.execute(sel_sql)
             if cursor.rowcount == 0:
                 cursor.execute(ins_sql)
-                print "neu", "<br />"
             else:
                 cursor.execute(upd_sql)
-                print "alt", "<br />"
         except rbdb.Error, e:
             print_html_error(e)
         conn.close()

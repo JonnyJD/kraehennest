@@ -265,6 +265,7 @@ if __name__ == '__main__':
         terrain = Terrain()
         terrain.process(form["data"].value)
     else:
+        terrain = Terrain()
         terrain.process("")
 
 

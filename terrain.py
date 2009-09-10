@@ -238,6 +238,23 @@ class Terrain(Feld):
             util.print_html_error(e)
             return False
 
+    def process(self, data):
+        lines = data.splitlines()
+        if len(lines) > 0:
+            for line in lines:
+                fields = line.split()
+                if not self.queue_entry(fields):
+                    print '"', line, '" enthielt Fehler <br />'
+            updated, added = self.exec_queue()
+            if (updated + added) > 0:
+                print "Es wurden", updated, "Felder aktualisiert und",
+                print added, "neu hinzugefuegt"
+            else:
+                print "Terrain ist schon bekannt."
+        else:
+            # Hier spaeter selbst ein Formular
+            print 'Es wurden keine Landschaftsdaten gesendet.'
+
 
 # Aufruf als Skript: Landschaftsaktualisierung
 if __name__ == '__main__':
@@ -246,23 +263,9 @@ if __name__ == '__main__':
 
     if form.has_key("data"):
         terrain = Terrain()
-
-        lines = form["data"].value.splitlines()
-        for line in lines:
-            fields = line.split()
-            if not terrain.queue_entry(fields):
-                print '"', line, '" enthielt Fehler <br />'
-        updated, added = terrain.exec_queue()
-        if (updated + added) > 0:
-            print "Es wurden", updated, "Felder aktualisiert und",
-            print added, "neu hinzugefuegt"
-        else:
-            print "Terrain ist schon bekannt."
-
+        terrain.process(form["data"].value)
     else:
-        # Hier spaeter selbst ein Formular
-        print 'Es wurden keine Landschaftsdaten gesendet.'
-
+        terrain.process("")
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

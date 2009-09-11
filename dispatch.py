@@ -1,11 +1,14 @@
 #!/usr/bin/python
 
-#import cgitb
-#cgitb.enable()
+import cgitb
+cgitb.enable()
 
 import cgi
 import re
+import util
+from xml.dom import minidom
 from terrain import Terrain
+#from armee import Armee
 
 def get_sections(data):
     lines = data.splitlines();
@@ -24,21 +27,31 @@ def get_sections(data):
         sections["felder"] = "\n".join(lines)
     return sections
 
+
 if __name__ == '__main__':
     form = cgi.FieldStorage()
+    data = None
     print "Content-type: text/html\n"
 
-    if form.has_key("data"):
-        data = form["data"].value
-        sections = get_sections(data)
+    try:
+        data = minidom.parseString(form.value).documentElement
+    except Exception:
+        print "Es wurden keine gueltigen Daten gesendet. <br />"
 
-        if "felder" in sections:
+    if data != None:
+        nodes = data.getElementsByTagName("auge")
+        if (nodes.length > 0):
+            util.track_client(nodes[0])
+
+        nodes = data.getElementsByTagName("armeen")
+        if (nodes.length > 0):
+            #armee = Armee()
+            #armee.process_xml(nodes[0])
+            print nodes[0].toxml()
+        nodes = data.getElementsByTagName("felder")
+        if (nodes.length > 0):
             terrain = Terrain()
-            terrain.process(sections["felder"])
-        if "armeen" in sections:
-            print "Armeen werden noch nicht gespeichert", "<br />"
-    else:
-        print "Es wurden keine Daten gesendet."
+            terrain.process_xml(nodes[0])
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

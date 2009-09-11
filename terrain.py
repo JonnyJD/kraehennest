@@ -252,8 +252,10 @@ class Terrain(Feld):
             else:
                 print "Terrain ist schon bekannt.", "<br />"
         else:
-            # Hier spaeter selbst ein Formular
             print 'Es wurden keine Landschaftsdaten gesendet.', "<br />"
+
+    def process_xml(self, node):
+        self.process(node.firstChild.data);
 
 
 # Aufruf als Skript: Landschaftsaktualisierung

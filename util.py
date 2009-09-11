@@ -15,14 +15,8 @@ def addslashes(text):
     return escape_string(text)
 
 
-def track_client_version(form):
-    """Aktualisiert welches Reich mit welcher Kraehenaugenversion
-    zum letzten Mal gesendet hat.
-    """
 
-    if "agent" in form and "pid" in form:
-        r_id = str(int(form["pid"].value.replace("rbspiel","")))
-        version = addslashes(form["agent"].value)
+def update_usage(r_id, version):
         conn = rbdb.connect()
         cursor = conn.cursor()
         sel_sql = "SELECT r_id FROM versionen WHERE r_id=" + r_id
@@ -40,6 +34,26 @@ def track_client_version(form):
         except rbdb.Error, e:
             print_html_error(e)
         conn.close()
+
+def track_client_version(form):
+    """Aktualisiert welches Reich mit welcher Kraehenaugenversion
+    zum letzten Mal gesendet hat.
+    """
+
+    if "agent" in form and "pid" in form:
+        r_id = str(int(form["pid"].value.replace("rbspiel","")))
+        version = addslashes(form["agent"].value)
+        update_usage(r_id, version)
+
+def track_client(node):
+    sender_elems = node.getElementsByTagName("sender")
+    if sender_elems.length > 0:
+        r_id = sender_elems[0].getAttribute("r_id")
+        client_elems = node.getElementsByTagName("client")
+        if client_elems.length > 0:
+            name = client_elems[0].getAttribute("name")
+            version = client_elems[0].getAttribute("version")
+            update_usage(r_id, name + " " + version)
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

@@ -46,13 +46,13 @@ def track_client_version(form):
         update_usage(r_id, version)
 
 def track_client(node):
-    sender_elems = node.getElementsByTagName("sender")
-    if sender_elems.length > 0:
-        r_id = sender_elems[0].getAttribute("r_id")
-        client_elems = node.getElementsByTagName("client")
-        if client_elems.length > 0:
-            name = client_elems[0].getAttribute("name")
-            version = client_elems[0].getAttribute("version")
+    sender_elems = node.xpathEval('sender')
+    if len(sender_elems) > 0:
+        r_id = sender_elems[0].prop('r_id')
+        client_elems = node.xpathEval('client')
+        if len(client_elems) > 0:
+            name = client_elems[0].prop("name")
+            version = client_elems[0].prop("version")
             update_usage(r_id, name + " " + version)
 
 

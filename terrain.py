@@ -255,7 +255,7 @@ class Terrain(Feld):
             print 'Es wurden keine Landschaftsdaten gesendet.', "<br />"
 
     def process_xml(self, node):
-        self.process(node.firstChild.data);
+        self.process(node.getContent());
 
 
 # Aufruf als Skript: Landschaftsaktualisierung

@@ -35,16 +35,17 @@ class Reich:
 
             for item in items:
                 subitems = item.xpathEval('item')
-                name = util.addslashes(subitems[0].getContent())
+                name = subitems[0].getContent()
+                safe_name = util.addslashes(name)
                 r_id = util.addslashes(subitems[1].getContent())
                 message =  r_id + ": " + name
                 sel_sql = "SELECT rittername FROM ritter"
                 sel_sql += " WHERE ritternr=" + r_id
                 ins_sql = "INSERT INTO ritter (ritternr, rittername)"
-                ins_sql += " VALUES (" + r_id + ", '" + name + "')"
+                ins_sql += " VALUES (" + r_id + ", '" + s_name + "')"
                 log_sql = "INSERT INTO logdat (aktion, daten)"
                 log_sql += " VALUES ('Ritter eingetragen', '" + message + "')"
-                upd_sql = "UPDATE ritter SET rittername='" + name + "'" 
+                upd_sql = "UPDATE ritter SET rittername='" + s_name + "'" 
                 upd_sql += " WHERE ritternr=" + r_id
                 self.__try_execute(cursor, sel_sql)
                 if cursor.rowcount == 0:
@@ -64,7 +65,7 @@ class Reich:
                             log += message + " aktualisiert\n"
                             log += "\t alter Name war: " + row[0] + "\n"
                         else:
-                            log += message + " NICHT eingetragen!\n"
+                            log += message + " NICHT aktualisiert!\n"
             conn.close()
             print log
 

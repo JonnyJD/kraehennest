@@ -20,6 +20,7 @@ class Terrain(Feld):
 
     Auslesen:
         Mit set_add_cond() kann man eine weitere Bedingung vorgeben.
+        (dabei sollte man die sql strings absichern!)
         Danach wird mit fetch_data([level[, xmin[, xmax[, ymin[, ymax]]]]])
         alles passende von der Datenbank geladen.
         Mit has(x,y) und get(x,y) kann man dann einzeln zugreifen.
@@ -70,13 +71,14 @@ class Terrain(Feld):
 
 
     def __update(self, feld):
-        sql = "UPDATE felder "
-        sql += "SET terrain = '" + feld["terrain"] + "'"
+        sql = "UPDATE felder SET terrain = %s"
+        args = feld["terrain"],
         if feld["typ"] != None:
-            sql += ", typ = " + feld["typ"]
-        sql += " WHERE level = '" + feld["level"] + "' AND "
-        sql += "x = " + feld["x"] + " AND y = " + feld["y"]
-        return self.try_execute_secondary(sql)
+            sql += ", typ = %s"
+            args += feld["typ"],
+        sql += " WHERE level = %s AND x = %s AND y = %s"
+        args += feld["level"], feld["x"], feld["y"]
+        return self.try_execute_safe_secondary(sql, args)
 
 
     def __check_old(self):
@@ -88,11 +90,11 @@ class Terrain(Feld):
         new = self.new_entries
         num_updated = 0
         sql = "SELECT level, x, y, terrain, typ FROM felder WHERE "
+        args = ()
         for f in new:
-            sql += "(level = '" + f["level"] + "' AND "
-            sql += "x = " + f["x"] + " AND y = " + f["y"] + ")"
-            sql += " OR "
-        self.cursor.execute(sql.rstrip(" OR "))
+            sql += "(level = %s AND x = %s AND y = %s) OR "
+            args += f["level"], f["x"], f["y"]
+        self.try_execute_safe(sql.rstrip(" OR "), args)
         row = self.cursor.fetchone()
         while row != None:
             i = 0
@@ -116,21 +118,21 @@ class Terrain(Feld):
     def __insert_type(self):
         """Fuegt einen Eintrag mit einer Untertypangabe zur Datenbank hinzu."""
 
-        sql = "INSERT INTO felder (x, y, level, terrain, typ) VALUES "
+        sql = "INSERT INTO felder (x, y, level, terrain, typ)"
+        sql += " VALUES (%s, %s, %s, %s, %s)"
+        arglist = []
         new = self.new_entries
-        num = 0
         i = 0
         while i < len(new):
             if new[i]["typ"] != None:
-                sql += "(" + new[i]["x"] + "," + new[i]["y"] + ",'"
-                sql += new[i]["level"] + "','"
-                sql += new[i]["terrain"] + "'," + new[i]["typ"] + "),"
+                args = new[i]["x"], new[i]["y"], new[i]["level"]
+                args += new[i]["terrain"], new[i]["typ"]
+                arglist.append(args)
                 del new[i]
-                num += 1
             else:
                 i += 1
-        if num > 0:
-            if self.try_execute(sql.rstrip(',')):
+        if len(arglist) > 0:
+            if self.try_executemany_safe(sql, arglist):
                 return self.cursor.rowcount
         return 0
 
@@ -142,12 +144,13 @@ class Terrain(Feld):
 
         typenum = self.__insert_type()
         if len(self.new_entries) > 0:
-            sql = "INSERT INTO felder (x, y, level, terrain) VALUES "
+            sql = "INSERT INTO felder (x, y, level, terrain)"
+            sql += " VALUES (%s, %s, %s, %s)"
+            arglist = []
             for new in self.new_entries:
-                sql += "(" + new["x"] + "," + new["y"] + ",'"
-                sql += new["level"] + "','" + new["terrain"] + "'),"
+                arglist += [(new["x"], new["y"], new["level"], new["terrain"])]
             self.new_entries = []
-            if self.try_execute(sql.rstrip(',')):
+            if self.try_executemany_safe(sql, arglist):
                 return self.cursor.rowcount + typenum
         return 0
 
@@ -194,10 +197,13 @@ class Terrain(Feld):
             xmin=None, xmax=None, ymin=None, ymax=None):
         """Liest die Terraindaten von der Datenbank aus."""
 
-        self.level = level
-        self.crop(xmin, xmax, ymin, ymax)
-        self.__get_border()
-        self.__get_entries()
+        if level.isalnum() and len(level) <= 2:
+            self.level = level
+            self.crop(xmin, xmax, ymin, ymax)
+            self.__get_border()
+            self.__get_entries()
+        else:
+            print "FEHLER: Level '" + level + "' ist ungueltig"
 
 
     def __get_border(self):

@@ -31,24 +31,16 @@ class Feld:
         self.cursor.close()
         self.__conn.close()
 
+    def try_execute_safe(self, sql, args):
+        return util.try_execute_safe(self.cursor, sql, args)
 
-    def try_execute(self, sql):
-        try:
-            self.cursor.execute(sql)
-            return self.cursor.rowcount
-        except rbdb.Error, e:
-            util.print_html_error(e)
-            return 0
+    def try_executemany_safe(self, sql, arglist):
+        return util.try_executemany_safe(self.cursor, sql, arglist[:])
 
-    def try_execute_secondary(self, sql):
-        try:
-            cursor = self.__conn.cursor()
-            cursor.execute(sql)
-            cursor.close()
-            return self.cursor.rowcount
-        except rbdb.Error, e:
-            util.print_html_error(e)
-            return 0
+    def try_execute_safe_secondary(self, sql, args):
+        cursor = self.__conn.cursor()
+        util.try_execute_safe(cursor, sql, args)
+        cursor.close()
 
 
     def queue_entry(self, fields):

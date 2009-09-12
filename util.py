@@ -15,7 +15,15 @@ def try_execute_safe(cursor, sql, args):
         cursor.execute(sql, args)
         return cursor.rowcount
     except rbdb.Error, e:
-        util.print_html_error(e)
+        print_html_error(e)
+        return 0
+
+def try_executemany_safe(cursor, sql, arglist):
+    try:
+        cursor.executemany(sql, arglist[:])
+        return cursor.rowcount
+    except rbdb.Error, e:
+        print_html_error(e)
         return 0
 
 def print_xml(xml_node):

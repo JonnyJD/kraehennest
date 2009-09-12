@@ -29,7 +29,7 @@ if __name__ == '__main__':
         if len(nodes) > 0:
         #    armee = Armee()
         #    armee.process_xml(nodes[0])
-            print nodes[0].getContent(), "<br />"
+            util.print_xml(nodes[0])
 
         nodes = data.xpathEval('rb/felder')
         if len(nodes) > 0:

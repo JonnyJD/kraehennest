@@ -255,7 +255,25 @@ class Terrain(Feld):
             print 'Es wurden keine Landschaftsdaten gesendet.', "<br />"
 
     def process_xml(self, node):
-        self.process(node.getContent());
+        felder = node.xpathEval('feld')
+        if len(felder) > 0:
+            for feld in felder:
+                fields = [feld.prop('level'), feld.prop('x'), feld.prop('y')]
+                fields.append(feld.xpathEval('terrain')[0].getContent())
+                names = feld.xpathEval('name')
+                if len(names) > 0:
+                    fields.extend(names[0].getContent().split())
+                if not self.queue_entry(fields):
+                    util.print_xml(feld)
+                    print "enthielt Fehler <br />"
+            updated, added = self.exec_queue()
+            if (updated + added) > 0:
+                print "Es wurden", updated, "Felder aktualisiert und",
+                print added, "neu hinzugefuegt.", "<br />"
+            else:
+                print "Terrain ist schon bekannt.", "<br />"
+        else:
+            print 'Es wurden keine Landschaftsdaten gesendet.', "<br />"
 
 
 # Aufruf als Skript: Landschaftsaktualisierung

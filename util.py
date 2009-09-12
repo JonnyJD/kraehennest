@@ -14,6 +14,9 @@ def addslashes(text):
     """Funktion um fuer MySQL gefaehrliche Zeichen zu maskieren"""
     return escape_string(text)
 
+def print_xml(xml_node):
+    print xml_node.serialize().replace("<","&lt;").replace(">","&gt;"), "<br />"
+
 
 
 def update_usage(r_id, version):

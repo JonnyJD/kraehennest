@@ -10,21 +10,7 @@ import util
 
 class Reich:
     """Eine Klasse um Reichsdaten ein- und auszulesen.
-    
-    Einlesen:
-
-    Auslesen:
-    
-    Beenden:
     """
-    def __try_execute(self, cursor, sql):
-        try:
-            cursor.execute(sql)
-            return cursor.rowcount
-        except rbdb.Error, e:
-            util.print_html_error(e)
-            return 0
-
 
     def process_xml(self, node):
         items = node.xpathEval('/response/content/item')
@@ -36,31 +22,27 @@ class Reich:
             for item in items:
                 subitems = item.xpathEval('item')
                 name = subitems[0].getContent()
-                safe_name = util.addslashes(name)
-                r_id = util.addslashes(subitems[1].getContent())
+                r_id = subitems[1].getContent()
                 message =  r_id + ": " + name
-                sel_sql = "SELECT rittername FROM ritter"
-                sel_sql += " WHERE ritternr=" + r_id
+                sel_sql = "SELECT rittername FROM ritter WHERE ritternr=%s"
                 ins_sql = "INSERT INTO ritter (ritternr, rittername)"
-                ins_sql += " VALUES (" + r_id + ", '" + s_name + "')"
+                ins_sql += " VALUES (%s, %s)"
                 log_sql = "INSERT INTO logdat (aktion, daten)"
-                log_sql += " VALUES ('Ritter eingetragen', '" + message + "')"
-                upd_sql = "UPDATE ritter SET rittername='" + s_name + "'" 
-                upd_sql += " WHERE ritternr=" + r_id
-                self.__try_execute(cursor, sel_sql)
-                if cursor.rowcount == 0:
+                log_sql += " VALUES ('Ritter eingetragen', %s)"
+                upd_sql = "UPDATE ritter SET rittername=%s WHERE ritternr=%s"
+                if util.try_execute_safe(cursor, sel_sql, (r_id,)) == 0:
                     # noch nicht in der DB
-                    self.__try_execute(cursor, ins_sql)
+                    util.try_execute_safe(cursor, ins_sql, (r_id, name)) == 1
                     if cursor.rowcount == 1:
                         log += message + " eingetragen\n"
-                        self.__try_execute(cursor, log_sql)
+                        util.try_execute_safe(cursor, log_sql, (message,))
                     else:
                         log += message + " NICHT eingetragen!\n"
                 else:
                     # schon in der DB
                     row = cursor.fetchone()
                     if row[0] != name:
-                        self.__try_execute(cursor, upd_sql)
+                        util.try_execute_safe(cursor, upd_sql, (name, r_id))
                         if cursor.rowcount == 1:
                             log += message + " aktualisiert\n"
                             log += "\t alter Name war: " + row[0] + "\n"

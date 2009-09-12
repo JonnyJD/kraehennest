@@ -10,9 +10,13 @@ def print_html_error(e):
     print_error(e)
     print "<br />"
 
-def addslashes(text):
-    """Funktion um fuer MySQL gefaehrliche Zeichen zu maskieren"""
-    return escape_string(text)
+def try_execute_safe(cursor, sql, args):
+    try:
+        cursor.execute(sql, args)
+        return cursor.rowcount
+    except rbdb.Error, e:
+        util.print_html_error(e)
+        return 0
 
 def print_xml(xml_node):
     print xml_node.serialize().replace("<","&lt;").replace(">","&gt;"), "<br />"
@@ -22,18 +26,16 @@ def print_xml(xml_node):
 def update_usage(r_id, version):
         conn = rbdb.connect()
         cursor = conn.cursor()
-        sel_sql = "SELECT r_id FROM versionen WHERE r_id=" + r_id
-        ins_sql = "INSERT INTO versionen (r_id, version)"
-        ins_sql += " VALUES (" + r_id + ", '" + version + "')"
+        sel_sql = "SELECT r_id FROM versionen WHERE r_id=%s"
+        ins_sql = "INSERT INTO versionen (r_id, version) VALUES (%s, %s)"
         # last_seen=now() forces the update even if nothing changed
-        upd_sql = "UPDATE versionen SET version='" + version + "',"
-        upd_sql += " last_seen=NOW() WHERE r_id=" + r_id
+        upd_sql = "UPDATE versionen SET version=%s,"
+        upd_sql += " last_seen=NOW() WHERE r_id=%s"
         try:
-            cursor.execute(sel_sql)
-            if cursor.rowcount == 0:
-                cursor.execute(ins_sql)
+            if try_execute_safe(cursor, sel_sql, (r_id,))  == 0:
+                try_execute_safe(cursor, ins_sql, (r_id, version))
             else:
-                cursor.execute(upd_sql)
+                try_execute_safe(cursor, upd_sql, (version, r_id))
         except rbdb.Error, e:
             print_html_error(e)
         conn.close()
@@ -45,7 +47,7 @@ def track_client_version(form):
 
     if "agent" in form and "pid" in form:
         r_id = str(int(form["pid"].value.replace("rbspiel","")))
-        version = addslashes(form["agent"].value)
+        version = form["agent"].value
         update_usage(r_id, version)
 
 def track_client(node):

@@ -66,8 +66,10 @@ class Terrain(Feld):
             if self.__check_entry(f):
                 self.new_entries.append(f)
                 return True
-
-        return False
+            else:
+                return False
+        else:
+            return False
 
 
     def __update(self, feld):
@@ -132,9 +134,9 @@ class Terrain(Feld):
             else:
                 i += 1
         if len(arglist) > 0:
-            if self.try_executemany_safe(sql, arglist):
-                return self.cursor.rowcount
-        return 0
+            return self.try_executemany_safe(sql, arglist)
+        else:
+            return 0
 
     def __insert(self):
         """Fuegt alle in der TODO-Liste verbliebenen Eintraege in die DB ein.
@@ -150,9 +152,9 @@ class Terrain(Feld):
             for new in self.new_entries:
                 arglist += [(new["x"], new["y"], new["level"], new["terrain"])]
             self.new_entries = []
-            if self.try_executemany_safe(sql, arglist):
-                return self.cursor.rowcount + typenum
-        return 0
+            return typenum + self.try_executemany_safe(sql, arglist)
+        else:
+            return typenum
 
 
     def exec_queue(self):
@@ -221,6 +223,8 @@ class Terrain(Feld):
                 self.xmin, self.xmax = row[0], row[1]
                 self.ymin, self.ymax = row[2], row[3]
                 return True
+            else:
+                return False
         except rbdb.Error, e:
             util.print_html_error(e)
             return False

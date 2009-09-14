@@ -39,8 +39,9 @@ class Feld:
 
     def try_execute_safe_secondary(self, sql, args):
         cursor = self.__conn.cursor()
-        util.try_execute_safe(cursor, sql, args)
+        affectedrows = util.try_execute_safe(cursor, sql, args)
         cursor.close()
+        return affectedrows
 
 
     def queue_entry(self, fields):

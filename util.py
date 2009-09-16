@@ -1,6 +1,7 @@
 """Einige kleine Hilfsfunktionen"""
 
 import rbdb
+import libxml2
 from MySQLdb import escape_string
 
 def print_error(e):
@@ -67,6 +68,15 @@ def track_client(node):
             name = client_elems[0].prop("name")
             version = client_elems[0].prop("version")
             update_usage(r_id, name + " " + version)
+
+def test_xml():
+    dtd = libxml2.parseDTD(None, 'data.dtd')
+    ctxt = libxml2.newValidCtxt()
+    doc = libxml2.parseDoc(open('test.xml', 'r').read())
+    if doc.validateDtd(ctxt, dtd):
+        print "\nDokument erfolgreich validiert"
+    else:
+        print "\nDokument ist fehlerhaft"
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

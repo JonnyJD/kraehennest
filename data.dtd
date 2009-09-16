@@ -1,0 +1,63 @@
+<!ELEMENT data          (auge,rb)>
+
+<!ELEMENT auge          (sender,client)>
+<!ELEMENT sender        EMPTY>
+<!ATTLIST sender
+        r_id    CDATA   #REQUIRED
+>
+<!ELEMENT client        EMPTY>
+<!ATTLIST client
+        name    CDATA   #REQUIRED
+        version CDATA   #REQUIRED
+>
+
+<!ELEMENT rb            (felder,armeen)>
+
+<!ELEMENT felder        (feld)*>
+<!ELEMENT feld          (terrain,feldname?)>
+<!ATTLIST feld
+        level   CDATA   #REQUIRED
+        x       CDATA   #REQUIRED
+        y       CDATA   #REQUIRED
+>
+<!ELEMENT terrain       (#PCDATA)>
+<!ELEMENT feldname      (#PCDATA)>
+
+<!ELEMENT armeen        (armee)*>
+<!ELEMENT armee         (position,bild,held,ritter,size?,strength?,bp?,ap?)>
+<!ATTLIST armee
+        h_id    NMTOKEN #REQUIRED
+>
+<!ELEMENT position      EMPTY>
+<!ATTLIST position
+        level   CDATA   #REQUIRED
+        x       CDATA   #REQUIRED
+        y       CDATA   #REQUIRED
+>
+<!ELEMENT bild          (#PCDATA)>
+<!ELEMENT held          (#PCDATA)>
+<!ELEMENT ritter        (#PCDATA)>
+<!ATTLIST ritter
+        r_id    CDATA   #IMPLIED
+>
+<!ELEMENT size          EMPTY>
+<!ATTLIST size
+        now     CDATA   #REQUIRED
+        max     CDATA   #IMPLIED
+>
+<!ELEMENT strength      EMPTY>
+<!ATTLIST strength
+        now     CDATA   #REQUIRED
+>
+<!ELEMENT bp            EMPTY>
+<!ATTLIST bp
+        now     CDATA   #REQUIRED
+        max     CDATA   #IMPLIED
+>
+<!ELEMENT ap            EMPTY>
+<!ATTLIST ap
+        now     CDATA   #REQUIRED
+        max     CDATA   #IMPLIED
+>
+
+<!-- vim:set expandtab smarttab: //-->

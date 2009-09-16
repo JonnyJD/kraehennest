@@ -11,15 +11,23 @@ from terrain import Terrain
 
 if __name__ == '__main__':
     form = cgi.FieldStorage()
-    data = None
+    valid = False
     print "Content-type: text/html\n"
 
     try:
-        data = libxml2.parseDoc(form.value).xpathEval('/data')[0]
+        dtd = libxml2.parseDTD(None, 'data.dtd')
+        ctxt = libxml2.newValidCtxt()
+        doc = libxml2.parseDoc(form.value)
+        if doc.validateDtd(ctxt, dtd):
+            valid = True
+        else:
+            print "Es wurden keine gueltigen Daten gesendet. <br />"
     except libxml2.parserError:
-        print "Es wurden keine gueltigen Daten gesendet. <br />"
+        print "Es wurden keine sinnvollen Daten gesendet. <br />"
 
-    if data != None:
+
+    if valid:
+        data = doc.xpathEval('/data')[0]
 
         nodes = data.xpathEval('auge')
         if len(nodes) > 0:

@@ -24,7 +24,8 @@
 <!ELEMENT feldname      (#PCDATA)>
 
 <!ELEMENT armeen        (armee)*>
-<!ELEMENT armee         (position,bild,held,ritter,size?,strength?,bp?,ap?)>
+<!ELEMENT armee         (position,bild,held,ritter,
+                        size?,strength?,bp?,ap?,schiff?)>
 <!ATTLIST armee
         h_id    NMTOKEN #REQUIRED
 >
@@ -58,6 +59,11 @@
 <!ATTLIST ap
         now     CDATA   #REQUIRED
         max     CDATA   #IMPLIED
+>
+<!ELEMENT schiff        EMPTY>
+<!ATTLIST schiff
+        typ     CDATA   #REQUIRED
+        last    CDATA   #IMPLIED
 >
 
 <!-- vim:set expandtab smarttab: //-->

@@ -1,13 +1,13 @@
 #!/usr/bin/python
 
-import cgitb
-cgitb.enable()
+#import cgitb
+#cgitb.enable()
 
 import cgi
 import util
 import libxml2
 from terrain import Terrain
-#from armee import Armee
+from armee import Armee
 
 if __name__ == '__main__':
     form = cgi.FieldStorage()
@@ -35,9 +35,8 @@ if __name__ == '__main__':
 
         nodes = data.xpathEval('rb/armeen')
         if len(nodes) > 0:
-        #    armee = Armee()
-        #    armee.process_xml(nodes[0])
-            util.print_xml(nodes[0])
+            armee = Armee()
+            armee.process_xml(nodes[0])
 
         nodes = data.xpathEval('rb/felder')
         if len(nodes) > 0:

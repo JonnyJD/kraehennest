@@ -27,7 +27,7 @@
 <!ELEMENT armee         (position,bild,held,ritter,
                         size?,strength?,bp?,ap?,schiff?)>
 <!ATTLIST armee
-        h_id    NMTOKEN #REQUIRED
+        h_id    NMTOKEN #IMPLIED
 >
 <!ELEMENT position      EMPTY>
 <!ATTLIST position

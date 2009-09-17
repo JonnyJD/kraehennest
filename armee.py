@@ -70,7 +70,7 @@ class Armee(Feld):
                 and self.__is_int(entry, True, "y", 3)
                 and self.__is_string(entry, True, "level", 2)
                 and self.__is_string(entry, True, "name", 30)
-                and self.__is_alnum(entry, True, "img", 6)
+                and self.__is_string(entry, True, "img", 8)
                 # optionale Felder
                 and self.__is_int(entry, False, "h_id", 8)
                 and self.__is_int(entry, False, "r_id", 5)

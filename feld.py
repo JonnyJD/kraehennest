@@ -24,12 +24,12 @@ class Feld:
         self.entries = dict()
         self.new_entries = []
         self.add_cond = ""
-        self.__conn = rbdb.connect()
-        self.cursor = self.__conn.cursor()
+        self.conn = rbdb.connect()
+        self.cursor = self.conn.cursor()
 
     def disconnect(self):
         self.cursor.close()
-        self.__conn.close()
+        self.conn.close()
 
     def try_execute_safe(self, sql, args):
         return util.try_execute_safe(self.cursor, sql, args)
@@ -38,7 +38,7 @@ class Feld:
         return util.try_executemany_safe(self.cursor, sql, arglist[:])
 
     def try_execute_safe_secondary(self, sql, args):
-        cursor = self.__conn.cursor()
+        cursor = self.conn.cursor()
         affectedrows = util.try_execute_safe(cursor, sql, args)
         cursor.close()
         return affectedrows
@@ -100,6 +100,27 @@ class Feld:
         if len(clauses) > 0:
             self.crop_clause = " AND " + " AND ".join(clauses)
 
+    def get_border(self):
+        """Findet die tatsaechlichen Grenzen der aktuellen Karte heraus."""
+
+        self.xmin, self.xmax, self.ymin, self.ymax = 0, 0, 0, 0
+        sql = "SELECT MIN(X), MAX(x), MIN(y), MAX(y) FROM "
+        sql += self.table_name
+        sql += " WHERE level='" + self.level + "'"
+        sql += self.crop_clause
+        sql += self.add_cond
+        try:
+            self.cursor.execute(sql)
+            row = self.cursor.fetchone()
+            if row[0] != None:
+                self.xmin, self.xmax = row[0], row[1]
+                self.ymin, self.ymax = row[2], row[3]
+                return True
+            else:
+                return False
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return False
 
     def __get_entries(self):
         """Holt alle Eintraege im Bereich von der Datenbank."""

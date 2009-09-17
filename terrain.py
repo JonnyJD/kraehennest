@@ -29,6 +29,10 @@ class Terrain(Feld):
         Mit disconnect() kann die Datenbankverbindung beendet werden.
         Danach koennen nurnoch die bereits geladenen Daten geholt werden."""
 
+    def __init__(self):
+        Feld.__init__(self)
+        self.table_name = "felder"
+
     def __type(self, fields):
         """Findet den Untertyp (I,II,III) eines Feldes heraus."""
 
@@ -92,11 +96,13 @@ class Terrain(Feld):
         new = self.new_entries
         num_updated = 0
         sql = "SELECT level, x, y, terrain, typ FROM felder WHERE "
+        sqllist = []
         args = ()
         for f in new:
-            sql += "(level = %s AND x = %s AND y = %s) OR "
+            sqllist.append("(level = %s AND x = %s AND y = %s)")
             args += f["level"], f["x"], f["y"]
-        self.try_execute_safe(sql.rstrip(" OR "), args)
+        sql += " OR ".join(sqllist)
+        self.try_execute_safe(sql, args)
         row = self.cursor.fetchone()
         while row != None:
             i = 0
@@ -202,33 +208,10 @@ class Terrain(Feld):
         if level.isalnum() and len(level) <= 2:
             self.level = level
             self.crop(xmin, xmax, ymin, ymax)
-            self.__get_border()
+            self.get_border()
             self.__get_entries()
         else:
             print "FEHLER: Level '" + level + "' ist ungueltig"
-
-
-    def __get_border(self):
-        """Findet die tatsaechlichen Grenzen der aktuellen Karte heraus."""
-
-        self.xmin, self.xmax, self.ymin, self.ymax = 0, 0, 0, 0
-        sql = "SELECT MIN(X), MAX(x), MIN(y), MAX(y) FROM felder"
-        sql += " WHERE level='" + self.level + "'"
-        sql += self.crop_clause
-        sql += self.add_cond
-        try:
-            self.cursor.execute(sql)
-            row = self.cursor.fetchone()
-            if row[0] != None:
-                self.xmin, self.xmax = row[0], row[1]
-                self.ymin, self.ymax = row[2], row[3]
-                return True
-            else:
-                return False
-        except rbdb.Error, e:
-            util.print_html_error(e)
-            return False
-
 
     def __get_entries(self):
         """Holt alle Eintraege im Bereich von der Datenbank."""

@@ -8,6 +8,7 @@ import util
 from feld import Feld
 from reich import get_ritter_id_form
 
+
 class Armee(Feld):
     """Eine Klasse um Armeedaten ein- und auszulesen.
     
@@ -29,73 +30,55 @@ class Armee(Feld):
     def __init__(self):
         Feld.__init__(self)
         self.table_name = "armeen"
-        self.__entry_name_is_db_name = ["h_id", "name", "img", "r_id",
-                "level", "x", "y",
-                "size", "strength", "ruf", "ap", "max_ap", "bp", "max_bp",
-                "dauer", "max_dauer", "verlaengerungen"]
+        self.__entry_name_is_db_name = []
+        self.__cols_gathered = False
+        self.__int_columns = []
 
-    def __is_int(self, entry, mandatory, key, length):
-        if (mandatory):
-            ret = (key in entry
-                    and (entry[key].isdigit() and len(entry[key]) <= length))
+    def __is(self, is_int, entry, mandatory, db_col, key, length):
+        if db_col and not self.__cols_gathered:
+            self.__entry_name_is_db_name.append(key)
+        if key not in entry:
+            ret = mandatory == False
+        elif is_int:
+            ret = entry[key].isdigit() and len(entry[key]) <= length
+            # after the length check we can make it integer
+            entry[key] = int(entry[key])
         else:
-            ret = (key not in entry
-                    or (entry[key].isdigit() and len(entry[key]) <= length))
-        if not ret:
-            print entry[key], "ist nicht zulaessig als", key, "<br />"
-        return ret
-
-    def __is_alnum(self, entry, mandatory, key, length):
-        if (mandatory):
-            ret = (key in entry
-                    and (entry[key].isalnum() and len(entry[key]) <= length))
-        else:
-            ret = (key not in entry
-                    or (entry[key].isalnum() and len(entry[key]) <= length))
-        if not ret:
-            print entry[key], "ist nicht zulaessig als", key, "<br />"
-        return ret
-
-    def __is_string(self, entry, mandatory, key, length):
-        if (mandatory):
-            ret = key in entry and len(entry[key]) <= length
-        else:
-            ret = key not in entry or len(entry[key]) <= length
+            ret = len(entry[key]) <= length
         if not ret:
             print entry[key], "ist nicht zulaessig als", key, "<br />"
         return ret
 
     def __check_entry(self, entry):
-        return (
-                self.__is_int(entry, True, "x", 3)
-                and self.__is_int(entry, True, "y", 3)
-                and self.__is_string(entry, True, "level", 2)
-                and self.__is_string(entry, True, "name", 30)
-                and self.__is_string(entry, True, "img", 10)
-                # optionale Felder
-                and self.__is_int(entry, False, "h_id", 8)
-                and self.__is_int(entry, False, "r_id", 5)
-                and self.__is_string(entry, False, "ritter", 80)
-                and self.__is_int(entry, False, "size", 2)
-                and self.__is_int(entry, False, "strength", 3)
-                and self.__is_int(entry, False, "ruf", 2)
-                and self.__is_int(entry, False, "bp", 2)
-                and self.__is_int(entry, False, "max_bp", 2)
-                and self.__is_int(entry, False, "ap", 2)
-                and self.__is_int(entry, False, "max_ap", 2)
-                and self.__is_int(entry, False, "dauer", 2)
-                and self.__is_int(entry, False, "max_dauer", 2)
-                and self.__is_int(entry, False, "verlaengerungen", 2)
-                and self.__is_string(entry, False, "schiffstyp", 15)
+        MAN     = True;         OPT   = False
+        DBCOL   = True;         NO_DB = False
+        INT     = True;         STR   = False
+        # DBCOL meint, dass es direkt so in die Datenbank gehen wird
+        ret =  (self.__is(INT, entry, MAN, DBCOL, "x", 3)
+                and self.__is(INT,entry, MAN, DBCOL, "y", 3)
+                and self.__is(STR,entry, MAN, DBCOL, "level", 2)
+                and self.__is(STR,entry, MAN, DBCOL, "name", 30)
+                and self.__is(STR,entry, MAN, DBCOL, "img", 10)
+                and self.__is(INT,entry, OPT, DBCOL, "h_id", 8)
+                and self.__is(STR,entry, OPT, NO_DB, "status", 1)
+                and self.__is(INT,entry, OPT, DBCOL, "r_id", 5)
+                and self.__is(STR,entry, OPT, NO_DB, "ritter", 80)
+                and self.__is(INT,entry, OPT, DBCOL, "size", 2)
+                and self.__is(INT,entry, OPT, DBCOL, "strength", 3)
+                and self.__is(INT,entry, OPT, DBCOL, "ruf", 2)
+                and self.__is(INT,entry, OPT, DBCOL, "bp", 2)
+                and self.__is(INT,entry, OPT, DBCOL, "max_bp", 2)
+                and self.__is(INT,entry, OPT, DBCOL, "ap", 2)
+                and self.__is(INT,entry, OPT, DBCOL, "max_ap", 2)
+                and self.__is(INT,entry, OPT, DBCOL, "dauer", 2)
+                and self.__is(INT,entry, OPT, DBCOL, "max_dauer", 2)
+                and self.__is(INT,entry, OPT, DBCOL, "t_id", 8)
+                and self.__is(STR,entry, OPT, DBCOL, "schiffstyp", 15)
+                and self.__is(STR,entry, OPT, DBCOL, "schiffslast", 15)
+                and self.__is(INT,entry, OPT, DBCOL, "verlaengerungen", 2)
                 )
-
-    def __make_integer(self, entry):
-        for key in ["x", "y", "h_id", "r_id", "size", "strength", "ruf",
-                "ap", "max_ap", "bp", "max_bp", "dauer", "max_dauer",
-                "verlaengerungen", "schiffslast"]:
-            if key in entry:
-                entry[key] = int(entry[key])
-
+        self.__cols_gathered = True
+        return ret
 
     def queue_entry(self, entry):
         """Nimmt ein Feld zum Eintragen erstmal in einer TODO-Liste auf.
@@ -103,7 +86,6 @@ class Armee(Feld):
         Es wird zurueckgegeben ob die Daten syntaktisch korrekt sind."""
 
         if self.__check_entry(entry):
-            self.__make_integer(entry)
             self.new_entries.append(entry)
             return True
         else:
@@ -167,11 +149,9 @@ class Armee(Feld):
             if key in entry:
                 sqllist.append(key + "=%s")
                 args += entry[key],
-        if "schiffstyp" in entry:
-            sqllist.append("schiff=%s")
-            args += entry["schiffstyp"],
         sqllist.append("last_seen=NOW()")
         sqllist.append("active=1")
+        sqllist.append("status=NULL")
         sql += ", ".join(sqllist)
         sql += " WHERE h_id = %s"
         args += entry["h_id"],
@@ -225,9 +205,6 @@ class Armee(Feld):
                 if key in entry:
                     sqlcols.append(key)
                     args += entry[key],
-            if "schiffstyp" in entry:
-                sqlcols.append("schiff")
-                args += entry["schiffstyp"],
             sql += ", ".join(sqlcols) + ") VALUES ("
             sql += ", ".join(["%s" for i in range(0,len(sqlcols))]) + ")"
             self.new_entries = []
@@ -277,7 +254,6 @@ class Armee(Feld):
                 entry = dict()
                 for key in self.__entry_name_is_db_name:
                     entry[key] = row[key]
-                entry["schiffstyp"] = row["schiff"]
                 self.entries[row["h_id"]] = entry
                 row = self.cursor.fetchoneDict()
             return True

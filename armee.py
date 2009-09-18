@@ -5,6 +5,7 @@
 
 import rbdb
 import util
+import re
 from feld import Feld
 from reich import get_ritter_id_form
 
@@ -44,7 +45,7 @@ class Armee(Feld):
         if key not in entry:
             ret = mandatory == False
         elif is_int:
-            ret = entry[key].isdigit() and len(entry[key]) <= length
+            ret = re.match('-?[0-9]+$',entry[key]) and len(entry[key]) <= length
             # after the length check we can make it integer
             entry[key] = int(entry[key])
         else:

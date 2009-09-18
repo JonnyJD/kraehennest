@@ -8,6 +8,17 @@ import libxml2
 import rbdb
 import util
 
+def get_ritter_id_form(rittername):
+    form ='''<form method="post"
+        action ="http://www.ritterburgwelt.de/rb/ajax_backend.php"
+        target="_blank">
+        <input type="hidden" name="_func" value="vorschlagSuche">
+        <input type="hidden" name="_args[0]" value="sucheBenutzerName">
+        <input type="hidden" name="_args[1]"'''
+    form += ' value="' + rittername + '">'
+    form += '<input type="submit" value="hole ID"></form>'
+    return form
+
 class Reich:
     """Eine Klasse um Reichsdaten ein- und auszulesen.
     """
@@ -23,31 +34,34 @@ class Reich:
                 subitems = item.xpathEval('item')
                 name = subitems[0].getContent()
                 r_id = subitems[1].getContent()
-                message =  r_id + ": " + name
-                sel_sql = "SELECT rittername FROM ritter WHERE ritternr=%s"
-                ins_sql = "INSERT INTO ritter (ritternr, rittername)"
-                ins_sql += " VALUES (%s, %s)"
-                log_sql = "INSERT INTO logdat (aktion, daten)"
-                log_sql += " VALUES ('Ritter eingetragen', %s)"
-                upd_sql = "UPDATE ritter SET rittername=%s WHERE ritternr=%s"
-                if util.try_execute_safe(cursor, sel_sql, (r_id,)) == 0:
-                    # noch nicht in der DB
-                    util.try_execute_safe(cursor, ins_sql, (r_id, name)) == 1
-                    if cursor.rowcount == 1:
-                        log += message + " eingetragen\n"
-                        util.try_execute_safe(cursor, log_sql, (message,))
-                    else:
-                        log += message + " NICHT eingetragen!\n"
-                else:
-                    # schon in der DB
-                    row = cursor.fetchone()
-                    if row[0] != name:
-                        util.try_execute_safe(cursor, upd_sql, (name, r_id))
+                if len(r_id) > 0:
+                    message =  r_id + ": " + name
+                    r_id = int(r_id)
+                    sel_sql = "SELECT rittername FROM ritter WHERE ritternr=%s"
+                    ins_sql = "INSERT INTO ritter (ritternr, rittername)"
+                    ins_sql += " VALUES (%s, %s)"
+                    log_sql = "INSERT INTO logdat (aktion, daten)"
+                    log_sql += " VALUES ('Ritter eingetragen', %s)"
+                    upd_sql = "UPDATE ritter SET rittername=%s"
+                    upd_sql += " WHERE ritternr=%s"
+                    if util.try_execute_safe(cursor, sel_sql, (r_id,)) == 0:
+                        # noch nicht in der DB
+                        util.try_execute_safe(cursor, ins_sql, (r_id, name))
                         if cursor.rowcount == 1:
-                            log += message + " aktualisiert\n"
-                            log += "\t alter Name war: " + row[0] + "\n"
+                            log += message + " eingetragen\n"
+                            util.try_execute_safe(cursor, log_sql, (message,))
                         else:
-                            log += message + " NICHT aktualisiert!\n"
+                            log += message + " NICHT eingetragen!\n"
+                    else:
+                        # schon in der DB
+                        row = cursor.fetchone()
+                        if row[0] != name:
+                            util.try_execute_safe(cursor, upd_sql, (name, r_id))
+                            if cursor.rowcount == 1:
+                                log += message + " aktualisiert\n"
+                                log += "\t alter Name war: " + row[0] + "\n"
+                            else:
+                                log += message + " NICHT aktualisiert!\n"
             conn.close()
             print log
 

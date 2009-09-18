@@ -6,6 +6,7 @@
 import rbdb
 import util
 from feld import Feld
+from reich import get_ritter_id_form
 
 class Armee(Feld):
     """Eine Klasse um Armeedaten ein- und auszulesen.
@@ -132,6 +133,7 @@ class Armee(Feld):
         while i < len(self.new_entries):
             if "r_id" not in self.new_entries[i]:
                 print "Ritter", self.new_entries[i]["ritter"], "ist unbekannt!"
+                print get_ritter_id_form(self.new_entries[i]["ritter"]),"<br />"
                 del self.new_entries[i]
             else:
                 i += 1

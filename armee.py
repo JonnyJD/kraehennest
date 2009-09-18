@@ -8,6 +8,9 @@ import util
 from feld import Feld
 from reich import get_ritter_id_form
 
+MAN     = True;         OPT   = False
+DBCOL   = True;         NO_DB = False
+INT     = True;         STR   = False
 
 class Armee(Feld):
     """Eine Klasse um Armeedaten ein- und auszulesen.
@@ -33,6 +36,7 @@ class Armee(Feld):
         self.__entry_name_is_db_name = []
         self.__cols_gathered = False
         self.__int_columns = []
+        self.__inactive_entries = []
 
     def __is(self, is_int, entry, mandatory, db_col, key, length):
         if db_col and not self.__cols_gathered:
@@ -50,9 +54,6 @@ class Armee(Feld):
         return ret
 
     def __check_entry(self, entry):
-        MAN     = True;         OPT   = False
-        DBCOL   = True;         NO_DB = False
-        INT     = True;         STR   = False
         # DBCOL meint, dass es direkt so in die Datenbank gehen wird
         ret =  (self.__is(INT, entry, MAN, DBCOL, "x", 3)
                 and self.__is(INT,entry, MAN, DBCOL, "y", 3)
@@ -80,8 +81,14 @@ class Armee(Feld):
         self.__cols_gathered = True
         return ret
 
+    def __check_inactive(self, entry):
+        return (self.__is(INT, entry, MAN, NO_DB, "x", 3)
+                and self.__is(INT,entry, MAN, NO_DB, "y", 3)
+                and self.__is(STR,entry, MAN, NO_DB, "level", 2)
+                )
+
     def queue_entry(self, entry):
-        """Nimmt ein Feld zum Eintragen erstmal in einer TODO-Liste auf.
+        """Nimmt eine Armee zum Eintragen erstmal in einer TODO-Liste auf.
         
         Es wird zurueckgegeben ob die Daten syntaktisch korrekt sind."""
 
@@ -91,6 +98,40 @@ class Armee(Feld):
         else:
             return False
 
+
+    def queue_inactive(self, entry):
+        """Nimmt eine Armee zum Deaktivieren erstmal in einer TODO-Liste auf.
+        
+        Es wird zurueckgegeben ob die Daten syntaktisch korrekt sind."""
+
+        if self.__check_inactive(entry):
+            self.__inactive_entries.append(entry)
+            return True
+        else:
+            return False
+
+    def __deactivate(self):
+        """Deaktiviert alle Armeen in der inactie Liste."""
+
+        if len(self.__inactive_entries) > 0:
+            sql = "UPDATE armeen SET active=0 WHERE "
+            sqllist = []
+            args = ()
+            for entry in self.__inactive_entries:
+                sqllist.append("(level=%s AND x=%s AND y=%s)")
+                args += entry["level"], entry["x"], entry["y"]
+            
+            sql += "(" + " OR ".join(sqllist) + ") AND "
+            # die hier anwesenden Armeen garnicht erst deaktivieren
+            sqllist = []
+            for entry in self.new_entries:
+                sqllist.append("h_id<>%s")
+                args += entry["h_id"],
+            sql += " AND ".join(sqllist)
+            self.__inactive_entries = []
+            return self.try_execute_safe(sql, args)
+        else:
+            return 0
 
     def __get_ritter_ids(self):
         sqllist = []
@@ -221,11 +262,13 @@ class Armee(Feld):
         Die Anzahl der aktualisierten und der neuen Eintraege
         wird zurueckgegeben."""
 
+        # setze alle Armeen die im Sichtbereich waeren auf inaktiv
+        inactive_count = self.__deactivate()
         self.__get_ritter_ids()
         self.__get_held_ids()
         update_count = self.__check_old()
         insert_count = self.__insert()
-        return update_count, insert_count
+        return inactive_count, update_count, insert_count
 
     def fetch_data(self, level='N',
             xmin=None, xmax=None, ymin=None, ymax=None):
@@ -262,6 +305,24 @@ class Armee(Feld):
             return False
 
     def process_xml(self, node):
+
+        sicht = util.get_view_type(node)
+        if sicht == "turm":
+            # Feldaten gibt es fuer genau die sichtbaren Felder
+            felder = node.xpathEval('../felder/feld') 
+            for feld in felder:
+                entry = dict()
+                entry["level"] = feld.prop("level")
+                entry["x"] = feld.prop("x");  entry["y"] = feld.prop("y")
+                self.queue_inactive(entry)
+        elif sicht == "armee":
+            # alle Armeen die gleiche Position, deshalb die 1. nehmen
+            position = node.xpathEval('armee/position')[0] 
+            entry = dict()
+            entry["level"] = position.prop("level")
+            entry["x"] = position.prop("x"); entry["y"] = position.prop("y")
+            self.queue_inactive(entry)
+
         armeen = node.xpathEval('armee')
         if len(armeen) > 0:
             for armee in armeen:
@@ -307,9 +368,10 @@ class Armee(Feld):
                     print "enthielt Fehler <br />"
                 #else:
                 #    print entry, " eingehangen<br />"
-            updated, added = self.exec_queue()
-            if (updated + added) > 0:
-                print "Es wurden", updated, "Armeen aktualisiert und",
+            inactive, updated, added = self.exec_queue()
+            if (inactive + updated + added) > 0:
+                print "Es wurden", inactive, "Armeen deaktiviert,",
+                print updated, "aktualisiert und",
                 print added, "neu hinzugefuegt.", "<br />"
             else:
                 print "Keine Armeen gespeichert.", "<br />"

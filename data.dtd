@@ -12,7 +12,7 @@
 >
 <!ELEMENT sicht         EMPTY>
 <!ATTLIST sicht
-        type    (keine|armee|turm)      #REQUIRED
+        typ    (keine|armee|turm)      #REQUIRED
 >
 
 <!ELEMENT rb            (felder,armeen)>

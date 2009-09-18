@@ -16,6 +16,7 @@ def try_execute_safe(cursor, sql, args):
         cursor.execute(sql, args)
         return cursor.rowcount
     except rbdb.Error, e:
+        print sql, "<br />", args, "<br />"
         print_html_error(e)
         return 0
 
@@ -68,6 +69,13 @@ def track_client(node):
             name = client_elems[0].prop("name")
             version = client_elems[0].prop("version")
             update_usage(r_id, name + " " + version)
+
+def get_view_type(node):
+    sicht_elems = node.xpathEval('/data/auge/sicht')
+    if len(sicht_elems) > 0:
+        return sicht_elems[0].prop("typ")
+    else:
+        return "keine"
 
 def test_xml():
     dtd = libxml2.parseDTD(None, 'data.dtd')

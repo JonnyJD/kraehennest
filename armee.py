@@ -177,7 +177,7 @@ class Armee(Feld):
                     row = self.cursor.fetchone()
                     new[i]["h_id"] = int(row[0])
                 else:
-                    print "Keine ID fuer", new[i]["name"]
+                    print "Keine ID fuer", new[i]["name"], "gefunden.<br />"
                     del new[i]
                     i -= 1
             i += 1
@@ -263,10 +263,10 @@ class Armee(Feld):
         Die Anzahl der aktualisierten und der neuen Eintraege
         wird zurueckgegeben."""
 
-        # setze alle Armeen die im Sichtbereich waeren auf inaktiv
-        inactive_count = self.__deactivate()
         self.__get_ritter_ids()
         self.__get_held_ids()
+        # setze alle Armeen die im Sichtbereich waeren auf inaktiv
+        inactive_count = self.__deactivate()
         update_count = self.__check_old()
         insert_count = self.__insert()
         return inactive_count, update_count, insert_count

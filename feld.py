@@ -88,17 +88,20 @@ class Feld:
         """Erstellt die SQL-Bedingung mit der der Bereich festgelegt wird."""
 
         self.crop_clause = ""
-        clauses = []
-        if xmin != None:
-            clauses.append(" x >= " + str(xmin))
-        if xmax != None:
-            clauses.append(" x <= " + str(xmax))
-        if ymin != None:
-            clauses.append(" y >= " + str(ymin))
-        if ymax != None:
-            clauses.append(" y <= " + str(ymax))
-        if len(clauses) > 0:
-            self.crop_clause = " AND " + " AND ".join(clauses)
+        try:
+            clauses = []
+            if xmin != None:
+                clauses.append(" x >= " + str(int(xmin)))
+            if xmax != None:
+                clauses.append(" x <= " + str(int(xmax)))
+            if ymin != None:
+                clauses.append(" y >= " + str(int(ymin)))
+            if ymax != None:
+                clauses.append(" y <= " + str(int(ymax)))
+            if len(clauses) > 0:
+                self.crop_clause = " AND " + " AND ".join(clauses)
+        except ValueError:
+            print "Die angegebenene Grenzen sind ungueltig <br />"
 
     def get_border(self):
         """Findet die tatsaechlichen Grenzen der aktuellen Karte heraus."""

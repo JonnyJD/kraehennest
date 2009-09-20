@@ -7,7 +7,7 @@ import cgi
 from terrain import Terrain
 from dorf import Dorf
 
-print 'Content-type: text/html\n'
+print 'Content-type: text/html; charset=utf-8\n'
 print '<html><head>'
 print '<title>Kr&auml;henkarte</title>'
 print '<link rel="stylesheet" type="text/css" href="stylesheet">'
@@ -16,7 +16,7 @@ print '<body>'
 
 form = cgi.FieldStorage()
 
-if form.has_key("list"):
+if "list" in form:
     if form["list"].value == "ksk":
         prefix = ""
     else:
@@ -78,18 +78,18 @@ if form.has_key("list"):
 else:
     # Zeige eine Karte
 
-    if form.has_key("level"):
+    if "level" in form:
         level = form["level"].value
     else:
         level = 'N'
 
     terrain = Terrain()
-    if form.has_key("name"):
+    if "name" in form:
         # benannte Kartenausschnitte
         if form["name"]. value == "kraehen":
             terrain.fetch_data(level, 256, 289, 280, 304)
         elif form["name"].value == "osten":
-            if not form.has_key("level") or form["level"] == 'N':
+            if "level" not in form or form["level"] == 'N':
                 terrain.fetch_data(level, 261, 292, 287, 322)
             else:
                 terrain.fetch_data(level, 261)
@@ -106,10 +106,12 @@ else:
         elif form["name"].value == "neu":
             terrain.set_add_cond("typ is not NULL")
             terrain.fetch_data(level)
+    elif "x1" in form:
+        terrain.fetch_data(level,form["x1"],form["x2"],form["y1"],form["y2"])
     else:
         terrain.fetch_data(level)
 
-    if not form.has_key("clean") and level == 'N':
+    if "clean" not in form and level == 'N':
         show_dorf = True
         dorf = Dorf()
         dorf.fetch_data()
@@ -118,7 +120,7 @@ else:
 
     size = 32 
     fontsize = 9
-    if form.has_key("size"):
+    if "size" in form:
         if form["size"].value == "small":
             size = 16
             fontsize = 5

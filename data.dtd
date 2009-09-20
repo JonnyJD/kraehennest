@@ -15,7 +15,7 @@
         typ    (keine|armee|turm)      #REQUIRED
 >
 
-<!ELEMENT rb            (felder,armeen)>
+<!ELEMENT rb            (felder?,armeen)>
 
 <!ELEMENT felder        (feld)*>
 <!ELEMENT feld          (terrain,feldname?)>
@@ -28,17 +28,18 @@
 <!ELEMENT feldname      (#PCDATA)>
 
 <!ELEMENT armeen        (armee)*>
-<!ELEMENT armee         (position,bild,held,ritter,
-                        size?,strength?,bp?,ap?,schiff?)>
+<!ELEMENT armee         (position?,bild,held,ritter?,
+                        size?,strength?,bp?,ap?,schiff?,dauer?)>
 <!ATTLIST armee
         h_id    NMTOKEN #IMPLIED
 >
-<!ELEMENT position      EMPTY>
+<!ELEMENT position      (#PCDATA)>
 <!ATTLIST position
-        level   CDATA   #REQUIRED
-        x       CDATA   #REQUIRED
-        y       CDATA   #REQUIRED
+        level   CDATA   #IMPLIED
+        x       CDATA   #IMPLIED
+        y       CDATA   #IMPLIED
 >
+<!ELEMENT no_position    EMPTY>
 <!ELEMENT bild          (#PCDATA)>
 <!ELEMENT held          (#PCDATA)>
 <!ELEMENT ritter        (#PCDATA)>
@@ -47,7 +48,7 @@
 >
 <!ELEMENT size          EMPTY>
 <!ATTLIST size
-        now     CDATA   #REQUIRED
+        now     CDATA   #IMPLIED
         max     CDATA   #IMPLIED
 >
 <!ELEMENT strength      EMPTY>
@@ -56,18 +57,23 @@
 >
 <!ELEMENT bp            EMPTY>
 <!ATTLIST bp
-        now     CDATA   #REQUIRED
+        now     CDATA   #IMPLIED
         max     CDATA   #IMPLIED
 >
 <!ELEMENT ap            EMPTY>
 <!ATTLIST ap
-        now     CDATA   #REQUIRED
+        now     CDATA   #IMPLIED
         max     CDATA   #IMPLIED
 >
 <!ELEMENT schiff        EMPTY>
 <!ATTLIST schiff
         typ     CDATA   #REQUIRED
         last    CDATA   #IMPLIED
+>
+<!ELEMENT dauer        EMPTY>
+<!ATTLIST dauer
+        now     CDATA   #IMPLIED
+        max     CDATA   #IMPLIED
 >
 
 <!-- vim:set expandtab smarttab: //-->

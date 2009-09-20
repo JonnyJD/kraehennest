@@ -42,7 +42,7 @@ class Armee(Feld):
     def __is(self, is_int, entry, mandatory, db_col, key, length):
         if db_col and not self.__cols_gathered:
             self.__entry_name_is_db_name.append(key)
-        if key not in entry:
+        if key not in entry or entry[key] == None:
             ret = mandatory == False
         elif is_int:
             ret = re.match('-?[0-9]+$',entry[key]) and len(entry[key]) <= length
@@ -56,11 +56,11 @@ class Armee(Feld):
 
     def __check_entry(self, entry):
         # DBCOL meint, dass es direkt so in die Datenbank gehen wird
-        ret =  (self.__is(INT, entry, MAN, DBCOL, "x", 3)
-                and self.__is(INT,entry, MAN, DBCOL, "y", 3)
-                and self.__is(STR,entry, MAN, DBCOL, "level", 2)
-                and self.__is(STR,entry, MAN, DBCOL, "name", 30)
+        ret =  (self.__is(STR,entry, MAN, DBCOL, "name", 30)
                 and self.__is(STR,entry, MAN, DBCOL, "img", 10)
+                and self.__is(INT, entry, OPT, DBCOL, "x", 3)
+                and self.__is(INT,entry, OPT, DBCOL, "y", 3)
+                and self.__is(STR,entry, OPT, DBCOL, "level", 2)
                 and self.__is(INT,entry, OPT, DBCOL, "h_id", 8)
                 and self.__is(STR,entry, OPT, NO_DB, "status", 1)
                 and self.__is(INT,entry, OPT, DBCOL, "r_id", 5)
@@ -192,8 +192,12 @@ class Armee(Feld):
                 sqllist.append(key + "=%s")
                 args += entry[key],
         sqllist.append("last_seen=NOW()")
-        sqllist.append("active=1")
-        sqllist.append("status=NULL")
+        if "pos" in entry and entry["pos"] == "taverne":
+            sqllist.append("active=0")
+            sqllist.append("status='S'")
+        else:
+            sqllist.append("active=1")
+            sqllist.append("status=NULL")
         sql += ", ".join(sqllist)
         sql += " WHERE h_id = %s"
         args += entry["h_id"],
@@ -247,6 +251,11 @@ class Armee(Feld):
                 if key in entry:
                     sqlcols.append(key)
                     args += entry[key],
+            if "pos" in entry and entry["pos"] == "taverne":
+                sqlcols.append("active");
+                args += 0,
+                sqlcols.append("status");
+                args += "S",
             sql += ", ".join(sqlcols) + ") VALUES ("
             sql += ", ".join(["%s" for i in range(0,len(sqlcols))]) + ")"
             self.new_entries = []
@@ -331,20 +340,28 @@ class Armee(Feld):
                 entry = dict()
                 if armee.hasProp("h_id"):
                     entry["h_id"] = armee.prop("h_id")
-                position = armee.xpathEval('position')[0] 
-                entry["level"] = position.prop("level")
-                entry["x"] = position.prop("x")
-                entry["y"] = position.prop("y")
+                positions = armee.xpathEval('position')
+                if len(positions) > 0:
+                    if positions[0].hasProp("level"):
+                        entry["level"] = positions[0].prop("level")
+                        entry["x"] = positions[0].prop("x")
+                        entry["y"] = positions[0].prop("y")
+                    else:
+                        entry["pos"] = positions[0].getContent()
+                        if entry["pos"] == "taverne":
+                            entry["r_id"] = None
                 entry["img"] = armee.xpathEval('bild')[0].getContent()
                 entry["name"] = armee.xpathEval('held')[0].getContent()
-                ritter = armee.xpathEval('ritter')[0] 
-                if ritter.hasProp("r_id"):
-                    entry["r_id"] = ritter.prop("r_id")
-                else:
-                    entry["ritter"] = ritter.getContent()
+                ritter_elems = armee.xpathEval('ritter')
+                if len(ritter_elems) > 0:
+                    if ritter_elems[0].hasProp("r_id"):
+                        entry["r_id"] = ritter_elems[0].prop("r_id")
+                    else:
+                        entry["ritter"] = ritter_elems[0].getContent()
                 sizes = armee.xpathEval('size')
                 if len(sizes) == 1:
-                    entry["size"] = sizes[0].prop("now")
+                    if sizes[0].hasProp("now"):
+                        entry["size"] = sizes[0].prop("now")
                     if sizes[0].hasProp("max"):
                         entry["ruf"] = sizes[0].prop("max")
                 strengths = armee.xpathEval('strength')
@@ -352,18 +369,26 @@ class Armee(Feld):
                     entry["strength"] = strengths[0].prop("now")
                 bps = armee.xpathEval('bp')
                 if len(bps) == 1:
-                    entry["bp"] = bps[0].prop("now")
+                    if bps[0].hasProp("now"):
+                        entry["bp"] = bps[0].prop("now")
                     if bps[0].hasProp("max"):
                         entry["max_bp"] = bps[0].prop("max")
                 aps = armee.xpathEval('ap')
                 if len(aps) == 1:
-                    entry["ap"] = aps[0].prop("now")
+                    if aps[0].hasProp("now"):
+                        entry["ap"] = aps[0].prop("now")
                     if aps[0].hasProp("max"):
                         entry["max_ap"] = aps[0].prop("max")
                 schiffe = armee.xpathEval('schiff') 
                 if len(schiffe) == 1:
                     entry["schiffstyp"] = schiffe[0].prop("typ")
                     entry["schiffslast"] = schiffe[0].prop("last")
+                dauer_elems = armee.xpathEval('dauer')
+                if len(dauer_elems) == 1:
+                    if dauer_elems[0].hasProp("now"):
+                        entry["dauer"] = dauer_elems[0].prop("now")
+                    if dauer_elems[0].hasProp("max"):
+                        entry["max_dauer"] = dauer_elems[0].prop("max")
                 if not self.queue_entry(entry):
                     print entry, "<br />"
                     print "enthielt Fehler <br />"

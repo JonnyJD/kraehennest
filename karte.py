@@ -84,39 +84,22 @@ else:
         level = 'N'
 
     terrain = Terrain()
-    if "name" in form:
-        # benannte Kartenausschnitte
-        if form["name"]. value == "kraehen":
-            terrain.fetch_data(level, 256, 289, 280, 304)
-        elif form["name"].value == "osten":
-            if "level" not in form or form["level"] == 'N':
-                terrain.fetch_data(level, 261, 292, 287, 322)
-            else:
-                terrain.fetch_data(level, 261)
-        elif form["name"].value == "westen":
-            terrain.fetch_data(level, 225, 261, 287, 307)
-        elif form["name"].value == "sueden":
-            terrain.fetch_data(level, 240, 250, 320, 341)
-        elif form["name"].value == "axt":
-            terrain.fetch_data(level, 240, 260, 296, 314)
-        elif form["name"].value == "schuetzen":
-            terrain.fetch_data(level, 238, 247, 303, 312)
-        elif form["name"].value == "drache":
-            terrain.fetch_data(level, 206, 217, 351, 360)
-        elif form["name"].value == "neu":
-            terrain.set_add_cond("typ is not NULL")
-            terrain.fetch_data(level)
-    elif "x1" in form:
-        terrain.fetch_data(level,form["x1"],form["x2"],form["y1"],form["y2"])
+    if form["layer"].value == "neu":
+        terrain.set_add_cond("typ is not NULL")
+    if "x1" in form:
+        terrain.fetch_data(level, form["x1"].value,form["x2"].value,
+                form["y1"].value, form["y2"].value)
     else:
         terrain.fetch_data(level)
 
-    if "clean" not in form and level == 'N':
+    if form["layer"].value in ["clean", "leer"]:
+        show_dorf = False
+    elif level != "N":
+        show_dorf = False
+    else:
         show_dorf = True
         dorf = Dorf()
         dorf.fetch_data()
-    else:
-        show_dorf = False
 
     size = 32 
     fontsize = 9

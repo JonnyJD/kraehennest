@@ -179,6 +179,11 @@ class Armee(Feld):
                     print "Keine ID fuer", new[i]["name"], "gefunden.<br />"
                     del new[i]
                     i -= 1
+            elif "h_id" not in new[i]:
+                print "Konnte eine Armee nicht identifizieren!<br/>"
+                del new[i]
+                i -= 1
+
             i += 1
 
 

@@ -168,11 +168,10 @@ class Armee(Feld):
         i = 0
         new = self.new_entries
         while i < len(new):
-            if ("h_id" not in new[i] and "r_id" in new[i]
-                    and "img" in new[i] and "name" in new[i]):
+            if ("h_id" not in new[i] and "img" in new[i] and "name" in new[i]):
                 sql = "SELECT h_id FROM armeen"
-                sql += " WHERE img=%s AND name=%s AND r_id=%s"
-                args = (new[i]["img"], new[i]["name"], new[i]["r_id"])
+                sql += " WHERE img=%s AND name=%s"
+                args = (new[i]["img"], new[i]["name"])
                 if self.try_execute_safe(sql, args) == 1:
                     row = self.cursor.fetchone()
                     new[i]["h_id"] = int(row[0])

@@ -49,7 +49,8 @@ class Armee(Feld):
             # after the length check we can make it integer
             entry[key] = int(entry[key])
         else:
-            ret = len(entry[key]) <= length
+            # wie lange ware der String in der Datenbank (latin1)
+            ret = len(unicode(entry[key],'utf-8').encode('latin-1')) <= length
         if not ret:
             print entry[key], "ist nicht zulaessig als", key, "<br />"
         return ret

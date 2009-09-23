@@ -27,4 +27,5 @@ clean:
 
 test:
 	cp /srv/http/cgi-bin/saves/127.0.0.1_xml test.xml
-	python test.py
+	python test.py \
+	| sed -e 's: /home.*/trunk/: :'

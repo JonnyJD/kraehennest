@@ -1,7 +1,7 @@
 """Funktionen zum Testen der Implementation"""
 
 import libxml2
-import profile
+import cProfile
 import pstats
 import dispatch
 
@@ -10,7 +10,7 @@ if __name__ == "__main__":
     ctxt = libxml2.newValidCtxt()
     doc = libxml2.parseDoc(open('test.xml', 'r').read())
     if doc.validateDtd(ctxt, dtd):
-        profile.run('dispatch.process(doc)', 'profile')
+        cProfile.run('dispatch.process(doc)', 'profile')
         pstats.Stats('profile').sort_stats('cum').print_stats('nest', 10)
     else:
         print "\nDokument ist fehlerhaft"

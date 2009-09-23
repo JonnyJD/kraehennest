@@ -27,4 +27,4 @@ clean:
 
 test:
 	cp /srv/http/cgi-bin/saves/127.0.0.1_xml test.xml
-	python -c "import util; util.test_xml()"
+	python test.py

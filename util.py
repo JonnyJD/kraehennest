@@ -1,7 +1,6 @@
 """Einige kleine Hilfsfunktionen"""
 
 import rbdb
-import libxml2
 from MySQLdb import escape_string
 
 def print_error(e):
@@ -76,15 +75,6 @@ def get_view_type(node):
         return sicht_elems[0].prop("typ")
     else:
         return "keine"
-
-def test_xml():
-    dtd = libxml2.parseDTD(None, 'data.dtd')
-    ctxt = libxml2.newValidCtxt()
-    doc = libxml2.parseDoc(open('test.xml', 'r').read())
-    if doc.validateDtd(ctxt, dtd):
-        print "\nDokument erfolgreich validiert"
-    else:
-        print "\nDokument ist fehlerhaft"
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

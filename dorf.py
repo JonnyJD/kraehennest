@@ -42,6 +42,8 @@ class Dorf(Feld):
                         rittername, allis.alli, alliname, allicolor
                 FROM dorf INNER JOIN ritter ON dorf.ritternr= ritter.ritternr
                     LEFT OUTER JOIN allis ON ritter.alli=allis.allinr"""
+        # so dass die andere clauses angehangen werden koennen:
+        sql += " WHERE 1"
         #sql += " WHERE level='" + self.level + "'"
         #sql += self.crop_clause
         sql += self.add_cond

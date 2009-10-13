@@ -50,7 +50,7 @@ if "list" in form:
         print "</td><td>"
         print '<a href="/karte">Kraehengebiet (navigierbar)</a><br />'
         print "</td><td>"
-        print_link("/neu", "detailliert erkundetes Terrain")
+        print_link("/neu", "aktuelle Doerfer (6 Monate)")
         print "</td></tr><tr>"
         print '<th colspan=3>neue Python-Karten</th>'
         print "</tr><tr><td>"
@@ -65,6 +65,8 @@ if "list" in form:
     print_link("/clean/small",          "komplett (klein ohne Doerfer)")
     print_link("/verysmall",            "komplett (sehr kleine Felder)")
     print_link("/tiny",                 "komplett (winzige Felder)")
+    print "<br />"
+    print_link("/neu", "aktuelle Doerfer (6 Monate)")
     print "</td><td>"
     print_area_link("osten", [1,2,3,4], "Der Osten")
     print_area_link("westen", [1,2,3],  "Der Westen")
@@ -83,15 +85,6 @@ else:
     else:
         level = 'N'
 
-    terrain = Terrain()
-    if form["layer"].value == "neu":
-        terrain.set_add_cond("typ is not NULL")
-    if "x1" in form:
-        terrain.fetch_data(level, form["x1"].value,form["x2"].value,
-                form["y1"].value, form["y2"].value)
-    else:
-        terrain.fetch_data(level)
-
     if form["layer"].value in ["clean", "leer"]:
         show_dorf = False
     elif level != "N":
@@ -99,7 +92,19 @@ else:
     else:
         show_dorf = True
         dorf = Dorf()
+        if form["layer"].value == "neu":
+            dorf.set_add_cond("datediff(now(), aktdatum) < 180")
         dorf.fetch_data()
+
+    terrain = Terrain()
+    #if form["layer"].value == "neu":
+    #    terrain.set_add_cond("typ is not NULL")
+    if "x1" in form:
+        terrain.fetch_data(level, form["x1"].value,form["x2"].value,
+                form["y1"].value, form["y2"].value)
+    else:
+        terrain.fetch_data(level)
+
 
     size = 32 
     fontsize = 9

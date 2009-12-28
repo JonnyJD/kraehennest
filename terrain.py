@@ -253,7 +253,7 @@ class Terrain(Feld):
             for feld in felder:
                 fields = [feld.prop('level'), feld.prop('x'), feld.prop('y')]
                 fields.append(feld.xpathEval('terrain')[0].getContent())
-                names = feld.xpathEval('name')
+                names = feld.xpathEval('feldname')
                 if len(names) > 0:
                     fields.extend(names[0].getContent().split())
                 if not self.queue_entry(fields):

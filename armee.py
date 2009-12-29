@@ -387,7 +387,9 @@ class Armee(Feld):
                 schiffe = armee.xpathEval('schiff') 
                 if len(schiffe) == 1:
                     entry["schiffstyp"] = schiffe[0].prop("typ")
-                    entry["schiffslast"] = schiffe[0].prop("last")
+                    #entry["schiffslast"] = schiffe[0].prop("last")
+                else:
+                    entry["schiffstyp"] = None;
                 dauer_elems = armee.xpathEval('dauer')
                 if len(dauer_elems) == 1:
                     if dauer_elems[0].hasProp("now"):

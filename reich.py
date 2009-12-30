@@ -7,6 +7,7 @@ import cgi
 import libxml2
 import rbdb
 import util
+from ausgabe import Tabelle
 
 def get_ritter_id_form(rittername):
     form ='''<form method="post"
@@ -22,6 +23,38 @@ def get_ritter_id_form(rittername):
 class Reich:
     """Eine Klasse um Reichsdaten ein- und auszulesen.
     """
+
+    def list(self):
+        tabelle = Tabelle()
+        tabelle.addColumn("r_id")
+        tabelle.addColumn("Top10")
+        tabelle.addColumn("Name")
+        tabelle.addColumn("Allianz")
+        sql = "SELECT ritternr, top10, rittername, alliname"
+        sql += " FROM ritter"
+        sql += " JOIN allis ON ritter.alli = allis.allinr"
+        sql += " WHERE top10 > 0"
+        sql += " OR ritternr IN (1,2,113,143,160,172,174,88,159,174,1152)"
+        sql += " ORDER BY rittername"
+        try:
+            conn = rbdb.connect()
+            cursor = conn.cursor()
+            cursor.execute(sql)
+            row = cursor.fetchone()
+            while row != None:
+                line = [row[0]]
+                line.append(row[1])
+                zelle = '<a href="reich/' + str(row[0]) + '">'
+                zelle += str(row[2]) + '</a>'
+                line.append(zelle)
+                line.append(row[3])
+                tabelle.addLine(line)
+                row = cursor.fetchone()
+            print "Es sind", tabelle.length(), "Reiche in der Datenbank"
+            return tabelle.show()
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return False
 
     def process_xml(self, node):
         items = node.xpathEval('/response/content/item')
@@ -70,28 +103,32 @@ class Reich:
 # Aufruf als Skript: Reich eintragen
 if __name__ == '__main__':
     print 'Content-type: text/html; charset=utf-8\n'
+    print '<html><head>'
+    print '<link rel="stylesheet" type="text/css" href="../stylesheet">'
 
     form = cgi.FieldStorage()
     root = None
 
-    if "wahl" in form:
-        print "Wahl"
-    elif "ritter" in form:
+    if "list" in form:
+        print '<title>Reichsliste</title>'
+        print '</head>'
+        print '<body>'
+
+        reich = Reich()
+        reich.list()
+    elif "id" in form:
         from armee import Armee
 
-        r_id = form["ritter"].value
+        r_id = form["id"].value
 
-        print '<html><head>'
         print '<title>Reich ' + r_id + '</title>'
-        print '<link rel="stylesheet" type="text/css" href="../stylesheet">'
         print '</head>'
         print '<body>'
 
         armee = Armee()
-        armeetabelle = armee.list_by_reich(form["ritter"].value)
+        armeetabelle = armee.list_by_reich(r_id)
         print "Anzahl Armeen:", armeetabelle.length()
         armeetabelle.show()
-        print '</body></html>'
     else:
         # Reichsdaten vom RB Server einlesen
         try:
@@ -102,6 +139,8 @@ if __name__ == '__main__':
         if root != None:
             reich = Reich()
             reich.process_xml(root)
+
+    print '</body></html>'
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

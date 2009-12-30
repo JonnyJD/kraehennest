@@ -8,13 +8,6 @@ import os
 from terrain import Terrain
 from dorf import Dorf
 
-def show_armeen():
-    if ("REMOTE_USER" not in os.environ
-            or os.environ["REMOTE_USER"] == "jonnyjd"):
-        return True
-    else:
-        return False
-
 print 'Content-type: text/html; charset=utf-8\n'
 print '<html><head>'
 print '<title>Kr&auml;henkarte</title>'
@@ -93,6 +86,8 @@ else:
     else:
         level = 'N'
 
+    show_armeen = False
+
     if form["layer"].value in ["clean", "leer"]:
         show_dorf = False
     elif level != "N":
@@ -103,6 +98,13 @@ else:
         if form["layer"].value == "neu":
             dorf.set_add_cond("datediff(now(), aktdatum) < 180")
         dorf.fetch_data()
+
+    if (("REMOTE_USER" not in os.environ
+            or os.environ["REMOTE_USER"] == "jonnyjd")
+            and form["layer"].value not in ["clean", "leer"]):
+        show_armeen = True
+    else:
+        show_armeen = False
 
     terrain = Terrain()
     #if form["layer"].value == "neu":
@@ -160,9 +162,8 @@ else:
             if terrain.has(x,y):
                 row = '<td background="/img/terrain/' + str(size) + '/'
                 row += terrain.get(x,y) + '.gif">'
-                #if show_armeen():
+                #if show_armeen:
                     # freundliche Armeen
-                #    row += '<div class="l"><span class="a60"></span></div>'
                 if show_dorf and dorf.has(x,y):
                     dorf.get(x,y)
                     row += '<div style="color:'+ dorf.entry['allyfarbe'] +';">'
@@ -171,9 +172,9 @@ else:
                     else:
                         row += "_"
                     row += '</div>'
-                elif show_armeen():
+                elif show_armeen:
                     row += '<div>&nbsp;</div>'
-                if show_armeen():
+                if show_armeen:
                     # feindliche Armeen (erstmal alle)
                     row += '<div class="armeen">'
                     row += '<span></span>' # dummy fuer Formatierung

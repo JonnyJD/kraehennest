@@ -301,19 +301,16 @@ class Armee(Feld):
     def __get_entries(self):
         """Holt alle Eintraege im Bereich von der Datenbank."""
 
-        sql = "SELECT * FROM armeen"
+        sql = "SELECT x, y, allinr FROM armeen"
+        sql += " JOIN ritter ON r_id = ritternr"
         sql += " WHERE level='" + self.level + "'"
         sql += self.crop_clause
         sql += self.add_cond
         try:
-            cursor = self.conn.cursor('DictCursor')
             self.cursor.execute(sql)
-            row = self.cursor.fetchoneDict()
+            row = self.cursor.fetchone()
             while row != None:
-                entry = dict()
-                for key in self.__entry_name_is_db_name:
-                    entry[key] = row[key]
-                self.entries[row["h_id"]] = entry
+                self.entries[x,y].append(row[3])
                 row = self.cursor.fetchoneDict()
             return True
         except rbdb.Error, e:

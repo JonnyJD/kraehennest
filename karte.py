@@ -100,9 +100,10 @@ else:
             dorf.set_add_cond("datediff(now(), aktdatum) < 180")
         dorf.fetch_data()
 
-    if (("REMOTE_USER" not in os.environ
-            or os.environ["REMOTE_USER"] == "jonnyjd")
-            and form["layer"].value not in ["clean", "leer"]):
+    #if (("REMOTE_USER" not in os.environ
+    #        or os.environ["REMOTE_USER"] == "jonnyjd")
+    #        and form["layer"].value not in ["clean", "leer"]):
+    if form["layer"].value not in ["clean", "leer"]:
         show_armeen = True
         armee = Armee()
         armee.fetch_data()

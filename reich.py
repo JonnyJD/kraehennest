@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-#import cgitb
-#cgitb.enable()
+import cgitb
+cgitb.enable()
 
 import cgi
 import libxml2
@@ -69,18 +69,39 @@ class Reich:
 
 # Aufruf als Skript: Reich eintragen
 if __name__ == '__main__':
-    print "Content-type: text/plain\n"
+    print 'Content-type: text/html; charset=utf-8\n'
+
     form = cgi.FieldStorage()
     root = None
 
-    try:
-        root = libxml2.parseDoc(form.value)
-    except libxml2.parserError:
-        print "Es wurden keine gueltigen Daten gesendet. <br />"
+    if "wahl" in form:
+        print "Wahl"
+    elif "ritter" in form:
+        from armee import Armee
 
-    if root != None:
-        reich = Reich()
-        reich.process_xml(root)
+        r_id = form["ritter"].value
+
+        print '<html><head>'
+        print '<title>Reich ' + r_id + '</title>'
+        print '<link rel="stylesheet" type="text/css" href="../stylesheet">'
+        print '</head>'
+        print '<body>'
+
+        armee = Armee()
+        armeetabelle = armee.list_by_reich(form["ritter"].value)
+        print "Anzahl Armeen:", armeetabelle.length()
+        armeetabelle.show()
+        print '</body></html>'
+    else:
+        # Reichsdaten vom RB Server einlesen
+        try:
+            root = libxml2.parseDoc(form.value)
+        except libxml2.parserError:
+            print "Es wurden keine gueltigen Daten gesendet. <br />"
+
+        if root != None:
+            reich = Reich()
+            reich.process_xml(root)
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

@@ -8,6 +8,7 @@ import util
 import re
 from feld import Feld
 from reich import get_ritter_id_form
+from ausgabe import Tabelle
 
 MAN     = True;         OPT   = False
 DBCOL   = True;         NO_DB = False
@@ -49,7 +50,7 @@ class Armee(Feld):
             # after the length check we can make it integer
             entry[key] = int(entry[key])
         else:
-            # wie lange ware der String in der Datenbank (latin1)
+            # wie lange waere der String in der Datenbank (latin1)
             ret = len(unicode(entry[key],'utf-8').encode('latin-1')) <= length
         if not ret:
             print entry[key], "ist nicht zulaessig als", key, "<br />"
@@ -59,7 +60,7 @@ class Armee(Feld):
         # DBCOL meint, dass es direkt so in die Datenbank gehen wird
         ret =  (self.__is(STR,entry, MAN, DBCOL, "name", 30)
                 and self.__is(STR,entry, MAN, DBCOL, "img", 10)
-                and self.__is(INT, entry, OPT, DBCOL, "x", 3)
+                and self.__is(INT,entry, OPT, DBCOL, "x", 3)
                 and self.__is(INT,entry, OPT, DBCOL, "y", 3)
                 and self.__is(STR,entry, OPT, DBCOL, "level", 2)
                 and self.__is(INT,entry, OPT, DBCOL, "h_id", 8)
@@ -315,6 +316,55 @@ class Armee(Feld):
                 self.entries[row["h_id"]] = entry
                 row = self.cursor.fetchoneDict()
             return True
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return False
+
+    def __list(self, cols, armeen):
+        tabelle = Tabelle()
+        for col in cols:
+            tabelle.addColumn(col)
+        for armee in armeen:
+            tabelle.addLine(armee)
+        return tabelle
+
+    def list_by_reich(self, r_id):
+        """Holt alle Armeen eines Reiches mit r_id"""
+
+        cols = ["level", "x", "y", "name", "last_seen"]
+        cols += ["size", "strength", "bp", "ap"]
+        sql = "SELECT " + ", ".join(cols)
+        sql += " FROM armeen"
+        sql += " JOIN ritter ON armeen.r_id = ritternr"
+        sql += " WHERE r_id = %s"
+        sql += " AND active = 1"
+        sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
+        sql += " ORDER BY last_seen DESC"
+        try:
+            self.cursor.execute(sql, r_id)
+            armeen = self.cursor.fetchall()
+            return self.__list(cols, armeen)
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return False
+
+    def list_by_allianz(self, a_id):
+        """Holt alle Armeen eines Allianz mit a_id"""
+
+        cols = ["level", "x", "y", "rittername", "name", "last_seen"]
+        cols += ["size", "strength", "bp", "ap"]
+        sql = "SELECT " + ", ".join(cols)
+        sql += " FROM armeen"
+        sql += " JOIN ritter ON armeen.r_id = ritternr"
+        sql += " JOIN allis ON ritter.alli = allis.allinr"
+        sql += " WHERE allinr = %s"
+        sql += " AND active = 1"
+        sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
+        sql += " ORDER BY last_seen DESC"
+        try:
+            self.cursor.execute(sql, a_id)
+            armeen = self.cursor.fetchall()
+            return self.__list(cols, armeen)
         except rbdb.Error, e:
             util.print_html_error(e)
             return False

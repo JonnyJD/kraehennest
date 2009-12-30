@@ -4,8 +4,16 @@
 #cgitb.enable()
 
 import cgi
+import os
 from terrain import Terrain
 from dorf import Dorf
+
+def show_armeen():
+    if ("REMOTE_USER" not in os.environ
+            or os.environ["REMOTE_USER"] == "jonnyjd"):
+        return True
+    else:
+        return False
 
 print 'Content-type: text/html; charset=utf-8\n'
 print '<html><head>'
@@ -121,10 +129,24 @@ else:
 
     print '<style type="text/css">'
     print 'td {'
-    print 'font-size: ' + str(fontsize) + 'pt;'
-    print 'height: ' + str(size) + 'px;'
-    print 'width: ' + str(size) + 'px;'
-    print 'text-align:center; }'
+    print '    font-size: ' + str(fontsize) + 'pt;'
+    print '    height: ' + str(size) + 'px;'
+    print '    width: ' + str(size) + 'px;'
+    print '    text-align:center; }'
+    print 'div.armeen {'
+    print '    margin-left: ' + str(fontsize-6) + 'px;'
+    print '    text-align:left;'
+    print '}'
+    print 'span {'
+    print '    display: inline-block;'
+    if fontsize > 8:
+        print '    height: ' + str(fontsize-6) + 'px;'
+        print '    width: ' + str(fontsize-6) + 'px;'
+    else:
+        print '    height: 0px;'
+        print '    width: 0px;'
+    print '}'
+    print 'span.a60 { background-color:red; }'
     print '</style>'
     width = size * (terrain.xmax - terrain.xmin + 1)
     print '<table width="' + str(width) + '" cellspacing="0" cellpadding="0">'
@@ -137,16 +159,29 @@ else:
         for x in range(terrain.xmin, terrain.xmax + 1):
             if terrain.has(x,y):
                 row = '<td background="/img/terrain/' + str(size) + '/'
-                row += terrain.get(x,y) + '.gif"'
+                row += terrain.get(x,y) + '.gif">'
+                #if show_armeen():
+                    # freundliche Armeen
+                #    row += '<div class="l"><span class="a60"></span></div>'
                 if show_dorf and dorf.has(x,y):
                     dorf.get(x,y)
-                    row += ' style="color:' + dorf.entry['allyfarbe'] + ';">'
+                    row += '<div style="color:'+ dorf.entry['allyfarbe'] +';">'
                     if dorf.entry['rittername'] != ".":
                         row += dorf.entry['rittername'][0:3]
                     else:
                         row += "_"
-                else:
-                    row += '>'
+                    row += '</div>'
+                elif show_armeen():
+                    row += '<div>&nbsp;</div>'
+                if show_armeen():
+                    # feindliche Armeen (erstmal alle)
+                    row += '<div class="armeen">'
+                    row += '<span></span>' # dummy fuer Formatierung
+                    if x == 270 and y == 292:
+                        row += '<span style="background-color:red"></span>'
+                        row += '<span style="background-color:red"></span>'
+                        row += '<span style="background-color:orange"></span>'
+                    row += '</div>'
                 row += '</td>'
                 print row
             else:

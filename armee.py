@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-#import cgitb
-#cgitb.enable()
+import cgitb
+cgitb.enable()
 
 import rbdb
 import util
@@ -348,6 +348,9 @@ class Armee(Feld):
             util.print_html_error(e)
             return False
 
+    def list_all(self):
+        return self.list_by_allianz(-1)
+
     def list_by_allianz(self, a_id):
         """Holt alle Armeen eines Allianz mit a_id"""
 
@@ -357,12 +360,17 @@ class Armee(Feld):
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"
         sql += " JOIN allis ON ritter.alli = allis.allinr"
-        sql += " WHERE allinr = %s"
-        sql += " AND active = 1"
+        sql += " WHERE"
+        sql += " active = 1"
+        if a_id != -1:
+            sql += " AND allinr = %s"
         sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
         sql += " ORDER BY last_seen DESC"
         try:
-            self.cursor.execute(sql, a_id)
+            if a_id != -1:
+                self.cursor.execute(sql, a_id)
+            else:
+                self.cursor.execute(sql)
             armeen = self.cursor.fetchall()
             return self.__list(cols, armeen)
         except rbdb.Error, e:
@@ -460,6 +468,32 @@ class Armee(Feld):
                 print "Keine Armeen gespeichert.", "<br />"
         else:
             print 'Es wurden keine Armeedaten gesendet.', "<br />"
+
+if __name__ == '__main__':
+    print 'Content-type: text/html; charset=utf-8\n'
+    print '<html><head>'
+    print '<link rel="stylesheet" type="text/css" href="../stylesheet">'
+    import cgi
+
+
+    form = cgi.FieldStorage()
+    root = None
+
+    if "list" in form:
+        from armee import Armee
+
+        print '<title>Armeeliste</title>'
+        print '</head>'
+        print '<body>'
+
+        armee = Armee()
+        armeetabelle = armee.list_all()
+        print "Anzahl Armeen:", armeetabelle.length()
+        armeetabelle.show()
+    else:
+        print "leer"
+
+    print'</body></html>'
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

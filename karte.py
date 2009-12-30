@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-import cgitb
-cgitb.enable()
+#import cgitb
+#cgitb.enable()
 
 import cgi
 from terrain import Terrain

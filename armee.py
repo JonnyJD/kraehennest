@@ -332,7 +332,7 @@ class Armee(Feld):
         """Holt alle Armeen eines Reiches mit r_id"""
 
         cols = ["level", "x", "y", "name", "last_seen"]
-        cols += ["size", "strength", "bp", "ap"]
+        cols += ["size", "strength", "bp", "ap", "schiffstyp"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"
@@ -352,7 +352,7 @@ class Armee(Feld):
         """Holt alle Armeen eines Allianz mit a_id"""
 
         cols = ["level", "x", "y", "rittername", "name", "last_seen"]
-        cols += ["size", "strength", "bp", "ap"]
+        cols += ["size", "strength", "bp", "ap", "schiffstyp"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"

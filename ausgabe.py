@@ -27,6 +27,8 @@ class Tabelle():
         for line in self.__lines:
             print '<tr>'
             for col in line:
+                if col is None:
+                    col = ""
                 if type(col) is IntType:
                     print '<td align="right">' + str(col) + '</td>'
                 else:

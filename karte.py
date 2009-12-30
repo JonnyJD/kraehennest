@@ -7,6 +7,7 @@ import cgi
 import os
 from terrain import Terrain
 from dorf import Dorf
+from armee import Armee
 
 print 'Content-type: text/html; charset=utf-8\n'
 print '<html><head>'
@@ -103,6 +104,8 @@ else:
             or os.environ["REMOTE_USER"] == "jonnyjd")
             and form["layer"].value not in ["clean", "leer"]):
         show_armeen = True
+        armee = Armee()
+        armee.fetch_data()
     else:
         show_armeen = False
 
@@ -136,14 +139,15 @@ else:
     print '    width: ' + str(size) + 'px;'
     print '    text-align:center; }'
     print 'div.armeen {'
-    print '    margin-left: ' + str(fontsize-6) + 'px;'
+    #print '    margin-left: ' + str(fontsize-5) + 'px;'
     print '    text-align:left;'
+    print '    max-height: ' + str(fontsize-5) + 'px;'
     print '}'
     print 'span {'
     print '    display: inline-block;'
     if fontsize > 8:
-        print '    height: ' + str(fontsize-6) + 'px;'
-        print '    width: ' + str(fontsize-6) + 'px;'
+        print '    height: ' + str(fontsize-5) + 'px;'
+        print '    width: ' + str(fontsize-5) + 'px;'
     else:
         print '    height: 0px;'
         print '    width: 0px;'
@@ -178,10 +182,10 @@ else:
                     # feindliche Armeen (erstmal alle)
                     row += '<div class="armeen">'
                     row += '<span></span>' # dummy fuer Formatierung
-                    if x == 270 and y == 292:
-                        row += '<span style="background-color:red"></span>'
-                        row += '<span style="background-color:red"></span>'
-                        row += '<span style="background-color:orange"></span>'
+                    if armee.has(x,y):
+                        for entry in armee.get(x,y):
+                            row += '<span style="background-color:'
+                            row += entry + '"></span>'
                     row += '</div>'
                 row += '</td>'
                 print row

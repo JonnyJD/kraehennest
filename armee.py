@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-import cgitb
-cgitb.enable()
+#import cgitb
+#cgitb.enable()
 
 import rbdb
 import util
@@ -301,17 +301,23 @@ class Armee(Feld):
     def __get_entries(self):
         """Holt alle Eintraege im Bereich von der Datenbank."""
 
-        sql = "SELECT x, y, allinr FROM armeen"
+        sql = "SELECT x, y, allicolor FROM armeen"
         sql += " JOIN ritter ON r_id = ritternr"
+        sql += " JOIN allis ON ritter.alli = allinr"
         sql += " WHERE level='" + self.level + "'"
+        sql += " AND active = 1"
+        sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
         sql += self.crop_clause
         sql += self.add_cond
+        sql += " ORDER BY allicolor"
         try:
             self.cursor.execute(sql)
             row = self.cursor.fetchone()
             while row != None:
-                self.entries[x,y].append(row[3])
-                row = self.cursor.fetchoneDict()
+                if (row[0],row[1]) not in self.entries:
+                    self.entries[row[0],row[1]] = []
+                self.entries[row[0],row[1]].append(row[2])
+                row = self.cursor.fetchone()
             return True
         except rbdb.Error, e:
             util.print_html_error(e)

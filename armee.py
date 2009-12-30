@@ -320,9 +320,23 @@ class Armee(Feld):
     def __list(self, cols, armeen):
         tabelle = Tabelle()
         for col in cols:
-            tabelle.addColumn(col)
+            if col != "ritternr":
+                tabelle.addColumn(col)
         for armee in armeen:
-            tabelle.addLine(armee)
+            line = []
+            for i in range(0, len(armee)):
+                if cols[i] == "ritternr":
+                    # nachfolgenden Ritternamen verlinken
+                    col = '<a href="reich/' + str(armee[i]) + '"'
+                    if armee[i] == 174: # Keiner
+                        col += ' style="color:green"'
+                    if armee[i] == 113: # Plunkett
+                        col += ' style="color:red"'
+                    col += '>' + armee[i+1] + '</a>'
+                    line.append(col)
+                elif cols[i-1] != "ritternr":
+                    line.append(armee[i])
+            tabelle.addLine(line)
         return tabelle
 
     def list_by_reich(self, r_id):
@@ -351,7 +365,8 @@ class Armee(Feld):
     def list_by_allianz(self, a_id):
         """Holt alle Armeen eines Allianz mit a_id"""
 
-        cols = ["level", "x", "y", "rittername", "name", "last_seen"]
+        cols = ["level", "x", "y", "ritternr", "rittername", "name"]
+        cols += ["last_seen"]
         cols += ["size", "strength", "bp", "ap", "schiffstyp"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"

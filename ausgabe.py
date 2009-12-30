@@ -2,7 +2,7 @@
 
 from types import *
 
-class Tabelle():
+class Tabelle:
     """Eine HTML-Tabelle"""
 
     def __init__(self):

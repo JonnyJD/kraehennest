@@ -3,6 +3,7 @@
 #import cgitb
 #cgitb.enable()
 
+import config
 import cgi
 import os
 from terrain import Terrain
@@ -15,6 +16,12 @@ print '<title>Kr&auml;henkarte</title>'
 print '<link rel="stylesheet" type="text/css" href="stylesheet">'
 print '</head>'
 print '<body>'
+
+if "REMOTE_USER" in os.environ:
+    username = os.environ["REMOTE_USER"]
+else:
+    username = ""
+is_kraehe = config.is_kraehe(username)
 
 form = cgi.FieldStorage()
 
@@ -87,8 +94,6 @@ else:
     else:
         level = 'N'
 
-    show_armeen = False
-
     if form["layer"].value in ["clean", "leer"]:
         show_dorf = False
     elif level != "N":
@@ -100,10 +105,7 @@ else:
             dorf.set_add_cond("datediff(now(), aktdatum) < 180")
         dorf.fetch_data()
 
-    #if (("REMOTE_USER" not in os.environ
-    #        or os.environ["REMOTE_USER"] == "jonnyjd")
-    #        and form["layer"].value not in ["clean", "leer"]):
-    if form["layer"].value not in ["clean", "leer"]:
+    if is_kraehe and form["layer"].value not in ["clean", "leer"]:
         show_armeen = True
         armee = Armee()
         armee.fetch_data()

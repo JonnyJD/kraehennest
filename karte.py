@@ -111,7 +111,7 @@ else:
     if is_kraehe and form["layer"].value not in ["clean", "leer"]:
         show_armeen = True
         armee = Armee()
-        armee.fetch_data()
+        armee.fetch_data(level)
     else:
         show_armeen = False
 

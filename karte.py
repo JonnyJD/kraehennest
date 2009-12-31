@@ -137,6 +137,9 @@ else:
         elif form["size"].value == "tiny":
             size = 5
             fontsize = 0
+    if fontsize == 0:
+        show_dorf = False
+        show_armeen = False
 
     print '<style type="text/css">'
     print 'td {'
@@ -166,7 +169,7 @@ else:
     if is_kraehe:
         print '<div id="position" style="z-index:2; position:fixed;'
         print ' top:5px; left:38px; width:85em;'
-        print ' font-size: ' + str(fontsize) + 'pt; background-color:#333333;'
+        print ' font-size:9pt; background-color:#333333;'
         print ' padding:5px;"><div>&nbsp;</div></div>'
         print '<br /><div></div>'
 

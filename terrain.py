@@ -216,7 +216,7 @@ class Terrain(Feld):
     def __get_entries(self):
         """Holt alle Eintraege im Bereich von der Datenbank."""
 
-        sql = "SELECT x, y, terrain FROM felder"
+        sql = "SELECT x, y, terrain, typ FROM felder"
         sql += " WHERE level='" + self.level + "'"
         sql += self.crop_clause
         sql += self.add_cond
@@ -224,7 +224,10 @@ class Terrain(Feld):
             self.cursor.execute(sql)
             row = self.cursor.fetchone()
             while row != None:
-                self.entries[row[0],row[1]] = row[2]
+                entry = dict()
+                entry["terrain"] = row[2]
+                entry["typ"] = row[3]
+                self.entries[row[0],row[1]] = entry
                 row = self.cursor.fetchone()
             return True
         except rbdb.Error, e:

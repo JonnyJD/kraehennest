@@ -167,8 +167,9 @@ else:
         print '<tr style="height:' + str(size) + 'px;"><td>' + str(y)  + '</td>'
         for x in range(terrain.xmin, terrain.xmax + 1):
             if terrain.has(x,y):
+                terrain.get(x,y)
                 row = '<td background="/img/terrain/' + str(size) + '/'
-                row += terrain.get(x,y) + '.gif">'
+                row += terrain.entry["terrain"] + '.gif">'
                 #if show_armeen:
                     # freundliche Armeen
                 if show_dorf and dorf.has(x,y):
@@ -176,8 +177,12 @@ else:
                     row += '<div style="color:'+ dorf.entry['allyfarbe'] +';">'
                     if dorf.entry['rittername'] != ".":
                         row += dorf.entry['rittername'][0:3]
-                    else:
+                    elif is_kraehe and terrain.entry["typ"]:
+                        row += "." * terrain.entry["typ"]
+                    elif is_kraehe:
                         row += "_"
+                    else:
+                        row += "."
                     row += '</div>'
                 elif show_armeen:
                     row += '<div>&nbsp;</div>'

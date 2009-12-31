@@ -10,18 +10,20 @@ from terrain import Terrain
 from dorf import Dorf
 from armee import Armee
 
-print 'Content-type: text/html; charset=utf-8\n'
-print '<html><head>'
-print '<title>Kr&auml;henkarte</title>'
-print '<link rel="stylesheet" type="text/css" href="stylesheet">'
-print '</head>'
-print '<body>'
-
 if "REMOTE_USER" in os.environ:
     username = os.environ["REMOTE_USER"]
 else:
     username = ""
 is_kraehe = config.is_kraehe(username)
+
+print 'Content-type: text/html; charset=utf-8\n'
+print '<html><head>'
+print '<title>Kr&auml;henkarte</title>'
+print '<link rel="stylesheet" type="text/css" href="stylesheet">'
+if is_kraehe:
+    print '<script src="javascript" type="text/javascript"></script>'
+print '</head>'
+print '<body>'
 
 form = cgi.FieldStorage()
 
@@ -51,6 +53,7 @@ if "list" in form:
     print '}'
     print 'td { width: 34%; }'
     print '</style>'
+
     print '<table><tr>'
     if form["list"].value == "ksk":
         print '<th colspan=3>alte PHP-Karte</th>'
@@ -157,7 +160,16 @@ else:
     print '}'
     print 'span.a60 { background-color:red; }'
     print '</style>'
+
     width = size * (terrain.xmax - terrain.xmin + 1)
+
+    if is_kraehe:
+        print '<div id="position" style="z-index:2; position:fixed;'
+        print ' top:5px; left:38px; width:85em;'
+        print ' font-size: ' + str(fontsize) + 'pt; background-color:#333333;'
+        print ' padding:5px;"><div>&nbsp;</div></div>'
+        print '<br /><div></div>'
+
     print '<table width="' + str(width) + '" cellspacing="0" cellpadding="0">'
     # X - Achse
     print '<tr style="height:' + str(size) + 'px;"><td></td>'
@@ -169,9 +181,19 @@ else:
             if terrain.has(x,y):
                 terrain.get(x,y)
                 row = '<td background="/img/terrain/' + str(size) + '/'
-                row += terrain.entry["terrain"] + '.gif">'
-                #if show_armeen:
-                    # freundliche Armeen
+                row += terrain.entry["terrain"] + '.gif"'
+                if is_kraehe:
+                    row += ' onmouseover="showPos(\'' + str(x) + "," + str(y)
+                    if show_dorf and dorf.has(x,y):
+                        dorf.get(x,y)
+                        list = []
+                        for col in ['rittername', 'alliname', 'dorfname',
+                                'dorflevel', 'mauer', 'aktdatum']:
+                            list.append(str(dorf.entry[col]))
+                        list = '|' + '|'.join(list)
+                        row += list.replace("'", "\\'").replace('"', "&quot;")
+                    row += '\')" onmouseout="delPos()"'
+                row += '>'
                 if show_dorf and dorf.has(x,y):
                     dorf.get(x,y)
                     row += '<div style="color:'+ dorf.entry['allyfarbe'] +';">'
@@ -187,7 +209,6 @@ else:
                 elif show_armeen:
                     row += '<div>&nbsp;</div>'
                 if show_armeen:
-                    # feindliche Armeen (erstmal alle)
                     row += '<div class="armeen">'
                     row += '<span></span>' # dummy fuer Formatierung
                     if armee.has(x,y):

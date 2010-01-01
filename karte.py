@@ -34,7 +34,7 @@ def list_maps(prefix):
     print '</style>'
 
     print '<div class="box" style="clear:both; width:100%;">'
-    print '<h3>Karten</h3>'
+    print '<h2>Karten</h2>'
     print '<table style="width:100%">'
     print '<tr><td class="karten">'
     if config.is_kraehe():
@@ -64,18 +64,23 @@ def list_maps(prefix):
 
 # Aufruf direkt: Karten anzeigen
 if __name__ == '__main__':
+    form = cgi.FieldStorage()
+
+    if "list" in form:
+        title = "Kr&auml;henkarten"
+    else:
+        title = "Kr&auml;henkarte"
     print 'Content-type: text/html; charset=utf-8\n'
     print '<html><head>'
-    print '<title>Kr&auml;henkarte</title>'
+    print '<title>' + title + '</title>'
     print '<link rel="stylesheet" type="text/css" href="stylesheet">'
     if config.is_kraehe():
         print '<script src="javascript" type="text/javascript"></script>'
     print '</head>'
     print '<body>'
 
-    form = cgi.FieldStorage()
-
     if "list" in form:
+        print '<h1>' + title + '</h1>'
         list_maps(prefix)
     else:
         # Zeige eine Karte

@@ -301,7 +301,7 @@ class Armee(Feld):
     def __get_entries(self):
         """Holt alle Eintraege im Bereich von der Datenbank."""
 
-        sql = "SELECT x, y, allicolor FROM armeen"
+        sql = "SELECT x, y, allicolor, ritternr FROM armeen"
         sql += " JOIN ritter ON r_id = ritternr"
         sql += " JOIN allis ON ritter.alli = allinr"
         sql += " WHERE level='" + self.level + "'"
@@ -316,7 +316,10 @@ class Armee(Feld):
             while row != None:
                 if (row[0],row[1]) not in self.entries:
                     self.entries[row[0],row[1]] = []
-                self.entries[row[0],row[1]].append(row[2])
+                if row[3] == 174:
+                    self.entries[row[0],row[1]].append('#008000')
+                else: 
+                    self.entries[row[0],row[1]].append(row[2])
                 row = self.cursor.fetchone()
             return True
         except rbdb.Error, e:

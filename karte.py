@@ -11,17 +11,11 @@ from terrain import Terrain
 from dorf import Dorf
 from armee import Armee
 
-if "REMOTE_USER" in os.environ:
-    username = os.environ["REMOTE_USER"]
-else:
-    username = ""
-is_kraehe = config.is_kraehe(username)
-
 print 'Content-type: text/html; charset=utf-8\n'
 print '<html><head>'
 print '<title>Kr&auml;henkarte</title>'
 print '<link rel="stylesheet" type="text/css" href="stylesheet">'
-if is_kraehe:
+if config.is_kraehe():
     print '<script src="javascript" type="text/javascript"></script>'
 print '</head>'
 print '<body>'
@@ -53,7 +47,7 @@ if "list" in form:
     print '</style>'
 
     print '<table><tr>'
-    if is_kraehe:
+    if config.is_kraehe():
         print '<th colspan=3>alte PHP-Karte</th>'
         print '</tr><tr style="height:50%;"><td>'
         print_link("",                "komplette Karte")
@@ -66,7 +60,7 @@ if "list" in form:
         print "</tr><tr><td>"
     else:
         print "<td>"
-    if is_kraehe:
+    if config.is_kraehe():
         print_area_link("kraehen", [],     "Kraehengebiet")
         print "<br />"
     print_area_link("", [1,2,3,4],      "komplett (Normalgroesse)")
@@ -106,7 +100,7 @@ else:
             dorf.set_add_cond("datediff(now(), aktdatum) < 180")
         dorf.fetch_data()
 
-    if is_kraehe and form["layer"].value not in ["clean", "leer"]:
+    if config.is_kraehe() and form["layer"].value not in ["clean", "leer"]:
         show_armeen = True
         armee = Armee()
         armee.fetch_data(level)
@@ -164,7 +158,7 @@ else:
 
     width = size * (terrain.xmax - terrain.xmin + 1)
 
-    if is_kraehe:
+    if config.is_kraehe():
         print '<div id="position" style="z-index:2; position:fixed;'
         print ' top:5px; left:38px; width:85em;'
         print ' font-size:9pt; background-color:#333333;'
@@ -183,7 +177,7 @@ else:
                 terrain.get(x,y)
                 row = '<td background="/img/terrain/' + str(size) + '/'
                 row += terrain.entry["terrain"] + '.gif"'
-                if is_kraehe:
+                if config.is_kraehe():
                     row += ' onmouseover="showPos(\'' + str(x) + "," + str(y)
                     if show_dorf and dorf.has(x,y):
                         dorf.get(x,y)
@@ -200,9 +194,9 @@ else:
                     row += '<div style="color:'+ dorf.entry['allyfarbe'] +';">'
                     if dorf.entry['rittername'] != ".":
                         row += dorf.entry['rittername'][0:3]
-                    elif is_kraehe and terrain.entry["typ"]:
+                    elif config.is_kraehe() and terrain.entry["typ"]:
                         row += "." * terrain.entry["typ"]
-                    elif is_kraehe:
+                    elif config.is_kraehe():
                         row += "_"
                     else:
                         row += "."

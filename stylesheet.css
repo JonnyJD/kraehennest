@@ -10,6 +10,10 @@ a:hover {
 	color: #FFFFCC;
 	text-decoration: underline;
 }
-th {
-	color: #CC9900;
+th,h1,h2,h3 {
+	color: #996600;
+}
+div.box {
+	float:left;
+	margin:25px;
 }

@@ -6,6 +6,7 @@
 import config
 import cgi
 import os
+import re
 from terrain import Terrain
 from dorf import Dorf
 from armee import Armee
@@ -28,10 +29,7 @@ print '<body>'
 form = cgi.FieldStorage()
 
 if "list" in form:
-    if form["list"].value == "ksk":
-        prefix = ""
-    else:
-        prefix = "/" + form["list"].value
+    prefix = re.match("(.*)/show", os.environ['SCRIPT_URL']).group(1)
 
     def print_link(link, name):
         url = prefix + "/show/karte" + link
@@ -55,7 +53,7 @@ if "list" in form:
     print '</style>'
 
     print '<table><tr>'
-    if form["list"].value == "ksk":
+    if is_kraehe:
         print '<th colspan=3>alte PHP-Karte</th>'
         print '</tr><tr style="height:50%;"><td>'
         print_link("",                "komplette Karte")
@@ -68,7 +66,7 @@ if "list" in form:
         print "</tr><tr><td>"
     else:
         print "<td>"
-    if form["list"].value == "ksk":
+    if is_kraehe:
         print_area_link("kraehen", [],     "Kraehengebiet")
         print "<br />"
     print_area_link("", [1,2,3,4],      "komplett (Normalgroesse)")

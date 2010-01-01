@@ -1,23 +1,18 @@
 """Konfiguration der DB und Berechtigungen"""
 
+import re
+import os
+
 # Datenbank
 db_host = "localhost"
 db_user = ""
 db_passwd = ""
 db = ""
 
-# Berechtigungen von logins
-kraehen = []
-tw = []
-
-choose_kraehen = True
-
 def is_kraehe(username):
-    #return username in kraehen
-    return choose_kraehen
+    return not re.match("/tw", os.environ['SCRIPT_URL'])
 
 def is_tw(username):
-    #return username in tw
-    return not choose_kraehen
+    return re.match("/tw", os.environ['SCRIPT_URL'])
 
 # vim:set shiftwidth=4 expandtab smarttab:

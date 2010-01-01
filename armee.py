@@ -317,7 +317,7 @@ class Armee(Feld):
                 if (row[0],row[1]) not in self.entries:
                     self.entries[row[0],row[1]] = []
                 if row[3] == 174:
-                    self.entries[row[0],row[1]].append('#008000')
+                    self.entries[row[0],row[1]].append('#00A000')
                 else: 
                     self.entries[row[0],row[1]].append(row[2])
                 row = self.cursor.fetchone()

@@ -19,7 +19,7 @@ class Tabelle:
         return len(self.__lines)
 
     def show(self):
-        print '<table>'
+        print '<table class="Tabelle">'
         print '<tr>'
         for col in self.__columns:
             print '<th>' + col + '</th>'
@@ -29,7 +29,7 @@ class Tabelle:
             for col in line:
                 if col is None:
                     col = ""
-                if type(col) is IntType:
+                if type(col) in [IntType, LongType]:
                     print '<td align="right">' + str(col) + '</td>'
                 else:
                     print '<td>' + str(col) + '</td>'

@@ -1,3 +1,4 @@
+/* allgemeine Elemente */
 body {
 	color: #FFFFCC;
 	background-color: #000000;
@@ -13,7 +14,16 @@ a:hover {
 th,h1,h2,h3 {
 	color: #996600;
 }
+
+/* spezielle Elemente */
 div.box {
 	float:left;
 	margin:25px;
+}
+/* "richtige" Tabellenzellen
+ * (in der Karte "unrichtige" Zellen benutzt)
+ * /
+table.tabelle tr td {
+	padding-left:3px;
+	padding-right:3px;
 }

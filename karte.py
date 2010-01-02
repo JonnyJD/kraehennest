@@ -160,7 +160,7 @@ if __name__ == '__main__':
             print '    width: 0px;'
         print '}'
         print 'span.a60 { background-color:red; }'
-        print 'td.navi {'
+        print '.navi {'
         if int(form["x2"].value) >= 999:
             print '    background-color:#333333;'
         print '    font-weight:bold;'
@@ -221,8 +221,10 @@ if __name__ == '__main__':
             else:
                 return '&nbsp;'
 
+        # Kartennavigation
         print '<table style="z-index:2; position:fixed; top:70px; right:5px;">'
         if int(form["x2"].value) < 999:
+            # Richtungen
             print '<tr><td></td><td></td>'
             print '<td class="navi">' + nav_link('nord', 17, '&uArr;')
             print '</td></tr><tr><td></td><td></td>'
@@ -249,12 +251,22 @@ if __name__ == '__main__':
             elif config.is_tw():
                 print '<a href="' + prefix + '/show/karte/osten">HOME</a>'
         print '</td></tr><tr><td>&nbsp;</td></tr>'
+        # Level
         print '<tr><td></td><td></td><td class="navi">' + level_link("hoch")
         print '</td></tr>'
         print '<tr><td></td><td></td><td class="navi">' + level + '</td></tr>'
         print '<tr><td></td><td></td><td class="navi">' + level_link("runter")
         print '</td></tr>'
         print '</table>'
+
+        # zurueck zum Datenbankindex
+        if int(form["x2"].value) < 999:
+            print '<div style="z-index:2; position:fixed;'
+            print ' bottom:70px; right:70px;" class="navi">'
+            if config.is_kraehe():
+                print '<a href="' + prefix + '/show">Index</a></div>'
+            else:
+                print '<a href="' + prefix + '/show/karten">Index</a></div>'
 
         print '<table width="' + str(width),
         print '" cellspacing="0" cellpadding="0">'

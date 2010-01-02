@@ -171,11 +171,18 @@ if __name__ == '__main__':
         width = size * (terrain.xmax - terrain.xmin + 1)
 
         if config.is_kraehe():
-            print '<div id="position" style="z-index:2; position:fixed;'
+            # Dorfdetail
+            print '<div id="dorfdetail" style="z-index:2; position:fixed;'
             print ' top:5px; left:38px; width:85em;'
             print ' font-size:9pt; background-color:#333333;'
             print ' padding:5px;"><div>&nbsp;</div></div>'
+            # Armeedetail
+            print '<div id="armeedetail" style="z-index:2; position:fixed;'
+            print ' top:400px; right:5px; width:13em; height:25em;'
+            print ' font-size:9pt; background-color:#333333;'
+            print ' padding:5px;"><div>&nbsp;</div></div>'
             print '<br /><div></div>'
+
 
         def nav_link(direction, amount, text):
             x1 = int(form["x1"].value); x2 = int(form["x2"].value)
@@ -292,6 +299,12 @@ if __name__ == '__main__':
                                     'dorflevel', 'mauer', 'aktdatum']:
                                 list.append(str(dorf.entry[col]))
                             list = '|' + '|'.join(list)
+                            if armee.has(x,y):
+                                for entry in armee.get(x,y):
+                                    list += '|' + entry["allyfarbe"]
+                                    list += '|' + entry["name"]
+                                    list += '|' + str(entry["size"])
+                                    list += '|' + str(entry["strength"])
                             list = list.replace("'", "\\'")
                             row += list.replace('"', "&quot;")
                         row += '\')" onmouseout="delPos()"'
@@ -317,7 +330,7 @@ if __name__ == '__main__':
                         if armee.has(x,y):
                             for entry in armee.get(x,y):
                                 row += '<span style="background-color:'
-                                row += entry + '"></span>'
+                                row += entry["allyfarbe"] + '"></span>'
                         row += '</div>'
                     row += '</td>'
                     print row

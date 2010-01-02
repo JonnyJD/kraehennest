@@ -224,24 +224,24 @@ if __name__ == '__main__':
         print '<table style="z-index:2; position:fixed; top:70px; right:5px;">'
         if int(form["x2"].value) < 999:
             print '<tr><td></td><td></td>'
-            print '<td class="navi">' + nav_link('nord', 20, '&uArr;')
+            print '<td class="navi">' + nav_link('nord', 17, '&uArr;')
             print '</td></tr><tr><td></td><td></td>'
-            print '<td class="navi">' + nav_link('nord', 10, '&uarr;')
+            print '<td class="navi">' + nav_link('nord', 3, '&uarr;')
             print '</td></tr><tr>'
-            print '<td class="navi">' + nav_link('ost', 20, '&lArr;') + '</td>'
-            print '<td class="navi">' + nav_link('ost', 10, '&larr;') + '</td>'
+            print '<td class="navi">' + nav_link('ost', 24, '&lArr;') + '</td>'
+            print '<td class="navi">' + nav_link('ost', 4, '&larr;') + '</td>'
             print '<td>'
             if config.is_kraehe():
                 print '<a href="' + prefix + '/show/karte/kraehen">&bull;</a>'
             elif config.is_tw():
                 print '<a href="' + prefix + '/show/karte/osten">&bull;</a>'
             print '</td>'
-            print '<td class="navi">' + nav_link('west', 10, '&rarr;') + '</td>'
-            print '<td class="navi">' + nav_link('west', 20, '&rArr;') + '</td>'
+            print '<td class="navi">' + nav_link('west', 4, '&rarr;') + '</td>'
+            print '<td class="navi">' + nav_link('west', 24, '&rArr;') + '</td>'
             print '</tr><tr><td></td><td></td>'
-            print '<td class="navi">' + nav_link('sued', 10, '&darr;')
+            print '<td class="navi">' + nav_link('sued', 3, '&darr;')
             print '</td></tr><tr><td></td><td></td>'
-            print '<td class="navi">' + nav_link('sued', 20, '&dArr;')
+            print '<td class="navi">' + nav_link('sued', 17, '&dArr;')
         else:
             print '<tr><td class="navi" colspan="3">'
             if config.is_kraehe():

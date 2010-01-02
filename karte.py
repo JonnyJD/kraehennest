@@ -135,9 +135,10 @@ if __name__ == '__main__':
             elif form["size"].value == "tiny":
                 size = 5
                 fontsize = 0
+        if fontsize <= 8:
+            show_armeen = False
         if fontsize == 0:
             show_dorf = False
-            show_armeen = False
 
         print '<style type="text/css">'
         print 'td {'
@@ -171,18 +172,19 @@ if __name__ == '__main__':
         width = size * (terrain.xmax - terrain.xmin + 1)
 
         if config.is_kraehe():
-            # Dorfdetail
-            print '<div id="dorfdetail" style="z-index:2; position:fixed;'
-            print ' top:5px; left:38px; width:85em;'
-            print ' font-size:9pt; background-color:#333333;'
-            print ' padding:5px;"><div>&nbsp;</div></div>'
-            # Armeedetail
-            print '<div id="armeedetail" style="z-index:2; position:fixed;'
-            print ' top:400px; right:5px; width:13em; height:25em;'
-            print ' font-size:9pt; background-color:#333333;'
-            print ' padding:5px;"><div>&nbsp;</div></div>'
-            print '<br /><div></div>'
-
+            if show_dorf:
+                # Dorfdetail
+                print '<div id="dorfdetail" style="z-index:2; position:fixed;'
+                print ' top:5px; left:38px; width:85em;'
+                print ' font-size:9pt; background-color:#333333;'
+                print ' padding:5px;"><div>&nbsp;</div></div>'
+            if show_armeen:
+                # Armeedetail
+                print '<div id="armeedetail" style="z-index:2; position:fixed;'
+                print ' top:400px; right:5px; width:13em; height:25em;'
+                print ' font-size:9pt; background-color:#333333;'
+                print ' padding:5px;"><div>&nbsp;</div></div>'
+                print '<br /><div></div>'
 
         def nav_link(direction, amount, text):
             x1 = int(form["x1"].value); x2 = int(form["x2"].value)
@@ -299,7 +301,7 @@ if __name__ == '__main__':
                                     'dorflevel', 'mauer', 'aktdatum']:
                                 list.append(str(dorf.entry[col]))
                             list = '|' + '|'.join(list)
-                            if armee.has(x,y):
+                            if show_armeen and armee.has(x,y):
                                 for entry in armee.get(x,y):
                                     list += '|' + entry["allyfarbe"]
                                     list += '|' + entry["name"]

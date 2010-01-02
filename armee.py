@@ -218,6 +218,9 @@ class Armee(Feld):
         sql += ", ".join(sqllist)
         sql += " WHERE h_id = %s"
         args += entry["h_id"],
+        if not "update_self" in entry or not entry["update_self"]:
+            # versteckte Armeen updaten nur sich selbst
+            sql += " AND status <> '" + S_HIDDEN + "'"
         return self.try_execute_safe_secondary(sql, args)
 
 
@@ -244,8 +247,9 @@ class Armee(Feld):
                 if (new[i]["h_id"] == row[0]):
                     if self.__update(new[i]):
                         num_updated += 1
-                    else:
-                        print "Konnte", new[i]["name"], "nicht aktualisieren"
+                    # versteckte Armeen werden z.B. normal nicht aktualisiert
+                    #else:
+                    #    print "Konnte", new[i]["name"], "nicht aktualisieren"
                     del new[i]
                 else:
                     i += 1
@@ -444,8 +448,6 @@ class Armee(Feld):
             for armee in armeen:
 
                 entry = dict()
-                if sicht == "keine":
-                    entry["status"] = S_HIDDEN
                 if armee.hasProp("h_id"):
                     entry["h_id"] = armee.prop("h_id")
                 positions = armee.xpathEval('position')
@@ -464,6 +466,11 @@ class Armee(Feld):
                 if len(ritter_elems) > 0:
                     if ritter_elems[0].hasProp("r_id"):
                         entry["r_id"] = ritter_elems[0].prop("r_id")
+                        # muss dann die aktuelle eigene Armee sein
+                        entry["update_self"] = True
+                        if sicht == "keine":
+                            # nur sich selbst als versteckt markieren
+                            entry["status"] = S_HIDDEN
                     else:
                         entry["ritter"] = ritter_elems[0].getContent()
                 sizes = armee.xpathEval('size')

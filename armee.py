@@ -14,6 +14,12 @@ MAN     = True;         OPT   = False
 DBCOL   = True;         NO_DB = False
 INT     = True;         STR   = False
 
+# Armeestati
+S_SOLD = 'S'    # Taverne
+S_HIDDEN = 'H'  # versteckt
+S_QUEST = 'Q'   # Quest
+S_DEAD = 'D'    # tot
+
 class Armee(Feld):
     """Eine Klasse um Armeedaten ein- und auszulesen.
     
@@ -125,6 +131,8 @@ class Armee(Feld):
                 args += entry["level"], entry["x"], entry["y"]
             
             sql += "(" + " OR ".join(sqllist) + ") AND "
+            # versteckte Armeen nicht deaktivieren
+            sql += "status <> '" + S_HIDDEN + "' AND "
             # die hier anwesenden Armeen garnicht erst deaktivieren
             sqllist = []
             for entry in self.new_entries:
@@ -200,7 +208,10 @@ class Armee(Feld):
         sqllist.append("last_seen=NOW()")
         if "pos" in entry and entry["pos"] == "taverne":
             sqllist.append("active=0")
-            sqllist.append("status='S'")
+            sqllist.append("status='" + S_SOLD + "'")
+        elif "status" in entry and entry["status"] == S_HIDDEN:
+            sqllist.append("active=1")
+            sqllist.append("status='" + S_HIDDEN + "'")
         else:
             sqllist.append("active=1")
             sqllist.append("status=NULL")
@@ -261,7 +272,12 @@ class Armee(Feld):
                 sqlcols.append("active");
                 args += 0,
                 sqlcols.append("status");
-                args += "S",
+                args += S_SOLD,
+            elif "status" in entry and entry["status"] == S_HIDDEN:
+                sqlcols.append("active");
+                args += 1,
+                sqlcols.append("status");
+                args += S_HIDDEN,
             sql += ", ".join(sqlcols) + ") VALUES ("
             sql += ", ".join(["%s" for i in range(0,len(sqlcols))]) + ")"
             self.new_entries = []
@@ -428,6 +444,8 @@ class Armee(Feld):
             for armee in armeen:
 
                 entry = dict()
+                if sicht == "keine":
+                    entry["status"] = S_HIDDEN
                 if armee.hasProp("h_id"):
                     entry["h_id"] = armee.prop("h_id")
                 positions = armee.xpathEval('position')

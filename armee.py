@@ -220,7 +220,8 @@ class Armee(Feld):
         args += entry["h_id"],
         if not "update_self" in entry or not entry["update_self"]:
             # versteckte Armeen updaten nur sich selbst
-            sql += " AND status <> '" + S_HIDDEN + "'"
+            sql += " AND (status IS NULL OR status <> '" + S_HIDDEN + "')"
+        print "<br />", sql, "<br />"
         return self.try_execute_safe_secondary(sql, args)
 
 

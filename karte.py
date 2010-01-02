@@ -303,8 +303,14 @@ if __name__ == '__main__':
                                 for entry in armee.get(x,y):
                                     list += '|' + entry["allyfarbe"]
                                     list += '|' + entry["name"]
-                                    list += '|' + str(entry["size"])
-                                    list += '|' + str(entry["strength"])
+                                    if entry["size"] == None:
+                                        list += '|?'
+                                    else:
+                                        list += '|' + str(entry["size"])
+                                    if entry["strength"] == None:
+                                        list += '|?'
+                                    else:
+                                        list += '|' + str(entry["strength"])
                             list = list.replace("'", "\\'")
                             row += list.replace('"', "&quot;")
                         row += '\')" onmouseout="delPos()"'

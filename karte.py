@@ -38,10 +38,12 @@ def list_maps(prefix):
     print '<table style="width:100%">'
     print '<tr><td class="karten">'
     if config.is_kraehe():
-        print_area_link("kraehen", [],     "Kraehengebiet")
-        print '<a href="/karte">Karte mit Navigation</a>'
-        print '<br />'
-        print '<br />'
+        text = '<span style="font-weight:bold;">Kraehengebiet</span>'
+        print_area_link("kraehen", [], text)
+    elif config.is_tw():
+        text = '<span style="font-weight:bold;">Der Osten</span>'
+        print_area_link("osten", [], text)
+    print '<br />'
     print_area_link("", [1,2,3,4],      "komplett (Normalgroesse)")
     print_link("/clean",                "komplett (ohne Doerfer)")
     print_link("/small",                "komplett (kleine Felder)")
@@ -51,6 +53,10 @@ def list_maps(prefix):
     print '<br />'
     print_link("/neu", "aktuelle Doerfer (6 Monate)")
     print '</td><td class="karten">'
+    if config.is_tw():
+        text = '<span style="font-weight:bold;">Der Osten</span>'
+    else:
+        text = "Der Osten"
     print_area_link("osten", [1,2,3,4], "Der Osten")
     print_area_link("westen", [1,2,3],  "Der Westen")
     print_area_link("sueden", [1,2,3],  "Der Sueden")
@@ -117,7 +123,6 @@ if __name__ == '__main__':
         else:
             terrain.fetch_data(level)
 
-
         size = 32 
         fontsize = 9
         if "size" in form:
@@ -155,6 +160,12 @@ if __name__ == '__main__':
             print '    width: 0px;'
         print '}'
         print 'span.a60 { background-color:red; }'
+        print 'td.navi {'
+        if int(form["x2"].value) >= 999:
+            print '    background-color:#333333;'
+        print '    font-weight:bold;'
+        print '    font-size:12pt;'
+        print '}'
         print '</style>'
 
         width = size * (terrain.xmax - terrain.xmin + 1)
@@ -165,6 +176,85 @@ if __name__ == '__main__':
             print ' font-size:9pt; background-color:#333333;'
             print ' padding:5px;"><div>&nbsp;</div></div>'
             print '<br /><div></div>'
+
+        def nav_link(direction, amount, text):
+            x1 = int(form["x1"].value); x2 = int(form["x2"].value)
+            y1 = int(form["y1"].value); y2 = int(form["y2"].value)
+            if direction == "nord":
+                y1 -= amount; y2 = y1 + 21;
+            if direction == "sued":
+                y2 += amount; y1 = y2 - 21;
+            if direction == "ost":
+                x1 -= amount; x2 = x1 + 33;
+            if direction == "west":
+                x2 += amount; x1 = x2 - 33;
+            link = '<a href=' + prefix + '/show/karte/'
+            link += str(x1) + '.' + str(y1) + '-' + str(x2) + '.' + str(y2)
+            if level != 'N':
+                link += '/' + level
+            if "size" in form and form["size"].value != "normal":
+                link += '/' + form["size"].value
+            return link + '>' + text + '</a>'
+
+        def level_link(direction):
+            x1 = int(form["x1"].value); x2 = int(form["x2"].value)
+            y1 = int(form["y1"].value); y2 = int(form["y2"].value)
+            if ((direction == "hoch" and level != 'N')
+                    or (direction == "runter" and level != 'u5')):
+                link = '<a href=' + prefix + '/show/karte/'
+                link += str(x1) + '.' + str(y1) + '-' + str(x2) + '.' + str(y2)
+                if direction == "hoch":
+                    if level != "u1":
+                        new_level = 'u' + str(int(level[1])-1)
+                        link += '/' + new_level
+                    else:
+                        new_level = 'N'
+                if direction == "runter":
+                    if level == "N":
+                        new_level = 'u1'
+                    else:
+                        new_level = 'u' + str(int(level[1])+1)
+                    link += '/' + new_level
+                if "size" in form and form["size"].value != "normal":
+                    link += '/' + form["size"].value
+                return link + '>' + new_level + '</a>'
+            else:
+                return '&nbsp;'
+
+        print '<table style="z-index:2; position:fixed; top:70px; right:5px;">'
+        if int(form["x2"].value) < 999:
+            print '<tr><td></td><td></td>'
+            print '<td class="navi">' + nav_link('nord', 20, '&uArr;')
+            print '</td></tr><tr><td></td><td></td>'
+            print '<td class="navi">' + nav_link('nord', 10, '&uarr;')
+            print '</td></tr><tr>'
+            print '<td class="navi">' + nav_link('ost', 20, '&lArr;') + '</td>'
+            print '<td class="navi">' + nav_link('ost', 10, '&larr;') + '</td>'
+            print '<td>'
+            if config.is_kraehe():
+                print '<a href="' + prefix + '/show/karte/kraehen">&bull;</a>'
+            elif config.is_tw():
+                print '<a href="' + prefix + '/show/karte/osten">&bull;</a>'
+            print '</td>'
+            print '<td class="navi">' + nav_link('west', 10, '&rarr;') + '</td>'
+            print '<td class="navi">' + nav_link('west', 20, '&rArr;') + '</td>'
+            print '</tr><tr><td></td><td></td>'
+            print '<td class="navi">' + nav_link('sued', 10, '&darr;')
+            print '</td></tr><tr><td></td><td></td>'
+            print '<td class="navi">' + nav_link('sued', 20, '&dArr;')
+        else:
+            print '<tr><td class="navi" colspan="3">'
+            if config.is_kraehe():
+                print '<a href="' + prefix + '/show/karte/kraehen">HOME</a>'
+            elif config.is_tw():
+                print '<a href="' + prefix + '/show/karte/osten">HOME</a>'
+        print '</td></tr><tr><td>&nbsp;</td></tr>'
+        print '<tr><td></td><td></td><td class="navi">' + level_link("hoch")
+        print '</td></tr>'
+        print '<tr><td></td><td></td><td class="navi">' + level + '</td></tr>'
+        print '<tr><td></td><td></td><td class="navi">' + level_link("runter")
+        print '</td></tr>'
+        print '</table>'
 
         print '<table width="' + str(width),
         print '" cellspacing="0" cellpadding="0">'

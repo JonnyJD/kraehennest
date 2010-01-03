@@ -29,6 +29,7 @@ if config.is_kraehe():
     print '<h2>&Uuml;bersichtsseiten</h2>'
     print '<a href="' + ausgabe.prefix + '/show/allianzen">Allianzen</a>'
     print '<br /><a href="' + ausgabe.prefix + '/show/reiche">Reiche</a>'
+    print '<br /><a href="' + ausgabe.prefix + '/show/doerfer">D&ouml;rfer</a>'
     print '<br /><a href="' + ausgabe.prefix + '/show/armeen">Armeen</a>'
     print '</div>'
 # Adminbereich

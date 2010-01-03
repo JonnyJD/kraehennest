@@ -3,7 +3,6 @@
 #import cgitb
 #cgitb.enable()
 
-import cgi
 import rbdb
 import util
 import re
@@ -158,6 +157,8 @@ class Dorf(Feld):
         sql += " JOIN allis ON ritter.alli = allis.allinr"
         if a_id != -1:
             sql += " WHERE allinr = %s"
+        else:
+            sql += " WHERE dorf.ritternr <> 0"
         sql += " ORDER BY aktdatum DESC, allicolor, rittername, koords"
         try:
             if a_id != -1:
@@ -171,6 +172,31 @@ class Dorf(Feld):
         except rbdb.Error, e:
             util.print_html_error(e)
             return False
+
+
+# Aufruf als Skript
+if __name__ == '__main__':
+    print 'Content-type: text/html; charset=utf-8\n'
+    print '<html><head>'
+    print '<link rel="stylesheet" type="text/css" href="../stylesheet">'
+    import cgi
+
+
+    form = cgi.FieldStorage()
+
+    if "list" in form:
+        print '<title>Dorfliste</title>'
+        print '</head>'
+        print '<body>'
+
+        dorf = Dorf()
+        dorftabelle = dorf.list_all()
+        print "Anzahl D&ouml;rfer:", dorftabelle.length()
+        dorftabelle.show()
+    else:
+        print "leer"
+
+    print'</body></html>'
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

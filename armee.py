@@ -548,6 +548,8 @@ class Armee(Feld):
         else:
             print 'Es wurden keine Armeedaten gesendet.', "<br />"
 
+
+# Aufruf als Skript
 if __name__ == '__main__':
     print 'Content-type: text/html; charset=utf-8\n'
     print '<html><head>'
@@ -556,7 +558,6 @@ if __name__ == '__main__':
 
 
     form = cgi.FieldStorage()
-    root = None
 
     if "list" in form:
         print '<title>Armeeliste</title>'

@@ -24,6 +24,10 @@ class Reich:
     """Eine Klasse um Reichsdaten ein- und auszulesen.
     """
 
+    def get_name(self, r_id):
+        sql = "SELECT rittername FROM ritter WHERE ritternr = %s"
+        return util.get_sql_row(sql, r_id)[0]
+
     def list(self):
         return self.list_by_allianz(-1)
 
@@ -132,7 +136,9 @@ if __name__ == '__main__':
         from dorf import Dorf
 
         r_id = form["id"].value
-        ausgabe.print_header('Reich ' + str(r_id))
+        reich = Reich()
+        name = reich.get_name(r_id)
+        ausgabe.print_header('Reich: ' + name)
 
         print '<table>'
         dorf = Dorf()

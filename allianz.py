@@ -12,6 +12,10 @@ class Allianz:
     """Eine Klasse um Allianzdaten ein- und auszulesen.
     """
 
+    def get_name(self, a_id):
+        sql = "SELECT alliname FROM allis WHERE allinr = %s"
+        return util.get_sql_row(sql, a_id)[0]
+
     def list(self):
         tabelle = ausgabe.Tabelle()
         tabelle.addColumn("a_id")
@@ -56,13 +60,15 @@ if __name__ == '__main__':
         from armee import Armee
 
         a_id = form["id"].value
+        allianz = Allianz()
+        name = allianz.get_name(a_id)
 
-        ausgabe.print_header("Allianz " + a_id)
+        ausgabe.print_header("Allianz: " + name)
 
         print '<table>'
         reich = Reich()
         reichtabelle = reich.list_by_allianz(a_id)
-        print '<tr><td><a href="#reiche">Reiche</a></td>'
+        print '<tr><td><a href="#reiche">Mitglieder</a></td>'
         print '<td>' + str(reichtabelle.length()) + '</td></tr>'
         dorf = Dorf()
         dorftabelle = dorf.list_by_allianz(a_id)

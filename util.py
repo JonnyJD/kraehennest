@@ -27,6 +27,13 @@ def try_executemany_safe(cursor, sql, arglist):
         print_html_error(e)
         return 0
 
+def get_sql_row(sql, args):
+    conn = rbdb.connect()
+    cursor = conn.cursor()
+    try_execute_safe(cursor, sql, args)
+    return cursor.fetchone()
+    conn.close()
+
 def print_xml(xml_node):
     print xml_node.serialize().replace("<","&lt;").replace(">","&gt;"), "<br />"
 
@@ -40,13 +47,10 @@ def update_usage(r_id, version):
         # last_seen=now() forces the update even if nothing changed
         upd_sql = "UPDATE versionen SET version=%s,"
         upd_sql += " last_seen=NOW() WHERE r_id=%s"
-        try:
-            if try_execute_safe(cursor, sel_sql, (r_id,))  == 0:
-                try_execute_safe(cursor, ins_sql, (r_id, version))
-            else:
-                try_execute_safe(cursor, upd_sql, (version, r_id))
-        except rbdb.Error, e:
-            print_html_error(e)
+        if try_execute_safe(cursor, sel_sql, (r_id,))  == 0:
+            try_execute_safe(cursor, ins_sql, (r_id, version))
+        else:
+            try_execute_safe(cursor, upd_sql, (version, r_id))
         conn.close()
 
 def track_client_version(form):

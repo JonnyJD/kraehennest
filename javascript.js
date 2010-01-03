@@ -32,7 +32,7 @@ function showPos(liste) {
 	}
 	document.getElementById("dorfdetail").innerHTML = descRow;
 	if (liste.length > 7) {
-		descRow = '<table>';
+		descRow = '<table class="detail">';
 		for (i=7; i < liste.length; i+=4) {
 			descRow += '<tr><td style="text-align:left;' +
 			       	' color:' + liste[i] + '">' +

@@ -1,6 +1,10 @@
 """Einige Klassen und Funktionen zur HTML-Ausgabe"""
 
+import re
+import os
 from types import *
+
+prefix = re.match("(.*)/show", os.environ['SCRIPT_URL']).group(1)
 
 class Tabelle:
     """Eine HTML-Tabelle"""

@@ -379,13 +379,16 @@ class Armee(Feld):
                     line.append(col)
                 elif cols[i] in ["ruf", "max_bp", "max_ap"]:
                     line.append("/")
-                    # damit es left aligned wird
-                    line.append(str(armee[i]))
+                    if armee[i] is not None:
+                        # to_str damit es left aligned wird
+                        line.append(str(armee[i]))
+                    else:
+                        line.append(armee[i])
                 elif cols[i] == "status":
                     if armee[i] == S_HIDDEN:
                         line.append("versteckt")
                     else:
-                        line.append("-")
+                        line.append("")
                 elif cols[i-1] not in ["ritternr", "allicolor"]:
                     line.append(armee[i])
             tabelle.addLine(line)

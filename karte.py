@@ -4,18 +4,11 @@
 #cgitb.enable()
 
 import config
-import cgi
-import os
-import re
-from terrain import Terrain
-from dorf import Dorf
-from armee import Armee
+import ausgabe
 
-
-prefix = re.match("(.*)/show", os.environ['SCRIPT_URL']).group(1)
 
 def print_link(link, name):
-    url = prefix + "/show/karte" + link
+    url = ausgabe.prefix + "/show/karte" + link
     print '<a href="' + url + '">' + name + '</a><br />'
 
 def print_area_link(area, levels, name):
@@ -28,7 +21,7 @@ def print_area_link(area, levels, name):
         print_link(link, new_name)
     print "<br />"
 
-def list_maps(prefix):
+def list_maps():
     print '<style type="text/css">'
     print 'td.karten { width:34%; }'
     print '</style>'
@@ -70,6 +63,11 @@ def list_maps(prefix):
 
 # Aufruf direkt: Karten anzeigen
 if __name__ == '__main__':
+    import cgi
+    from terrain import Terrain
+    from dorf import Dorf
+    from armee import Armee
+
     form = cgi.FieldStorage()
 
     if "list" in form:
@@ -87,7 +85,7 @@ if __name__ == '__main__':
 
     if "list" in form:
         print '<h1>' + title + '</h1>'
-        list_maps(prefix)
+        list_maps()
     else:
         # Zeige eine Karte
 
@@ -197,7 +195,7 @@ if __name__ == '__main__':
                 x1 -= amount; x2 = x1 + 33;
             if direction == "west":
                 x2 += amount; x1 = x2 - 33;
-            link = '<a href=' + prefix + '/show/karte/'
+            link = '<a href=' + ausgabe.prefix + '/show/karte/'
             link += str(x1) + '.' + str(y1) + '-' + str(x2) + '.' + str(y2)
             if level != 'N':
                 link += '/' + level
@@ -210,7 +208,7 @@ if __name__ == '__main__':
             y1 = int(form["y1"].value); y2 = int(form["y2"].value)
             if ((direction == "hoch" and level != 'N')
                     or (direction == "runter" and level != 'u5')):
-                link = '<a href=' + prefix + '/show/karte/'
+                link = '<a href=' + ausgabe.prefix + '/show/karte/'
                 link += str(x1) + '.' + str(y1) + '-' + str(x2) + '.' + str(y2)
                 if direction == "hoch":
                     if level != "u1":
@@ -243,9 +241,10 @@ if __name__ == '__main__':
             print '<td class="navi">' + nav_link('ost', 4, '&larr;') + '</td>'
             print '<td>'
             if config.is_kraehe():
-                print '<a href="' + prefix + '/show/karte/kraehen">&bull;</a>'
+                print '<a href="' + ausgabe.prefix + '/show/karte/kraehen">'
             elif config.is_tw():
-                print '<a href="' + prefix + '/show/karte/osten">&bull;</a>'
+                print '<a href="' + ausgabe.prefix + '/show/karte/osten">'
+            print '&bull;</a>'
             print '</td>'
             print '<td class="navi">' + nav_link('west', 4, '&rarr;') + '</td>'
             print '<td class="navi">' + nav_link('west', 24, '&rArr;') + '</td>'
@@ -256,9 +255,10 @@ if __name__ == '__main__':
         else:
             print '<tr><td class="navi" colspan="3">'
             if config.is_kraehe():
-                print '<a href="' + prefix + '/show/karte/kraehen">HOME</a>'
+                print '<a href="' + ausgabe.prefix + '/show/karte/kraehen">'
             elif config.is_tw():
-                print '<a href="' + prefix + '/show/karte/osten">HOME</a>'
+                print '<a href="' + ausgabe.prefix + '/show/karte/osten">'
+            print 'HOME</a>'
         print '</td></tr><tr><td>&nbsp;</td></tr>'
         # Level
         print '<tr><td></td><td></td><td class="navi">' + level_link("hoch")
@@ -273,9 +273,10 @@ if __name__ == '__main__':
             print '<div style="z-index:2; position:fixed;'
             print ' bottom:70px; right:70px;" class="navi">'
             if config.is_kraehe():
-                print '<a href="' + prefix + '/show">Index</a></div>'
+                print '<a href="' + ausgabe.prefix + '/show">'
             else:
-                print '<a href="' + prefix + '/show/karten">Index</a></div>'
+                print '<a href="' + ausgabe.prefix + '/show/karten">'
+            print 'Index</a></div>'
 
         print '<table width="' + str(width),
         print '" cellspacing="0" cellpadding="0">'
@@ -317,6 +318,9 @@ if __name__ == '__main__':
                             row += list.replace('"', "&quot;")
                         row += '\')" onmouseout="delPos()"'
                     row += '>'
+                    if config.is_kraehe() and armee.has(x,y):
+                        row += '<a href="' + ausgabe.prefix + '/show/feld/'
+                        row += str(x) + '.' + str(y) + '/' + level + '">'
                     if show_dorf and dorf.has(x,y):
                         dorf.get(x,y)
                         row += '<div style="color:'
@@ -340,6 +344,8 @@ if __name__ == '__main__':
                                 row += '<span style="background-color:'
                                 row += entry["allyfarbe"] + '"></span>'
                         row += '</div>'
+                    if config.is_kraehe() and armee.has(x,y):
+                        row += '</a>'
                     row += '</td>'
                     print row
                 else:

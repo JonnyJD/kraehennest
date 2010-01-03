@@ -8,7 +8,7 @@ import util
 import re
 from feld import Feld
 from reich import get_ritter_id_form
-from ausgabe import Tabelle
+import ausgabe
 
 MAN     = True;         OPT   = False
 DBCOL   = True;         NO_DB = False
@@ -353,7 +353,7 @@ class Armee(Feld):
             return False
 
     def __list(self, cols, armeen):
-        tabelle = Tabelle()
+        tabelle = ausgabe.Tabelle()
         for col in cols:
             if col != "ritternr":
                 tabelle.addColumn(col)
@@ -362,7 +362,8 @@ class Armee(Feld):
             for i in range(0, len(armee)):
                 if cols[i] == "ritternr":
                     # nachfolgenden Ritternamen verlinken
-                    col = '<a href="reich/' + str(armee[i]) + '"'
+                    col = '<a href="' + ausgabe.prefix + '/show/reich/'
+                    col += str(armee[i]) + '"'
                     if armee[i] == 174: # Keiner
                         col += ' style="color:green"'
                     if armee[i] == 113: # Plunkett
@@ -373,6 +374,26 @@ class Armee(Feld):
                     line.append(armee[i])
             tabelle.addLine(line)
         return tabelle
+
+    def list_by_feld(self, level, x, y):
+        """Holt alle Armeen auf einem Feld"""
+
+        cols = ["ritternr", "rittername", "name", "last_seen"]
+        cols += ["size", "strength", "bp", "ap", "schiffstyp"]
+        sql = "SELECT " + ", ".join(cols)
+        sql += " FROM armeen"
+        sql += " JOIN ritter ON armeen.r_id = ritternr"
+        sql += " WHERE level = %s AND x = %s AND y = %s"
+        sql += " AND active = 1"
+        sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
+        sql += " ORDER BY last_seen DESC"
+        try:
+            self.cursor.execute(sql, (level, x, y))
+            armeen = self.cursor.fetchall()
+            return self.__list(cols, armeen)
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return False
 
     def list_by_reich(self, r_id):
         """Holt alle Armeen eines Reiches mit r_id"""
@@ -532,8 +553,6 @@ if __name__ == '__main__':
     root = None
 
     if "list" in form:
-        from armee import Armee
-
         print '<title>Armeeliste</title>'
         print '</head>'
         print '<body>'

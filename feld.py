@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+#import cgitb
+#cgitb.enable()
+
 import rbdb
 import util
 
@@ -137,6 +140,40 @@ class Feld:
     def get(self, x, y):
         self.entry = self.entries[x,y]
         return self.entry
+
+
+# Aufruf als Skript: Felddetails
+if __name__ == '__main__':
+
+    import cgi
+    from armee import Armee
+
+    print 'Content-type: text/html; charset=utf-8\n'
+    print '<html><head>'
+    print '<link rel="stylesheet" type="text/css" href="../stylesheet">'
+
+    form = cgi.FieldStorage()
+
+    if "level" in form:
+        level = form["level"].value
+    else:
+        level = "N"
+    x = form["x"].value
+    y = form["y"].value
+
+    if level != "N":
+        print '<title>Feld', level + ": " + x + ", " + y + '</title>'
+    else:
+        print '<title>Feld', x + ", " + y + '</title>'
+    print '</head>'
+    print '<body>'
+
+    armee = Armee()
+    armeetabelle = armee.list_by_feld(level, x, y)
+    print "Anzahl Armeen:", armeetabelle.length()
+    armeetabelle.show()
+
+    print '</body></html>'
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

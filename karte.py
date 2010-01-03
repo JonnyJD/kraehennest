@@ -320,7 +320,10 @@ if __name__ == '__main__':
                     row += '>'
                     if config.is_kraehe() and armee.has(x,y):
                         row += '<a href="' + ausgabe.prefix + '/show/feld/'
-                        row += str(x) + '.' + str(y) + '/' + level + '">'
+                        row += str(x) + '.' + str(y)
+                        if level != "N":
+                            row += '/' + level
+                        row += '" target="_blank">'
                     if show_dorf and dorf.has(x,y):
                         dorf.get(x,y)
                         row += '<div style="color:'

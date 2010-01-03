@@ -6,6 +6,21 @@ from types import *
 
 prefix = re.match("(.*)/(show|send)", os.environ['SCRIPT_URL']).group(1)
 
+def print_header(title, styles=None):
+    print 'Content-type: text/html; charset=utf-8\n'
+    print '<html>'
+    print '<head>'
+    print '<title>' + title + '</title>'
+    print '<link rel="stylesheet" type="text/css" href="/show/stylesheet">'
+    if styles:
+        print styles
+    print '</head>\n'
+    print '<body>'
+    print '<h1>' + title + '</h1>'
+
+def print_footer():
+    print '</body></html>'
+
 class Tabelle:
     """Eine HTML-Tabelle"""
 

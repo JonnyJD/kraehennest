@@ -7,19 +7,7 @@ import config
 import karte
 import ausgabe
 
-title = "Kr&auml;hennest"
-print 'Content-type: text/html; charset=utf-8\n'
-print '<html><head>'
-print '<title>' + title + '</title>'
-print '<link rel="stylesheet" type="text/css" href="stylesheet">'
-print '</head>'
-print '<body>'
-
-print '<style type="text/css">'
-print 'td.karten { width:34%; }'
-print '</style>'
-
-print '<h1>' + title + '</h1>'
+ausgabe.print_header("Kr&auml;hennest")
 
 print '<p>eingeloggter Benutzer: ' + config.get_username() + '</p>'
 
@@ -42,6 +30,6 @@ if config.is_admin():
     print '</div>'
 karte.list_maps()
 
-print "</body></html>"
+ausgabe.print_footer()
 
 # vim:set shiftwidth=4 expandtab smarttab:

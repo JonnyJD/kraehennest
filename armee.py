@@ -567,18 +567,11 @@ class Armee(Feld):
 
 # Aufruf als Skript
 if __name__ == '__main__':
-    print 'Content-type: text/html; charset=utf-8\n'
-    print '<html><head>'
-    print '<link rel="stylesheet" type="text/css" href="../stylesheet">'
     import cgi
-
-
     form = cgi.FieldStorage()
 
     if "list" in form:
-        print '<title>Armeeliste</title>'
-        print '</head>'
-        print '<body>'
+        ausgabe.print_header("Armeeliste")
 
         armee = Armee()
         armeetabelle = armee.list_all()
@@ -587,7 +580,7 @@ if __name__ == '__main__':
     else:
         print "leer"
 
-    print'</body></html>'
+    ausgabe.print_footer()
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

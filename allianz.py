@@ -43,16 +43,10 @@ class Allianz:
 
 # Aufruf als Skript
 if __name__ == '__main__':
-    print 'Content-type: text/html; charset=utf-8\n'
-    print '<html><head>'
-    print '<link rel="stylesheet" type="text/css" href="../stylesheet">'
-
     form = cgi.FieldStorage()
 
     if "list" in form:
-        print '<title>Allianzliste</title>'
-        print '</head>'
-        print '<body>'
+        ausgabe.print_header("Allianzliste")
 
         allianz = Allianz()
         allianz.list()
@@ -63,9 +57,7 @@ if __name__ == '__main__':
 
         a_id = form["id"].value
 
-        print '<title>Allianz ' + a_id + '</title>'
-        print '</head>'
-        print '<body>'
+        ausgabe.print_header("Allianz " + a_id)
 
         print '<table>'
         reich = Reich()
@@ -89,7 +81,7 @@ if __name__ == '__main__':
         print '<h2 id="armeen">Armeen</h2>'
         armeetabelle.show()
 
-    print '</body></html>'
+    ausgabe.print_footer()
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

@@ -44,19 +44,13 @@ def list_versions():
 
 # Aufruf als Skript: Reich eintragen
 if __name__ == '__main__':
-    print 'Content-type: text/html; charset=utf-8\n'
-    print '<html><head>'
-    print '<link rel="stylesheet" type="text/css" href="../stylesheet">'
-
     form = cgi.FieldStorage()
 
     if "list" in form:
         if form["list"].value == "versionen":
-            print '<title>Versionsliste</title>'
-            print '</head>'
-            print '<body>'
+            ausgabe.print_header("Versionsliste")
             list_versions()
-            print '</body></html>'
+            ausgabe.print_footer()
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

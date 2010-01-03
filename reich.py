@@ -116,17 +116,11 @@ class Reich:
 
 # Aufruf als Skript: Reich eintragen
 if __name__ == '__main__':
-    print 'Content-type: text/html; charset=utf-8\n'
-    print '<html><head>'
-    print '<link rel="stylesheet" type="text/css" href="../stylesheet">'
-
     form = cgi.FieldStorage()
     root = None
 
     if "list" in form:
-        print '<title>Reichsliste</title>'
-        print '</head>'
-        print '<body>'
+        ausgabe.print_header("Reichsliste")
 
         reich = Reich()
         reichtabelle = reich.list()
@@ -138,10 +132,7 @@ if __name__ == '__main__':
         from dorf import Dorf
 
         r_id = form["id"].value
-
-        print '<title>Reich ' + r_id + '</title>'
-        print '</head>'
-        print '<body>'
+        ausgabe.print_header('Reich ' + str(r_id))
 
         print '<table>'
         dorf = Dorf()
@@ -169,7 +160,7 @@ if __name__ == '__main__':
             reich = Reich()
             reich.process_xml(root)
 
-    print '</body></html>'
+    ausgabe.print_footer()
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

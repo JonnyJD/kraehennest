@@ -144,14 +144,10 @@ class Feld:
 
 # Aufruf als Skript: Felddetails
 if __name__ == '__main__':
-
     import cgi
     from armee import Armee
     from dorf import Dorf
-
-    print 'Content-type: text/html; charset=utf-8\n'
-    print '<html><head>'
-    print '<link rel="stylesheet" type="text/css" href="../stylesheet">'
+    import ausgabe
 
     form = cgi.FieldStorage()
 
@@ -163,11 +159,10 @@ if __name__ == '__main__':
     y = form["y"].value
 
     if level != "N":
-        print '<title>Feld', level + ": " + x + ", " + y + '</title>'
+        title = "Feld " + level + ": " + x + ", " + y
     else:
-        print '<title>Feld', x + ", " + y + '</title>'
-    print '</head>'
-    print '<body>'
+        title = "Feld " + x + ", " + y
+    ausgabe.print_header(title)
 
     if level == "N":
         print "<h2>Dorf</h2>"
@@ -183,7 +178,7 @@ if __name__ == '__main__':
     print "Anzahl Armeen:", armeetabelle.length()
     armeetabelle.show()
 
-    print '</body></html>'
+    ausgabe.print_footer()
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

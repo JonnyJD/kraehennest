@@ -355,7 +355,7 @@ class Armee(Feld):
     def __list(self, cols, armeen):
         tabelle = ausgabe.Tabelle()
         for col in cols:
-            if col != "ritternr":
+            if col not in ["ritternr", "allicolor"]:
                 tabelle.addColumn(col)
         for armee in armeen:
             line = []
@@ -364,13 +364,16 @@ class Armee(Feld):
                     # nachfolgenden Ritternamen verlinken
                     col = '<a href="' + ausgabe.prefix + '/show/reich/'
                     col += str(armee[i]) + '"'
-                    if armee[i] == 174: # Keiner
-                        col += ' style="color:green"'
-                    if armee[i] == 113: # Plunkett
-                        col += ' style="color:red"'
-                    col += '>' + armee[i+1] + '</a>'
+                    if cols[i+1] == "allicolor":
+                        if armee[i] == 174: # Keiner
+                            col += ' style="color:green"'
+                        else:
+                            col += ' style="color:' + armee[i+1] + '"'
+                        col += '>' + armee[i+2] + '</a>'
+                    else:
+                        col += '>' + armee[i+1] + '</a>'
                     line.append(col)
-                elif cols[i-1] != "ritternr":
+                elif cols[i-1] not in ["ritternr", "allicolor"]:
                     line.append(armee[i])
             tabelle.addLine(line)
         return tabelle
@@ -421,8 +424,8 @@ class Armee(Feld):
     def list_by_allianz(self, a_id):
         """Holt alle Armeen eines Allianz mit a_id"""
 
-        cols = ["level", "x", "y", "ritternr", "rittername", "name"]
-        cols += ["last_seen"]
+        cols = ["level", "x", "y", "ritternr", "allicolor", "rittername"]
+        cols += ["name", "last_seen"]
         cols += ["size", "strength", "bp", "ap", "schiffstyp"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"

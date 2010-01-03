@@ -30,7 +30,7 @@ class Reich:
         tabelle.addColumn("Top10")
         tabelle.addColumn("Name")
         tabelle.addColumn("Allianz")
-        sql = "SELECT ritternr, top10, rittername, alliname"
+        sql = "SELECT ritternr, top10, rittername, allicolor, alliname"
         sql += " FROM ritter"
         sql += " JOIN allis ON ritter.alli = allis.allinr"
         sql += " WHERE top10 > 0"
@@ -47,7 +47,9 @@ class Reich:
                 zelle = '<a href="reich/' + str(row[0]) + '">'
                 zelle += str(row[2]) + '</a>'
                 line.append(zelle)
-                line.append(row[3])
+                zelle = '<div style="color:' + row[3] + ';">'
+                zelle += row[4] + '</div>'
+                line.append(zelle)
                 tabelle.addLine(line)
                 row = cursor.fetchone()
             print "Es sind", tabelle.length(), "Reiche in der Datenbank"

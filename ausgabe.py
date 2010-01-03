@@ -38,21 +38,24 @@ class Tabelle:
         return len(self.__lines)
 
     def show(self):
-        print '<table class="Tabelle">'
-        print '<tr>'
-        for col in self.__columns:
-            print '<th>' + col + '</th>'
-        print '</tr>'
-        for line in self.__lines:
+        if self.length() > 0:
+            print '<table class="Tabelle">'
             print '<tr>'
-            for col in line:
-                if col is None:
-                    col = ""
-                if type(col) in [IntType, LongType]:
-                    print '<td align="right">' + str(col) + '</td>'
-                else:
-                    print '<td>' + str(col) + '</td>'
+            for col in self.__columns:
+                print '<th>' + col + '</th>'
             print '</tr>'
-        print '</table>'
+            for line in self.__lines:
+                print '<tr>'
+                for col in line:
+                    if col is None:
+                        col = ""
+                    if type(col) in [IntType, LongType]:
+                        print '<td align="right">' + str(col) + '</td>'
+                    else:
+                        print '<td>' + str(col) + '</td>'
+                print '</tr>'
+            print '</table>'
+        else:
+            print '(keine)'
 
 # vim:set shiftwidth=4 expandtab smarttab:

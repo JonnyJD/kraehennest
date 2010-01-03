@@ -36,15 +36,25 @@ class Reich:
         tabelle.addColumn("r_id")
         tabelle.addColumn("Top10")
         tabelle.addColumn("Name")
+        tabelle.addColumn("D&ouml;rfer")
+        tabelle.addColumn("Armeen")
         if a_id == -1:
             tabelle.addColumn("Allianz")
-        sql = "SELECT ritternr, top10, rittername, allinr, allicolor, alliname"
+        sql = "SELECT ritter.ritternr, top10, rittername"
+        sql += ", allinr, allicolor, alliname"
+        sql += ", count(distinct dorf.koords)"
+        sql += ", count(distinct h_id)"
         sql += " FROM ritter"
         sql += " JOIN allis ON ritter.alli = allis.allinr"
+        sql += " LEFT JOIN dorf ON ritter.ritternr = dorf.ritternr"
+        sql += " LEFT JOIN armeen ON ritter.ritternr = r_id"
         sql += " WHERE (top10 > 0"
-        sql += " OR ritternr IN (1,2,113,143,160,172,174,88,159,174,1152))"
+        sql += " OR ritter.ritternr"
+        sql += " IN (0,1,2,113,143,160,172,174,88,159,174,1152))"
         if a_id != -1:
             sql += " AND allinr =%s "
+        sql += " GROUP BY ritter.ritternr, top10, rittername"
+        sql += ", allinr, allicolor, alliname"
         sql += " ORDER BY rittername"
         try:
             conn = rbdb.connect()
@@ -67,6 +77,8 @@ class Reich:
                     zelle += '<div style="color:' + row[4] + ';">'
                     zelle += row[5] + '</div></a>'
                     line.append(zelle)
+                line.append(row[6])
+                line.append(row[7])
                 tabelle.addLine(line)
                 row = cursor.fetchone()
             return tabelle

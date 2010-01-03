@@ -21,8 +21,18 @@ class Allianz:
         tabelle.addColumn("a_id")
         tabelle.addColumn("Name")
         tabelle.addColumn("Tag")
-        sql = "SELECT allinr, allicolor, alliname, alli"
+        tabelle.addColumn("Mitglieder")
+        tabelle.addColumn("D&ouml;rfer")
+        tabelle.addColumn("Armeen")
+        sql = "SELECT allinr, allicolor, alliname, allis.alli"
+        sql += ", count(distinct ritter.ritternr)"
+        sql += ", count(distinct dorf.koords)"
+        sql += ", count(distinct h_id)"
         sql += " FROM allis"
+        sql += " LEFT JOIN ritter ON allinr = ritter.alli"
+        sql += " LEFT JOIN dorf ON ritter.ritternr = dorf.ritternr"
+        sql += " LEFT JOIN armeen ON ritter.ritternr = r_id"
+        sql += " GROUP BY allinr, allicolor, alliname, allis.alli"
         sql += " ORDER BY alliname"
         try:
             conn = rbdb.connect()
@@ -35,7 +45,8 @@ class Allianz:
                 zelle += '<div style="color:' + row[1] + ';">'
                 zelle += row[2] + '</div></a>'
                 line.append(zelle)
-                line.append(row[3])
+                for i in range(3,7):
+                    line.append(row[i])
                 tabelle.addLine(line)
                 row = cursor.fetchone()
             print "Es sind", tabelle.length(), "Allianzen in der Datenbank"

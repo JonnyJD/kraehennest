@@ -390,7 +390,7 @@ class Armee(Feld):
         sql += " WHERE level = %s AND x = %s AND y = %s"
         sql += " AND active = 1"
         sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
-        sql += " ORDER BY last_seen DESC"
+        sql += " ORDER BY allicolor, rittername, name"
         try:
             self.cursor.execute(sql, (level, x, y))
             armeen = self.cursor.fetchall()

@@ -78,7 +78,10 @@ class Dorf(Feld):
         for dorf in doerfer:
             line = []
             for i in range(0, len(dorf)):
-                if cols[i] == "ritternr":
+                if cols[i] == "koords":
+                    line.append(dorf[i][0:3])
+                    line.append(dorf[i][4:7])
+                elif cols[i] == "ritternr":
                     # nachfolgenden Ritternamen verlinken
                     col = '<a href="' + ausgabe.prefix + '/show/reich/'
                     col += str(dorf[i]) + '"'
@@ -91,9 +94,11 @@ class Dorf(Feld):
                     else:
                         col += '>' + dorf[i+1] + '</a>'
                     line.append(col)
-                elif cols[i] == "koords":
-                    line.append(dorf[i][0:3])
-                    line.append(dorf[i][4:7])
+                elif cols[i] == "mauer":
+                    mauer_string = {'o': "ohne", 'k': "kleine", 'm': "mittlere",
+                            'g': "gro&szlig;e", 'u': "un&uuml;berwindbar",
+                            'n': "?"}
+                    line.append(mauer_string[dorf[i]])
                 elif cols[i-1] not in ["ritternr", "allicolor"]:
                     line.append(dorf[i])
             tabelle.addLine(line)
@@ -113,6 +118,7 @@ class Dorf(Feld):
             self.cursor.execute(sql, x + ',' + y)
             armeen = self.cursor.fetchall()
             cols[0] = "ritternr" # war dorf.ritternr
+            cols[5] = "level" # war dorflevel
             return self.__list(cols, armeen)
         except rbdb.Error, e:
             util.print_html_error(e)
@@ -130,6 +136,7 @@ class Dorf(Feld):
         try:
             self.cursor.execute(sql, r_id)
             armeen = self.cursor.fetchall()
+            cols[3] = "level" # war dorflevel
             return self.__list(cols, armeen)
         except rbdb.Error, e:
             util.print_html_error(e)
@@ -159,6 +166,7 @@ class Dorf(Feld):
                 self.cursor.execute(sql)
             armeen = self.cursor.fetchall()
             cols[1] = "ritternr" # war dorf.ritternr
+            cols[5] = "level" # war dorflevel
             return self.__list(cols, armeen)
         except rbdb.Error, e:
             util.print_html_error(e)

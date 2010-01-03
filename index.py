@@ -27,7 +27,8 @@ print '<p>eingeloggter Benutzer: ' + config.get_username() + '</p>'
 if config.is_kraehe():
     print '<div class="box">'
     print '<h2>&Uuml;bersichtsseiten</h2>'
-    print '<a href="' + ausgabe.prefix + '/show/reiche">Reiche</a>'
+    print '<a href="' + ausgabe.prefix + '/show/allianzen">Allianzen</a>'
+    print '<br /><a href="' + ausgabe.prefix + '/show/reiche">Reiche</a>'
     print '<br /><a href="' + ausgabe.prefix + '/show/armeen">Armeen</a>'
     print '</div>'
 # Adminbereich

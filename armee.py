@@ -410,7 +410,7 @@ class Armee(Feld):
         sql += " WHERE r_id = %s"
         sql += " AND active = 1"
         sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
-        sql += " ORDER BY last_seen DESC"
+        sql += " ORDER BY last_seen DESC, x, y, name"
         try:
             self.cursor.execute(sql, r_id)
             armeen = self.cursor.fetchall()
@@ -437,7 +437,7 @@ class Armee(Feld):
         if a_id != -1:
             sql += " AND allinr = %s"
         sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
-        sql += " ORDER BY last_seen DESC"
+        sql += " ORDER BY last_seen DESC, rittername, x, y, name"
         try:
             if a_id != -1:
                 self.cursor.execute(sql, a_id)

@@ -6,10 +6,10 @@
 import cgi
 import rbdb
 import util
-from ausgabe import Tabelle
+import ausgabe
 
 def list_versions():
-    tabelle = Tabelle()
+    tabelle = ausgabe.Tabelle()
     tabelle.addColumn("r_id")
     tabelle.addColumn("rittername")
     tabelle.addColumn("version")

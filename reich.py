@@ -7,7 +7,7 @@ import cgi
 import libxml2
 import rbdb
 import util
-from ausgabe import Tabelle
+import ausgabe
 
 def get_ritter_id_form(rittername):
     form ='''<form method="post"
@@ -25,12 +25,12 @@ class Reich:
     """
 
     def list(self):
-        tabelle = Tabelle()
+        tabelle = ausgabe.Tabelle()
         tabelle.addColumn("r_id")
         tabelle.addColumn("Top10")
         tabelle.addColumn("Name")
         tabelle.addColumn("Allianz")
-        sql = "SELECT ritternr, top10, rittername, allicolor, alliname"
+        sql = "SELECT ritternr, top10, rittername, allinr, allicolor, alliname"
         sql += " FROM ritter"
         sql += " JOIN allis ON ritter.alli = allis.allinr"
         sql += " WHERE top10 > 0"
@@ -47,8 +47,9 @@ class Reich:
                 zelle = '<a href="reich/' + str(row[0]) + '">'
                 zelle += str(row[2]) + '</a>'
                 line.append(zelle)
-                zelle = '<div style="color:' + row[3] + ';">'
-                zelle += row[4] + '</div>'
+                zelle = '<a href="allianz/' + str(row[3]) + '">'
+                zelle += '<div style="color:' + row[4] + ';">'
+                zelle += row[5] + '</div></a>'
                 line.append(zelle)
                 tabelle.addLine(line)
                 row = cursor.fetchone()

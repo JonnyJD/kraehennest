@@ -353,8 +353,12 @@ class Armee(Feld):
             return False
 
     def __list(self, cols, armeen):
+        from armee import S_HIDDEN
+
         tabelle = ausgabe.Tabelle()
         for col in cols:
+            if col in ["max_bp", "max_ap", "ruf"]:
+                tabelle.addColumn("/")
             if col not in ["ritternr", "allicolor"]:
                 tabelle.addColumn(col)
         for armee in armeen:
@@ -373,6 +377,15 @@ class Armee(Feld):
                     else:
                         col += '>' + armee[i+1] + '</a>'
                     line.append(col)
+                elif cols[i] in ["ruf", "max_bp", "max_ap"]:
+                    line.append("/")
+                    # damit es left aligned wird
+                    line.append(str(armee[i]))
+                elif cols[i] == "status":
+                    if armee[i] == S_HIDDEN:
+                        line.append("versteckt")
+                    else:
+                        line.append("-")
                 elif cols[i-1] not in ["ritternr", "allicolor"]:
                     line.append(armee[i])
             tabelle.addLine(line)
@@ -381,8 +394,9 @@ class Armee(Feld):
     def list_by_feld(self, level, x, y):
         """Holt alle Armeen auf einem Feld"""
 
-        cols = ["ritternr", "allicolor", "rittername", "name", "last_seen"]
-        cols += ["size", "strength", "bp", "ap", "schiffstyp"]
+        cols = ["status", "ritternr", "allicolor", "rittername"]
+        cols += ["name", "last_seen"]
+        cols += ["strength", "size", "bp", "ap", "schiffstyp"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"
@@ -402,15 +416,14 @@ class Armee(Feld):
     def list_by_reich(self, r_id):
         """Holt alle Armeen eines Reiches mit r_id"""
 
-        cols = ["level", "x", "y", "name", "last_seen"]
-        cols += ["size", "strength", "bp", "ap", "schiffstyp"]
+        cols = ["active", "status", "level", "x", "y", "name", "last_seen"]
+        cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
+        cols += ["schiffstyp"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"
         sql += " WHERE r_id = %s"
-        sql += " AND active = 1"
-        sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
-        sql += " ORDER BY last_seen DESC, x, y, name"
+        sql += " ORDER BY active DESC, last_seen DESC, x, y, name"
         try:
             self.cursor.execute(sql, r_id)
             armeen = self.cursor.fetchall()
@@ -425,11 +438,11 @@ class Armee(Feld):
     def list_by_allianz(self, a_id):
         """Holt alle Armeen eines Allianz mit a_id"""
 
-        cols = ["level", "x", "y", "ritternr"]
+        cols = ["status", "level", "x", "y", "ritternr"]
         if a_id == -1:
             cols.append("allicolor")
         cols += ["rittername", "name", "last_seen"]
-        cols += ["size", "strength", "bp", "ap", "schiffstyp"]
+        cols += ["strength", "size", "bp", "ap", "schiffstyp"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"

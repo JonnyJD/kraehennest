@@ -37,6 +37,7 @@ if config.is_admin():
     print '<div class="box">'
     print '<h2>Administration</h2>'
     print '<a href="/karte/datenpflege.php">Datenpflege</a>'
+    print '<br /><a href="' + prefix + '/show/versionen">Versionsliste</a>'
     print '</div>'
 karte.list_maps(prefix)
 

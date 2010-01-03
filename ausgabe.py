@@ -4,7 +4,7 @@ import re
 import os
 from types import *
 
-prefix = re.match("(.*)/show", os.environ['SCRIPT_URL']).group(1)
+prefix = re.match("(.*)/(show|send)", os.environ['SCRIPT_URL']).group(1)
 
 class Tabelle:
     """Eine HTML-Tabelle"""

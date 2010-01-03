@@ -381,11 +381,12 @@ class Armee(Feld):
     def list_by_feld(self, level, x, y):
         """Holt alle Armeen auf einem Feld"""
 
-        cols = ["ritternr", "rittername", "name", "last_seen"]
+        cols = ["ritternr", "allicolor", "rittername", "name", "last_seen"]
         cols += ["size", "strength", "bp", "ap", "schiffstyp"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"
+        sql += " JOIN allis ON ritter.alli = allis.allinr"
         sql += " WHERE level = %s AND x = %s AND y = %s"
         sql += " AND active = 1"
         sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"

@@ -425,8 +425,10 @@ class Armee(Feld):
     def list_by_allianz(self, a_id):
         """Holt alle Armeen eines Allianz mit a_id"""
 
-        cols = ["level", "x", "y", "ritternr", "allicolor", "rittername"]
-        cols += ["name", "last_seen"]
+        cols = ["level", "x", "y", "ritternr"]
+        if a_id == -1:
+            cols.append("allicolor")
+        cols += ["rittername", "name", "last_seen"]
         cols += ["size", "strength", "bp", "ap", "schiffstyp"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
@@ -437,7 +439,7 @@ class Armee(Feld):
         if a_id != -1:
             sql += " AND allinr = %s"
         sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
-        sql += " ORDER BY last_seen DESC, rittername, x, y, name"
+        sql += " ORDER BY last_seen DESC, allicolor, rittername, x, y, name"
         try:
             if a_id != -1:
                 self.cursor.execute(sql, a_id)

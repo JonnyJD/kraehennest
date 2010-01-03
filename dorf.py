@@ -8,6 +8,7 @@ import rbdb
 import util
 import re
 from feld import Feld
+import ausgabe
 
 class Dorf(Feld):
     """Eine Klasse um Dorfdaten ein- und auszulesen.
@@ -61,6 +62,104 @@ class Dorf(Feld):
                             'alliname': row[7], 'allyfarbe': row[8]}
                 row = self.cursor.fetchone()
             return True
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return False
+
+
+    def __list(self, cols, doerfer):
+        tabelle = ausgabe.Tabelle()
+        for col in cols:
+            if col == "koords":
+                tabelle.addColumn("x")
+                tabelle.addColumn("y")
+            elif col not in ["ritternr", "allicolor"]:
+                tabelle.addColumn(col)
+        for dorf in doerfer:
+            line = []
+            for i in range(0, len(dorf)):
+                if cols[i] == "ritternr":
+                    # nachfolgenden Ritternamen verlinken
+                    col = '<a href="' + ausgabe.prefix + '/show/reich/'
+                    col += str(dorf[i]) + '"'
+                    if cols[i+1] == "allicolor":
+                        if dorf[i] == 174: # Keiner
+                            col += ' style="color:green"'
+                        else:
+                            col += ' style="color:' + dorf[i+1] + '"'
+                        col += '>' + dorf[i+2] + '</a>'
+                    else:
+                        col += '>' + dorf[i+1] + '</a>'
+                    line.append(col)
+                elif cols[i] == "koords":
+                    line.append(dorf[i][0:3])
+                    line.append(dorf[i][4:7])
+                elif cols[i-1] not in ["ritternr", "allicolor"]:
+                    line.append(dorf[i])
+            tabelle.addLine(line)
+        return tabelle
+
+    def list_by_feld(self, x, y):
+        """Holt das Dorf auf einem Feld"""
+
+        cols = ["dorf.ritternr", "allicolor", "rittername", "dorfname"]
+        cols += ["aktdatum", "dorflevel", "mauer"]
+        sql = "SELECT " + ", ".join(cols)
+        sql += " FROM dorf"
+        sql += " JOIN ritter ON dorf.ritternr = ritter.ritternr"
+        sql += " JOIN allis ON ritter.alli = allis.allinr"
+        sql += " WHERE koords = %s"
+        try:
+            self.cursor.execute(sql, x + ',' + y)
+            armeen = self.cursor.fetchall()
+            cols[0] = "ritternr" # war dorf.ritternr
+            return self.__list(cols, armeen)
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return False
+
+    def list_by_reich(self, r_id):
+        """Holt alle Doerfer eines Reiches mit r_id"""
+
+        cols = ["koords", "dorfname", "aktdatum", "dorflevel", "mauer"]
+        sql = "SELECT " + ", ".join(cols)
+        sql += " FROM dorf"
+        sql += " JOIN ritter ON dorf.ritternr = ritter.ritternr"
+        sql += " WHERE dorf.ritternr = %s"
+        sql += " ORDER BY koords"
+        try:
+            self.cursor.execute(sql, r_id)
+            armeen = self.cursor.fetchall()
+            return self.__list(cols, armeen)
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return False
+
+    def list_all(self):
+        return self.list_by_allianz(-1)
+
+    def list_by_allianz(self, a_id):
+        """Holt alle Doerfer eines Allianz mit a_id"""
+
+        cols = ["koords", "dorf.ritternr"]
+        if a_id == -1:
+            cols.append("allicolor")
+        cols += ["rittername", "dorfname", "aktdatum", "dorflevel", "mauer"]
+        sql = "SELECT " + ", ".join(cols)
+        sql += " FROM dorf"
+        sql += " JOIN ritter ON dorf.ritternr = ritter.ritternr"
+        sql += " JOIN allis ON ritter.alli = allis.allinr"
+        if a_id != -1:
+            sql += " WHERE allinr = %s"
+        sql += " ORDER BY aktdatum DESC, allicolor, rittername, koords"
+        try:
+            if a_id != -1:
+                self.cursor.execute(sql, a_id)
+            else:
+                self.cursor.execute(sql)
+            armeen = self.cursor.fetchall()
+            cols[1] = "ritternr" # war dorf.ritternr
+            return self.__list(cols, armeen)
         except rbdb.Error, e:
             util.print_html_error(e)
             return False

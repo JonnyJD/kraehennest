@@ -41,7 +41,7 @@ class Allianz:
             return False
 
 
-# Aufruf als Skript: Reich eintragen
+# Aufruf als Skript
 if __name__ == '__main__':
     print 'Content-type: text/html; charset=utf-8\n'
     print '<html><head>'
@@ -57,17 +57,36 @@ if __name__ == '__main__':
         allianz = Allianz()
         allianz.list()
     elif "id" in form:
+        from reich import Reich
+        from dorf import Dorf
         from armee import Armee
+
         a_id = form["id"].value
 
         print '<title>Allianz ' + a_id + '</title>'
         print '</head>'
         print '<body>'
 
+        print '<table>'
+        reich = Reich()
+        reichtabelle = reich.list_by_allianz(a_id)
+        print '<tr><td><a href="#reiche">Reiche</a></td>'
+        print '<td>' + str(reichtabelle.length()) + '</td></tr>'
+        dorf = Dorf()
+        dorftabelle = dorf.list_by_allianz(a_id)
+        print '<tr><td><a href="#doerfer">D&ouml;rfer</a></td>'
+        print '<td>' + str(dorftabelle.length()) + '</td></tr>'
         armee = Armee()
-        allianz = Allianz()
         armeetabelle = armee.list_by_allianz(a_id)
-        print "Anzahl Armeen:", armeetabelle.length()
+        print '<tr><td><a href="#armeen">Armeen</a></td>'
+        print '<td>' + str(armeetabelle.length()) + '</td></tr>'
+        print '</table>'
+
+        print '<h2 id="reiche">Reiche</h2>'
+        reichtabelle.show()
+        print '<h2 id="doerfer">D&ouml;rfer</h2>'
+        dorftabelle.show()
+        print '<h2 id="armeen">Armeen</h2>'
         armeetabelle.show()
 
     print '</body></html>'

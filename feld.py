@@ -147,6 +147,7 @@ if __name__ == '__main__':
 
     import cgi
     from armee import Armee
+    from dorf import Dorf
 
     print 'Content-type: text/html; charset=utf-8\n'
     print '<html><head>'
@@ -168,6 +169,15 @@ if __name__ == '__main__':
     print '</head>'
     print '<body>'
 
+    if level == "N":
+        print "<h2>Dorf</h2>"
+        dorf = Dorf()
+        dorftabelle = dorf.list_by_feld(x, y)
+        if dorftabelle.length() > 1:
+            print "Mehrere D&ouml;rfer?? <br /><br />"
+        dorftabelle.show()
+
+    print "<h2>Armeen</h2>"
     armee = Armee()
     armeetabelle = armee.list_by_feld(level, x, y)
     print "Anzahl Armeen:", armeetabelle.length()

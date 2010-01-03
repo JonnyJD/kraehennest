@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-#import cgitb
-#cgitb.enable()
+import cgitb
+cgitb.enable()
 
 import cgi
 import libxml2
@@ -25,36 +25,47 @@ class Reich:
     """
 
     def list(self):
+        return self.list_by_allianz(-1)
+
+    def list_by_allianz(self, a_id):
         tabelle = ausgabe.Tabelle()
         tabelle.addColumn("r_id")
         tabelle.addColumn("Top10")
         tabelle.addColumn("Name")
-        tabelle.addColumn("Allianz")
+        if a_id == -1:
+            tabelle.addColumn("Allianz")
         sql = "SELECT ritternr, top10, rittername, allinr, allicolor, alliname"
         sql += " FROM ritter"
         sql += " JOIN allis ON ritter.alli = allis.allinr"
-        sql += " WHERE top10 > 0"
-        sql += " OR ritternr IN (1,2,113,143,160,172,174,88,159,174,1152)"
+        sql += " WHERE (top10 > 0"
+        sql += " OR ritternr IN (1,2,113,143,160,172,174,88,159,174,1152))"
+        if a_id != -1:
+            sql += " AND allinr =%s "
         sql += " ORDER BY rittername"
         try:
             conn = rbdb.connect()
             cursor = conn.cursor()
-            cursor.execute(sql)
+            if a_id != -1:
+                cursor.execute(sql, a_id)
+            else:
+                cursor.execute(sql)
             row = cursor.fetchone()
             while row != None:
                 line = [row[0]]
                 line.append(row[1])
-                zelle = '<a href="reich/' + str(row[0]) + '">'
+                zelle = '<a href="' + ausgabe.prefix + '/show/reich/'
+                zelle += str(row[0]) + '">'
                 zelle += str(row[2]) + '</a>'
                 line.append(zelle)
-                zelle = '<a href="allianz/' + str(row[3]) + '">'
-                zelle += '<div style="color:' + row[4] + ';">'
-                zelle += row[5] + '</div></a>'
-                line.append(zelle)
+                if a_id == -1:
+                    zelle = '<a href="' + ausgabe.prefix + '/show/allianz/'
+                    zelle += str(row[3]) + '">'
+                    zelle += '<div style="color:' + row[4] + ';">'
+                    zelle += row[5] + '</div></a>'
+                    line.append(zelle)
                 tabelle.addLine(line)
                 row = cursor.fetchone()
-            print "Es sind", tabelle.length(), "Reiche in der Datenbank"
-            return tabelle.show()
+            return tabelle
         except rbdb.Error, e:
             util.print_html_error(e)
             return False
@@ -118,9 +129,13 @@ if __name__ == '__main__':
         print '<body>'
 
         reich = Reich()
-        reich.list()
+        reichtabelle = reich.list()
+        print "Es sind", reichtabelle.length(), "Reiche in der Datenbank"
+        reichtabelle.show()
+
     elif "id" in form:
         from armee import Armee
+        from dorf import Dorf
 
         r_id = form["id"].value
 
@@ -128,9 +143,20 @@ if __name__ == '__main__':
         print '</head>'
         print '<body>'
 
+        print '<table>'
+        dorf = Dorf()
+        dorftabelle = dorf.list_by_reich(r_id)
+        print '<tr><td><a href="#doerfer">D&ouml;rfer</a></td>'
+        print '<td>' + str(dorftabelle.length()) + '</td></tr>'
         armee = Armee()
         armeetabelle = armee.list_by_reich(r_id)
-        print "Anzahl Armeen:", armeetabelle.length()
+        print '<tr><td><a href="#armeen">Armeen</a></td>'
+        print '<td>' + str(armeetabelle.length()) + '</td></tr>'
+        print '</table>'
+
+        print '<h2 id="doerfer">D&ouml;rfer</h2>'
+        dorftabelle.show()
+        print '<h2 id="armeen">Armeen</h2>'
         armeetabelle.show()
     else:
         # Reichsdaten vom RB Server einlesen

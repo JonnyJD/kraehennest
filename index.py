@@ -7,9 +7,10 @@ import config
 import karte
 import ausgabe
 
+title = "Kr&auml;hennest"
 print 'Content-type: text/html; charset=utf-8\n'
 print '<html><head>'
-print '<title>Kr&auml;hendatenbank</title>'
+print '<title>' + title + '</title>'
 print '<link rel="stylesheet" type="text/css" href="stylesheet">'
 print '</head>'
 print '<body>'
@@ -18,7 +19,7 @@ print '<style type="text/css">'
 print 'td.karten { width:34%; }'
 print '</style>'
 
-print '<h1>Kr&auml;hendatenbank</h1>'
+print '<h1>' + title + '</h1>'
 
 print '<p>eingeloggter Benutzer: ' + config.get_username() + '</p>'
 

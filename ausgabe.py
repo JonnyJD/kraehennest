@@ -41,10 +41,10 @@ def datetime_delta_string(my_datetime):
         return prefix + str(months) + " Monaten"
     elif months == 1:
         return prefix + str(months) + " Monat"
-    elif days > 1:
+    elif days >= 2:
         return prefix + str(days) + " Tagen"
     elif days == 1:
-        return prefix + str(days) + " Tag"
+        return prefix + str(24*days+hours) + " Stunden"
     elif hours > 1:
         return prefix + str(hours) + " Stunden"
     elif hours == 1:

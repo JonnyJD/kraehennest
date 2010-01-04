@@ -10,18 +10,18 @@ class Feld:
     """Eine abstrakte Klasse um Felddaten ein- und auszulesen.
     
     Einlesen:
-        Mit queue_entry(fields) werden die Felder einzeln uebergeben.
-        Mit exec_queue() werden dann alle eingetragen, falls nicht vorhanden.
+    Mit queue_entry(fields) werden die Felder einzeln uebergeben.
+    Mit exec_queue() werden dann alle eingetragen, falls nicht vorhanden.
 
     Auslesen:
-        Mit set_add_cond() kann man eine weitere Bedingung vorgeben.
-        Danach wird mit fetch_data([level[, xmin[, xmax[, ymin[, ymax]]]]])
-        alles passende von der Datenbank geladen.
-        Mit has(x,y) und get(x,y) kann man dann einzeln zugreifen.
+    Mit set_add_cond() kann man eine weitere Bedingung vorgeben.
+    Danach wird mit fetch_data([level[, xmin[, xmax[, ymin[, ymax]]]]])
+    alles passende von der Datenbank geladen.
+    Mit has(x,y) und get(x,y) kann man dann einzeln zugreifen.
     
     Beenden:
-        Mit disconnect() kann die Datenbankverbindung beendet werden.
-        Danach koennen nurnoch die bereits geladenen Daten geholt werden."""
+    Mit disconnect() kann die Datenbankverbindung beendet werden.
+    Danach koennen nurnoch die bereits geladenen Daten geholt werden."""
 
     def __init__(self):
         self.entries = dict()

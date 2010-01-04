@@ -12,22 +12,22 @@ class Terrain(Feld):
     """Eine Klasse um Terraindaten ein- und auszulesen.
     
     Einlesen:
-        Mit queue_entry(fields) werden die Felder einzeln uebergeben.
-        Mit exec_queue() werden dann alle eingetragen, falls nicht vorhanden.
-        Mit replace_uniform_area(level, x1, y1, x2, y2, terrain)
-        und replace_line(level, x, y, terrain_list)
-        koennen Terraindaten manuell eingetragen werden
+    Mit queue_entry(fields) werden die Felder einzeln uebergeben.
+    Mit exec_queue() werden dann alle eingetragen, falls nicht vorhanden.
+    Mit replace_uniform_area(level, x1, y1, x2, y2, terrain)
+    und replace_line(level, x, y, terrain_list)
+    koennen Terraindaten manuell eingetragen werden
 
     Auslesen:
-        Mit set_add_cond() kann man eine weitere Bedingung vorgeben.
-        (dabei sollte man die sql strings absichern!)
-        Danach wird mit fetch_data([level[, xmin[, xmax[, ymin[, ymax]]]]])
-        alles passende von der Datenbank geladen.
-        Mit has(x,y) und get(x,y) kann man dann einzeln zugreifen.
+    Mit set_add_cond() kann man eine weitere Bedingung vorgeben.
+    (dabei sollte man die sql strings absichern!)
+    Danach wird mit fetch_data([level[, xmin[, xmax[, ymin[, ymax]]]]])
+    alles passende von der Datenbank geladen.
+    Mit has(x,y) und get(x,y) kann man dann einzeln zugreifen.
     
     Beenden:
-        Mit disconnect() kann die Datenbankverbindung beendet werden.
-        Danach koennen nurnoch die bereits geladenen Daten geholt werden."""
+    Mit disconnect() kann die Datenbankverbindung beendet werden.
+    Danach koennen nurnoch die bereits geladenen Daten geholt werden."""
 
     def __init__(self):
         Feld.__init__(self)

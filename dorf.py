@@ -179,7 +179,10 @@ class Dorf(Feld):
                 self.cursor.execute(sql)
             armeen = self.cursor.fetchall()
             cols[1] = "ritternr" # war dorf.ritternr
-            cols[5] = "level" # war dorflevel
+            if a_id == -1:
+                cols[6] = "level" # war dorflevel
+            else:
+                cols[5] = "level" # war dorflevel
             return self.__list(cols, armeen)
         except rbdb.Error, e:
             util.print_html_error(e)

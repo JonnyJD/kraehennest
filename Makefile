@@ -22,6 +22,9 @@ serverconf:
 	-e 's:\(\w*\)/karte/\(.*\)\w*\[PT\]:\1$(KARTE)/\2:' \
 	>> serverurl.conf
 
+doc:
+	epydoc -o /var/www/doc.kraehen.org/tools *.py
+
 clean:
 	rm serverurl.conf test.xml
 

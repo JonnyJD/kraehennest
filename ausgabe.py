@@ -5,7 +5,10 @@ import os
 from datetime import datetime, time
 from types import *
 
-prefix = re.match("(.*)/(show|send)", os.environ['SCRIPT_URL']).group(1)
+if 'SCRIPT_URL' in os.environ:
+    prefix = re.match("(.*)/(show|send)", os.environ['SCRIPT_URL']).group(1)
+else:
+    prefix = ''
 
 def print_header(title, styles=None):
     print 'Content-type: text/html; charset=utf-8\n'

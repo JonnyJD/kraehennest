@@ -77,7 +77,8 @@ if __name__ == '__main__':
     print 'Content-type: text/html; charset=utf-8\n'
     print '<html><head>'
     print '<title>' + title + '</title>'
-    print '<link rel="stylesheet" type="text/css" href="/show/stylesheet">'
+    print '<link rel="stylesheet" type="text/css" href="',
+    print ausgabe.prefix + '/show/stylesheet">'
     if config.is_kraehe():
         print '<script src="/show/javascript" type="text/javascript"></script>'
     print '</head>'

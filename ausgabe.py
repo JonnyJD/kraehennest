@@ -12,7 +12,8 @@ def print_header(title, styles=None):
     print '<html>'
     print '<head>'
     print '<title>' + title + '</title>'
-    print '<link rel="stylesheet" type="text/css" href="/show/stylesheet">'
+    print '<link rel="stylesheet" type="text/css" href="'
+    print prefix + '/show/stylesheet">'
     if styles:
         print styles
     print '</head>\n'

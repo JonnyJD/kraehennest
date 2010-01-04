@@ -327,11 +327,15 @@ if __name__ == '__main__':
                         row += '\')" onmouseout="delPos()"'
                     row += '>'
                     if config.is_kraehe() and armee.has(x,y):
+                        # Felddetail-Link
                         row += '<a href="' + ausgabe.prefix + '/show/feld/'
                         row += str(x) + '.' + str(y)
                         if level != "N":
                             row += '/' + level
-                        row += '" target="_blank">'
+                        # link color vermeiden (taucht sonst manchmal auf)
+                        row += '" style="color:'
+                        row += dorf.get(x,y)['allyfarbe'] +';"'
+                        row += ' target="_blank">'
                     if show_dorf and dorf.has(x,y):
                         dorf.get(x,y)
                         row += '<div style="color:'

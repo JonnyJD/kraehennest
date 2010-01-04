@@ -20,6 +20,11 @@ S_HIDDEN = 'H'  # versteckt
 S_QUEST = 'Q'   # Quest
 S_DEAD = 'D'    # tot
 
+def status_string(status):
+    return {S_SOLD: "Taverne", S_HIDDEN: "versteckt",
+            S_QUEST: "Quest", S_DEAD: "tot", None: None}[status]
+
+
 class Armee(Feld):
     """Eine Klasse um Armeedaten ein- und auszulesen.
     
@@ -353,8 +358,6 @@ class Armee(Feld):
             return False
 
     def __list(self, cols, armeen):
-        from armee import S_HIDDEN
-
         tabelle = ausgabe.Tabelle()
         for col in cols:
             if col in ["max_bp", "max_ap", "ruf"]:
@@ -385,10 +388,7 @@ class Armee(Feld):
                     else:
                         line.append(armee[i])
                 elif cols[i] == "status":
-                    if armee[i] == S_HIDDEN:
-                        line.append("versteckt")
-                    else:
-                        line.append("")
+                    line.append(status_string(armee[i]))
                 elif cols[i-1] not in ["ritternr", "allicolor"]:
                     line.append(armee[i])
             tabelle.addLine(line)

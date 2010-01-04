@@ -393,24 +393,22 @@ class Armee(Feld):
                     minutes = seconds/60
                     if days >= 1:
                         string = "vor " + str(days) + " Tagen"
-                        zelle = '<div style="color:red">' + string + '</div>'
                     elif hours >= 1:
                         string = "vor " + str(hours) + " Stunden"
-                        if hours > 6:
-                            zelle = '<div style="color:red">'
-                            zelle += string + '</div>'
-                        elif hours > 18:
-                            zelle = '<div style="color:orange">'
-                            zelle += string + '</div>'
-                        else:
-                            zelle = string
                     elif minutes >= 1:
                         string = "vor " + str(minutes) + " Minuten"
-                        zelle = string
                     else:
                         string = "vor " + str(seconds) + " Sekunden"
-                        zelle = string
-                    line.append(zelle)
+                    if days >= 2 or (days == 1 and hours >= 6):
+                            zelle = '<div style="color:red">'
+                            zelle += string + '</div>'
+                            line.append(zelle)
+                    elif days >= 1 or (hours >= 6):
+                            zelle = '<div style="color:orange">'
+                            zelle += string + '</div>'
+                            line.append(zelle)
+                    else:
+                        line.append(string)
                 elif cols[i] in ["ruf", "max_bp", "max_ap"]:
                     line.append("/")
                     if armee[i] is not None:

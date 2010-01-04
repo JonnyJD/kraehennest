@@ -170,7 +170,6 @@ if __name__ == '__main__':
         print '<h2 id="doerfer">D&ouml;rfer</h2>'
         dorftabelle.show()
         print '<h2 id="armeen">Armeen</h2>'
-        print '<p>Hier werden auch inaktive oder alte Armeen gezeigt!</p>'
         armeetabelle.show()
     else:
         # Reichsdaten vom RB Server einlesen

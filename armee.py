@@ -6,7 +6,7 @@
 import rbdb
 import util
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from feld import Feld
 from reich import get_ritter_id_form
 import ausgabe
@@ -387,23 +387,13 @@ class Armee(Feld):
                         col += '>' + armee[i+1] + '</a>'
                     line.append(col)
                 elif cols[i] == "last_seen":
-                    days = (datetime.now() - armee[i]).days
-                    seconds = (datetime.now() - armee[i]).seconds
-                    hours = seconds/3600
-                    minutes = seconds/60
-                    if days >= 1:
-                        string = "vor " + str(days) + " Tagen"
-                    elif hours >= 1:
-                        string = "vor " + str(hours) + " Stunden"
-                    elif minutes >= 1:
-                        string = "vor " + str(minutes) + " Minuten"
-                    else:
-                        string = "vor " + str(seconds) + " Sekunden"
-                    if days >= 2 or (days == 1 and hours >= 6):
+                    string = ausgabe.datetime_delta_string(armee[i])
+                    delta = datetime.today() - armee[i]
+                    if delta > timedelta(hours=30):
                             zelle = '<div style="color:red">'
                             zelle += string + '</div>'
                             line.append(zelle)
-                    elif days >= 1 or (hours >= 6):
+                    elif delta > timedelta(hours=6):
                             zelle = '<div style="color:orange">'
                             zelle += string + '</div>'
                             line.append(zelle)

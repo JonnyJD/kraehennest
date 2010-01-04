@@ -2,6 +2,7 @@
 
 import re
 import os
+from datetime import datetime, time
 from types import *
 
 prefix = re.match("(.*)/(show|send)", os.environ['SCRIPT_URL']).group(1)
@@ -20,6 +21,42 @@ def print_header(title, styles=None):
 
 def print_footer():
     print '</body></html>'
+
+def date_delta_string(my_date):
+    return datetime_delta_string(datetime.combine(my_date, time()))
+
+def datetime_delta_string(my_datetime):
+    seconds = (datetime.now() - my_datetime).seconds
+    minutes = seconds//60
+    hours = seconds//3600
+    days = (datetime.now() - my_datetime).days
+    months = days//30
+    years = days//365
+    prefix = "vor "
+    if years > 1:
+        return prefix + str(years) + " Jahren"
+    elif years == 1:
+        return prefix + str(years) + " Jahr"
+    elif months > 1:
+        return prefix + str(months) + " Monaten"
+    elif months == 1:
+        return prefix + str(months) + " Monat"
+    elif days > 1:
+        return prefix + str(days) + " Tagen"
+    elif days == 1:
+        return prefix + str(days) + " Tag"
+    elif hours > 1:
+        return prefix + str(hours) + " Stunden"
+    elif hours == 1:
+        return prefix + str(hours) + " Stunde"
+    elif minutes > 1:
+        return prefix + str(minutes) + " Minuten"
+    elif minutes == 1:
+        return prefix + str(minutes) + " Minute"
+    elif seconds > 1:
+        return prefix + str(seconds) + " Sekunden"
+    else:
+        return prefix + str(seconds) + " Sekunde"
 
 class Tabelle:
     """Eine HTML-Tabelle"""

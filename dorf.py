@@ -6,7 +6,7 @@
 import rbdb
 import util
 import re
-from datetime import date
+from datetime import date, datetime, timedelta
 from feld import Feld
 import ausgabe
 
@@ -100,12 +100,12 @@ class Dorf(Feld):
                             'n': "?"}
                     line.append(mauer_string[dorf[i]])
                 elif cols[i] == "aktdatum":
-                    days = (date.today() - dorf[i]).days
-                    string = "vor " + str(days) + " Tagen"
-                    if days > 730:
+                    string = ausgabe.date_delta_string(dorf[i])
+                    delta = date.today() - dorf[i]
+                    if delta > timedelta(weeks=104):
                         zelle = '<div style="color:red">' + string + '</div>'
                         line.append(zelle)
-                    elif days > 365:
+                    elif delta > timedelta(weeks=52):
                         zelle = '<div style="color:orange">' + string + '</div>'
                         line.append(zelle)
                     else:

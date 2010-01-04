@@ -126,7 +126,7 @@ class Armee(Feld):
             return False
 
     def __deactivate(self):
-        """Deaktiviert alle Armeen in der inactie Liste."""
+        """Deaktiviert alle Armeen in der inactive Liste."""
 
         if len(self.__inactive_entries) > 0:
             sql = "UPDATE armeen SET active=0 WHERE "
@@ -138,7 +138,7 @@ class Armee(Feld):
             
             sql += "(" + " OR ".join(sqllist) + ") AND "
             # versteckte Armeen nicht deaktivieren
-            sql += "status <> '" + S_HIDDEN + "' AND "
+            sql += "(status is null OR status <> '" + S_HIDDEN + "') AND "
             # die hier anwesenden Armeen garnicht erst deaktivieren
             sqllist = []
             for entry in self.new_entries:

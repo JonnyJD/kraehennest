@@ -6,6 +6,7 @@
 import rbdb
 import util
 import re
+from datetime import datetime
 from feld import Feld
 from reich import get_ritter_id_form
 import ausgabe
@@ -367,7 +368,12 @@ class Armee(Feld):
         for armee in armeen:
             line = []
             for i in range(0, len(armee)):
-                if cols[i] == "ritternr":
+                if cols[i] == "active":
+                    if armee[i] == 1:
+                        line.append("Ja")
+                    else:
+                        line.append('<div style="color:red">Nein</div>')
+                elif cols[i] == "ritternr":
                     # nachfolgenden Ritternamen verlinken
                     col = '<a href="' + ausgabe.prefix + '/show/reich/'
                     col += str(armee[i]) + '"'
@@ -380,6 +386,31 @@ class Armee(Feld):
                     else:
                         col += '>' + armee[i+1] + '</a>'
                     line.append(col)
+                elif cols[i] == "last_seen":
+                    days = (datetime.now() - armee[i]).days
+                    seconds = (datetime.now() - armee[i]).seconds
+                    hours = seconds/3600
+                    minutes = seconds/60
+                    if days >= 1:
+                        string = "vor " + str(days) + " Tagen"
+                        zelle = '<div style="color:red">' + string + '</div>'
+                    elif hours >= 1:
+                        string = "vor " + str(hours) + " Stunden"
+                        if hours > 6:
+                            zelle = '<div style="color:red">'
+                            zelle += string + '</div>'
+                        elif hours > 18:
+                            zelle = '<div style="color:orange">'
+                            zelle += string + '</div>'
+                        else:
+                            zelle = string
+                    elif minutes >= 1:
+                        string = "vor " + str(minutes) + " Minuten"
+                        zelle = string
+                    else:
+                        string = "vor " + str(seconds) + " Sekunden"
+                        zelle = string
+                    line.append(zelle)
                 elif cols[i] in ["ruf", "max_bp", "max_ap"]:
                     line.append("/")
                     if armee[i] is not None:

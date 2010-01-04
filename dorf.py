@@ -6,6 +6,7 @@
 import rbdb
 import util
 import re
+from datetime import date
 from feld import Feld
 import ausgabe
 
@@ -98,6 +99,17 @@ class Dorf(Feld):
                             'g': "gro&szlig;e", 'u': "un&uuml;berwindbar",
                             'n': "?"}
                     line.append(mauer_string[dorf[i]])
+                elif cols[i] == "aktdatum":
+                    days = (date.today() - dorf[i]).days
+                    string = "vor " + str(days) + " Tagen"
+                    if days > 730:
+                        zelle = '<div style="color:red">' + string + '</div>'
+                        line.append(zelle)
+                    elif days > 365:
+                        zelle = '<div style="color:orange">' + string + '</div>'
+                        line.append(zelle)
+                    else:
+                        line.append(string)
                 elif cols[i-1] not in ["ritternr", "allicolor"]:
                     line.append(dorf[i])
             tabelle.addLine(line)

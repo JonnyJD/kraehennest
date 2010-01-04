@@ -44,13 +44,29 @@ class Allianz:
             cursor.execute(sql)
             row = cursor.fetchone()
             while row != None:
-                line = [row[0]]
-                zelle = '<a href="allianz/' + str(row[0]) + '">'
-                zelle += '<div style="color:' + row[1] + ';">'
-                zelle += row[2] + '</div></a>'
-                line.append(zelle)
-                for i in range(3,7):
-                    line.append(row[i])
+                line = []
+                if row[4] > 0: # positive Mitgliederzahl
+                    line.append(row[0])
+                    zelle = '<a href="allianz/' + str(row[0]) + '">'
+                    zelle += '<div style="color:' + row[1] + ';">'
+                    zelle += row[2] + '</div></a>'
+                    line.append(zelle)
+                    line.append(row[3])
+                else:
+                    zelle = '<div style="color:#666666;">'
+                    zelle += str(row[0]) + '</div>'
+                    line.append(zelle)
+                    zelle = '<div style="color:#666666;">'
+                    zelle += row[2] + '</div>'
+                    line.append(zelle)
+                    zelle = '<div style="color:#666666;">'
+                    zelle += row[3] + '</div>'
+                    line.append(zelle)
+                for i in range(4,7):
+                    if row[i] > 0:
+                        line.append(row[i])
+                    else:
+                        line.append("")
                 tabelle.addLine(line)
                 row = cursor.fetchone()
             print "Es sind", tabelle.length(), "Allianzen in der Datenbank"

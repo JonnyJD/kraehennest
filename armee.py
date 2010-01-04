@@ -144,7 +144,8 @@ class Armee(Feld):
             for entry in self.new_entries:
                 sqllist.append("h_id<>%s")
                 args += entry["h_id"],
-            sql += " AND ".join(sqllist)
+            if len(self.new_entries) > 0:
+                sql += " AND " + " AND ".join(sqllist)
             self.__inactive_entries = []
             return self.try_execute_safe(sql, args)
         else:

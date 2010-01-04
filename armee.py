@@ -138,7 +138,7 @@ class Armee(Feld):
             
             sql += "(" + " OR ".join(sqllist) + ") AND "
             # versteckte Armeen nicht deaktivieren
-            sql += "(status is null OR status <> '" + S_HIDDEN + "') AND "
+            sql += "(status is null OR status <> '" + S_HIDDEN + "')"
             # die hier anwesenden Armeen garnicht erst deaktivieren
             sqllist = []
             for entry in self.new_entries:
@@ -238,28 +238,26 @@ class Armee(Feld):
 
         new = self.new_entries
         num_updated = 0
-        sql = "SELECT h_id, name FROM armeen WHERE "
-        sqllist = []
-        args = ()
-        for entry in new:
-            sqllist.append("h_id=%s")
-            args += entry["h_id"],
-        sql += " OR ".join(sqllist)
-        self.try_execute_safe(sql, args)
-        row = self.cursor.fetchone()
-        while row != None:
-            i = 0
-            while i < len(new):
-                if (new[i]["h_id"] == row[0]):
-                    if self.__update(new[i]):
-                        num_updated += 1
-                    # versteckte Armeen werden z.B. normal nicht aktualisiert
-                    #else:
-                    #    print "Konnte", new[i]["name"], "nicht aktualisieren"
-                    del new[i]
-                else:
-                    i += 1
+        if len(new) > 0:
+            sql = "SELECT h_id, name FROM armeen WHERE "
+            sqllist = []
+            args = ()
+            for entry in new:
+                sqllist.append("h_id=%s")
+                args += entry["h_id"],
+            sql += " OR ".join(sqllist)
+            self.try_execute_safe(sql, args)
             row = self.cursor.fetchone()
+            while row != None:
+                i = 0
+                while i < len(new):
+                    if (new[i]["h_id"] == row[0]):
+                        if self.__update(new[i]):
+                            num_updated += 1
+                        del new[i]
+                    else:
+                        i += 1
+                row = self.cursor.fetchone()
         return num_updated
 
 
@@ -506,82 +504,80 @@ class Armee(Feld):
             self.queue_inactive(entry)
 
         armeen = node.xpathEval('armee')
-        if len(armeen) > 0:
-            for armee in armeen:
-
-                entry = dict()
-                if armee.hasProp("h_id"):
-                    entry["h_id"] = armee.prop("h_id")
-                positions = armee.xpathEval('position')
-                if len(positions) > 0:
-                    if positions[0].hasProp("level"):
-                        entry["level"] = positions[0].prop("level")
-                        entry["x"] = positions[0].prop("x")
-                        entry["y"] = positions[0].prop("y")
-                    else:
-                        entry["pos"] = positions[0].getContent()
-                        if entry["pos"] == "taverne":
-                            entry["r_id"] = None
-                entry["img"] = armee.xpathEval('bild')[0].getContent()
-                entry["name"] = armee.xpathEval('held')[0].getContent()
-                ritter_elems = armee.xpathEval('ritter')
-                if len(ritter_elems) > 0:
-                    if ritter_elems[0].hasProp("r_id"):
-                        entry["r_id"] = ritter_elems[0].prop("r_id")
-                        # muss dann die aktuelle eigene Armee sein
-                        entry["update_self"] = True
-                        if sicht == "keine":
-                            # nur sich selbst als versteckt markieren
-                            entry["status"] = S_HIDDEN
-                    else:
-                        entry["ritter"] = ritter_elems[0].getContent()
-                sizes = armee.xpathEval('size')
-                if len(sizes) == 1:
-                    if sizes[0].hasProp("now"):
-                        entry["size"] = sizes[0].prop("now")
-                    if sizes[0].hasProp("max"):
-                        entry["ruf"] = sizes[0].prop("max")
-                strengths = armee.xpathEval('strength')
-                if len(strengths) == 1:
-                    entry["strength"] = strengths[0].prop("now")
-                bps = armee.xpathEval('bp')
-                if len(bps) == 1:
-                    if bps[0].hasProp("now"):
-                        entry["bp"] = bps[0].prop("now")
-                    if bps[0].hasProp("max"):
-                        entry["max_bp"] = bps[0].prop("max")
-                aps = armee.xpathEval('ap')
-                if len(aps) == 1:
-                    if aps[0].hasProp("now"):
-                        entry["ap"] = aps[0].prop("now")
-                    if aps[0].hasProp("max"):
-                        entry["max_ap"] = aps[0].prop("max")
-                schiffe = armee.xpathEval('schiff') 
-                if len(schiffe) == 1:
-                    entry["schiffstyp"] = schiffe[0].prop("typ")
-                    #entry["schiffslast"] = schiffe[0].prop("last")
+        for armee in armeen:
+            entry = dict()
+            if armee.hasProp("h_id"):
+                entry["h_id"] = armee.prop("h_id")
+            positions = armee.xpathEval('position')
+            if len(positions) > 0:
+                if positions[0].hasProp("level"):
+                    entry["level"] = positions[0].prop("level")
+                    entry["x"] = positions[0].prop("x")
+                    entry["y"] = positions[0].prop("y")
                 else:
-                    entry["schiffstyp"] = None;
-                dauer_elems = armee.xpathEval('dauer')
-                if len(dauer_elems) == 1:
-                    if dauer_elems[0].hasProp("now"):
-                        entry["dauer"] = dauer_elems[0].prop("now")
-                    if dauer_elems[0].hasProp("max"):
-                        entry["max_dauer"] = dauer_elems[0].prop("max")
-                if not self.queue_entry(entry):
-                    print entry, "<br />"
-                    print "enthielt Fehler <br />"
-                #else:
-                #    print entry, " eingehangen<br />"
-            inactive, updated, added = self.exec_queue()
-            if (inactive + updated + added) > 0:
-                print "Es wurden", inactive, "Armeen deaktiviert,",
-                print updated, "aktualisiert und",
-                print added, "neu hinzugefuegt.", "<br />"
+                    entry["pos"] = positions[0].getContent()
+                    if entry["pos"] == "taverne":
+                        entry["r_id"] = None
+            entry["img"] = armee.xpathEval('bild')[0].getContent()
+            entry["name"] = armee.xpathEval('held')[0].getContent()
+            ritter_elems = armee.xpathEval('ritter')
+            if len(ritter_elems) > 0:
+                if ritter_elems[0].hasProp("r_id"):
+                    entry["r_id"] = ritter_elems[0].prop("r_id")
+                    # muss dann die aktuelle eigene Armee sein
+                    entry["update_self"] = True
+                    if sicht == "keine":
+                        # nur sich selbst als versteckt markieren
+                        entry["status"] = S_HIDDEN
+                else:
+                    entry["ritter"] = ritter_elems[0].getContent()
+            sizes = armee.xpathEval('size')
+            if len(sizes) == 1:
+                if sizes[0].hasProp("now"):
+                    entry["size"] = sizes[0].prop("now")
+                if sizes[0].hasProp("max"):
+                    entry["ruf"] = sizes[0].prop("max")
+            strengths = armee.xpathEval('strength')
+            if len(strengths) == 1:
+                entry["strength"] = strengths[0].prop("now")
+            bps = armee.xpathEval('bp')
+            if len(bps) == 1:
+                if bps[0].hasProp("now"):
+                    entry["bp"] = bps[0].prop("now")
+                if bps[0].hasProp("max"):
+                    entry["max_bp"] = bps[0].prop("max")
+            aps = armee.xpathEval('ap')
+            if len(aps) == 1:
+                if aps[0].hasProp("now"):
+                    entry["ap"] = aps[0].prop("now")
+                if aps[0].hasProp("max"):
+                    entry["max_ap"] = aps[0].prop("max")
+            schiffe = armee.xpathEval('schiff') 
+            if len(schiffe) == 1:
+                entry["schiffstyp"] = schiffe[0].prop("typ")
+                #entry["schiffslast"] = schiffe[0].prop("last")
             else:
-                print "Keine Armeen gespeichert.", "<br />"
+                entry["schiffstyp"] = None;
+            dauer_elems = armee.xpathEval('dauer')
+            if len(dauer_elems) == 1:
+                if dauer_elems[0].hasProp("now"):
+                    entry["dauer"] = dauer_elems[0].prop("now")
+                if dauer_elems[0].hasProp("max"):
+                    entry["max_dauer"] = dauer_elems[0].prop("max")
+            if not self.queue_entry(entry):
+                print entry, "<br />"
+                print "enthielt Fehler <br />"
+            #else:
+            #    print entry, " eingehangen<br />"
+
+        # fuehre updates aus
+        inactive, updated, added = self.exec_queue()
+        if (inactive + updated + added) > 0:
+            print "Es wurden", inactive, "Armeen deaktiviert,",
+            print updated, "aktualisiert und",
+            print added, "neu hinzugefuegt.", "<br />"
         else:
-            print 'Es wurden keine Armeedaten gesendet.', "<br />"
+            print "Keine Armeen geaendert.", "<br />"
 
 
 # Aufruf als Skript

@@ -14,7 +14,11 @@ class Allianz:
 
     def get_name(self, a_id):
         sql = "SELECT alliname FROM allis WHERE allinr = %s"
-        return util.get_sql_row(sql, a_id)[0]
+        row = util.get_sql_row(sql, a_id)
+        if row:
+            return row[0]
+        else:
+            return "[unbekannte Allianz]"
 
     def list(self):
         tabelle = ausgabe.Tabelle()

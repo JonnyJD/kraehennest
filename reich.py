@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-#import cgitb
-#cgitb.enable()
+import cgitb
+cgitb.enable()
 
 import cgi
 import libxml2
@@ -26,7 +26,11 @@ class Reich:
 
     def get_name(self, r_id):
         sql = "SELECT rittername FROM ritter WHERE ritternr = %s"
-        return util.get_sql_row(sql, r_id)[0]
+        row = util.get_sql_row(sql, r_id)
+        if row:
+            return row[0]
+        else:
+            return "[unbekannter Ritter]"
 
     def list(self):
         return self.list_by_allianz(-1)

@@ -65,7 +65,7 @@ class Armee(Feld):
             # wie lange waere der String in der Datenbank (latin1)
             ret = len(unicode(entry[key],'utf-8').encode('latin-1')) <= length
         if not ret:
-            print entry[key], "ist nicht zulaessig als", key, "<br />"
+            print entry[key], "ist nicht zul&auml;ssig als", key, "<br />"
         return ret
 
     def __check_entry(self, entry):
@@ -321,7 +321,7 @@ class Armee(Feld):
             self.get_border()
             self.__get_entries()
         else:
-            print "FEHLER: Level '" + level + "' ist ungueltig"
+            print "FEHLER: Level '" + level + "' ist ung&uuml;ltig"
 
     def __get_entries(self):
         """Holt alle Eintraege im Bereich von der Datenbank."""
@@ -576,9 +576,9 @@ class Armee(Feld):
         if (inactive + updated + added) > 0:
             print "Es wurden", inactive, "Armeen deaktiviert,",
             print updated, "aktualisiert und",
-            print added, "neu hinzugefuegt.", "<br />"
+            print added, "neu hinzugef&auml;gt.", "<br />"
         else:
-            print "Keine Armeen geaendert.", "<br />"
+            print "Keine Armeen ge&auml;ndert.", "<br />"
 
 
 # Aufruf als Skript

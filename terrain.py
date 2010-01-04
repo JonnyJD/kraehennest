@@ -211,7 +211,7 @@ class Terrain(Feld):
             self.get_border()
             self.__get_entries()
         else:
-            print "FEHLER: Level '" + level + "' ist ungueltig"
+            print "FEHLER: Level '" + level + "' ist ung&uuml;ltig"
 
     def __get_entries(self):
         """Holt alle Eintraege im Bereich von der Datenbank."""
@@ -244,7 +244,7 @@ class Terrain(Feld):
             updated, added = self.exec_queue()
             if (updated + added) > 0:
                 print "Es wurden", updated, "Felder aktualisiert und",
-                print added, "neu hinzugefuegt.", "<br />"
+                print added, "neu hinzugef&uuml;gt.", "<br />"
             else:
                 print "Terrain ist schon bekannt.", "<br />"
         else:
@@ -265,7 +265,7 @@ class Terrain(Feld):
             updated, added = self.exec_queue()
             if (updated + added) > 0:
                 print "Es wurden", updated, "Felder aktualisiert und",
-                print added, "neu hinzugefuegt.", "<br />"
+                print added, "neu hinzugef&uuml;gt.", "<br />"
             else:
                 print "Terrain ist schon bekannt.", "<br />"
         else:

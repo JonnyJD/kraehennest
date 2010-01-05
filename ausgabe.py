@@ -10,20 +10,22 @@ if 'SCRIPT_URL' in os.environ:
 else:
     prefix = ''
 
-def print_header(title, styles=None):
+def print_header(title=None, styles=None):
     print 'Content-type: text/html; charset=utf-8\n'
     print '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"'
     print '          "http://www.w3.org/TR/html4/loose.dtd">'
     print '<html>'
     print '<head>'
-    print '<title>' + title + '</title>'
+    if title:
+        print '<title>' + title + '</title>'
     print '<link rel="stylesheet" type="text/css" href="',
     print prefix + '/show/stylesheet">'
     if styles:
         print styles
     print '</head>\n'
     print '<body>'
-    print '<h1>' + title + '</h1>'
+    if title:
+        print '<h1>' + title + '</h1>'
 
 def print_footer():
     print '</body></html>'

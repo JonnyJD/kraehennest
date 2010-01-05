@@ -54,8 +54,9 @@ class Reich:
         sql += " LEFT JOIN dorf ON ritter.ritternr = dorf.ritternr"
         sql += " LEFT JOIN armeen ON ritter.ritternr = r_id"
         sql += " WHERE (top10 > 0"
-        sql += " OR ritter.ritternr"
-        sql += " IN (0,1,2,88,113,132,143,159,160,172,174,175,1152))"
+        sql += " OR ritter.alli <> 0" # noetig fuer gesamtliste (-1)
+        sql += " OR inaktiv = 'P'" # SL/NPC Reiche? (alte DB)
+        sql += " OR ritter.ritternr IN (2,172,174,175))"
         if a_id != -1:
             sql += " AND allinr =%s "
         sql += " GROUP BY ritter.ritternr, top10, rittername"

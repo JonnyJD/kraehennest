@@ -54,7 +54,7 @@ class Reich:
         sql += " LEFT JOIN armeen ON ritter.ritternr = r_id"
         sql += " WHERE (top10 > 0"
         sql += " OR ritter.ritternr"
-        sql += " IN (0,1,2,113,143,160,172,174,88,159,174,1152))"
+        sql += " IN (0,1,2,88,113,132,143,159,160,172,174,175,1152))"
         if a_id != -1:
             sql += " AND allinr =%s "
         sql += " GROUP BY ritter.ritternr, top10, rittername"

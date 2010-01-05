@@ -75,6 +75,8 @@ if __name__ == '__main__':
     else:
         title = "Kr&auml;henkarte"
     print 'Content-type: text/html; charset=utf-8\n'
+    print '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"'
+    print '          "http://www.w3.org/TR/html4/loose.dtd">'
     print '<html><head>'
     print '<title>' + title + '</title>'
     print '<link rel="stylesheet" type="text/css" href="',

@@ -40,10 +40,10 @@ class Reich:
         tabelle.addColumn("r_id")
         tabelle.addColumn("Top10")
         tabelle.addColumn("Name")
-        tabelle.addColumn("D&ouml;rfer")
-        tabelle.addColumn("Armeen")
         if a_id == -1:
             tabelle.addColumn("Allianz")
+        tabelle.addColumn("D&ouml;rfer")
+        tabelle.addColumn("Armeen")
         sql = "SELECT ritter.ritternr, top10, rittername"
         sql += ", allinr, allicolor, alliname"
         sql += ", count(distinct dorf.koords)"

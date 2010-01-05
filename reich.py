@@ -8,6 +8,7 @@ import libxml2
 import rbdb
 import util
 import ausgabe
+from types import *
 
 def get_ritter_id_form(rittername):
     form ='''<form method="post"
@@ -139,7 +140,17 @@ if __name__ == '__main__':
     form = cgi.FieldStorage()
     root = None
 
-    if "list" in form:
+    if type(form.value) == StringType:
+        # Reichsdaten vom RB Server einlesen
+        try:
+            root = libxml2.parseDoc(form.value)
+        except libxml2.parserError:
+            print "Es wurden keine gueltigen Daten gesendet. <br />"
+
+        if root != None:
+            reich = Reich()
+            reich.process_xml(root)
+    elif "list" in form:
         ausgabe.print_header("Reichsliste")
 
         reich = Reich()
@@ -147,6 +158,7 @@ if __name__ == '__main__':
         print "Es sind", reichtabelle.length(), "Reiche in der Datenbank"
         reichtabelle.show()
 
+        ausgabe.print_footer()
     elif "id" in form:
         from armee import Armee
         from dorf import Dorf
@@ -156,6 +168,7 @@ if __name__ == '__main__':
         name = reich.get_name(r_id)
         ausgabe.print_header('Reich: ' + name)
 
+        print type(form.value)
         print '<table>'
         dorf = Dorf()
         dorftabelle = dorf.list_by_reich(r_id)
@@ -171,18 +184,8 @@ if __name__ == '__main__':
         dorftabelle.show()
         print '<h2 id="armeen">Armeen</h2>'
         armeetabelle.show()
-    else:
-        # Reichsdaten vom RB Server einlesen
-        try:
-            root = libxml2.parseDoc(form.value)
-        except libxml2.parserError:
-            print "Es wurden keine gueltigen Daten gesendet. <br />"
 
-        if root != None:
-            reich = Reich()
-            reich.process_xml(root)
-
-    ausgabe.print_footer()
+        ausgabe.print_footer()
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

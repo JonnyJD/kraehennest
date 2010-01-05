@@ -101,7 +101,10 @@ class Dorf(Feld):
                     line.append(mauer_string[dorf[i]])
                 elif cols[i] == "aktdatum":
                     string = ausgabe.date_delta_string(dorf[i])
-                    delta = date.today() - dorf[i]
+                    if dorf[i]:
+                        delta = date.today() - dorf[i]
+                    else:
+                        delta = timedelta(weeks=9999)
                     if delta > timedelta(weeks=104):
                         zelle = '<div style="color:red">' + string + '</div>'
                         line.append(zelle)

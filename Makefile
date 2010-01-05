@@ -23,7 +23,8 @@ serverconf:
 	>> serverurl.conf
 
 doc:
-	epydoc -o /var/www/doc.kraehen.org/tools *.py
+	epydoc --output=/var/www/doc.kraehen.org/tools/nest \
+		--name=Kraehenauge --exclude=config *.py
 
 clean:
 	rm serverurl.conf test.xml

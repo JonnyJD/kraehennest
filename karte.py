@@ -309,7 +309,10 @@ if __name__ == '__main__':
                             list = []
                             for col in ['rittername', 'alliname', 'dorfname',
                                     'dorflevel', 'mauer', 'aktdatum']:
-                                list.append(str(dorf.entry[col]))
+                                if dorf.entry[col]:
+                                    list.append(str(dorf.entry[col]))
+                                else:
+                                    list.append("?")
                             list = '|' + '|'.join(list)
                             if show_armeen and armee.has(x,y):
                                 for entry in armee.get(x,y):

@@ -52,6 +52,8 @@ def list_by_allianz(a_id):
     @return: L{ausgabe.Tabelle}
     """
 
+    import allianz
+
     tabelle = ausgabe.Tabelle()
     tabelle.addColumn("r_id")
     tabelle.addColumn("Top10")
@@ -93,11 +95,7 @@ def list_by_allianz(a_id):
             zelle += str(row[2]) + '</a>'
             line.append(zelle)
             if a_id == -1:
-                zelle = '<a href="' + ausgabe.prefix + '/show/allianz/'
-                zelle += str(row[3]) + '">'
-                zelle += '<div style="color:' + row[4] + ';">'
-                zelle += row[5] + '</div></a>'
-                line.append(zelle)
+                line.append(allianz.link(row[3], row[5], row[4]))
             line.append(row[6])
             line.append(row[7])
             tabelle.addLine(line)
@@ -211,8 +209,8 @@ if __name__ == '__main__':
             ausgabe.print_header('Reich: ' + reich.name)
 
             print '<table>'
-            print '<tr><td>Allianz</td><td>'
-            allianz.print_link(reich.ally, reich.allyname, reich.allycolor)
+            print '<tr><td>Allianz</td><td>',
+            print allianz.link(reich.ally, reich.allyname, reich.allycolor),
             print '</td></tr>'
             dorf = Dorf()
             dorftabelle = dorf.list_by_reich(r_id)

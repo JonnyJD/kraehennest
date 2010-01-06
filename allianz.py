@@ -9,15 +9,16 @@ import util
 import ausgabe
 
 
-def print_link(a_id, name=None, color=None):
+def link(a_id, name=None, color=None):
     """
-    Gibt einen gefaerbten Allianzlink aus.
+    Gibt einen gefaerbten Allianzlink zurueck.
 
     Name und Farbe werden bei Bedarf aus der Datenbank gefischt.
 
     @param a_id: Allianz ID
     @param name: Name der Allianz (optional)
     @param color: Farbe der Allianz (optional)
+    @return: gefaerbter HTML-link
     @raise KeyError: Wenn keine Allianz mit der C{a_id} gefunden wird
     """
 
@@ -29,9 +30,10 @@ def print_link(a_id, name=None, color=None):
         else:
             name = row[0]
             color = row[1]
-    print '<a href="' + ausgabe.prefix + '/show/allianz/' + str(a_id) + '">'
-    print '<div style="color:' + color + ';">' + name + '</div>'
-    print '</a>'
+    link = '<a href="' + ausgabe.prefix + '/show/allianz/' + str(a_id) + '">'
+    link += '<div style="color:' + color + ';">' + name + '</div>'
+    link += '</a>'
+    return link
 
 def list():
     """Listet alle Allianzen in einer verlinkten Tabelle."""

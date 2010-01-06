@@ -119,7 +119,7 @@ if __name__ == '__main__':
         ausgabe.print_header("Allianzliste")
         list()
     elif "id" in form:
-        from reich import Reich
+        import reich
         from dorf import Dorf
         from armee import Armee
 
@@ -130,7 +130,6 @@ if __name__ == '__main__':
             ausgabe.print_header("Allianz: " + allianz.name)
 
             print '<table>'
-            reich = Reich()
             reichtabelle = reich.list_by_allianz(a_id)
             print '<tr><td><a href="#reiche">Mitglieder</a></td>'
             print '<td>' + str(reichtabelle.length()) + '</td></tr>'

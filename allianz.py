@@ -84,6 +84,8 @@ def list():
                     line.append("")
             tabelle.addLine(line)
             row = cursor.fetchone()
+        cursor.close()
+        conn.close()
         print "Es sind", tabelle.length(), "Allianzen in der Datenbank"
         return tabelle.show()
     except rbdb.Error, e:

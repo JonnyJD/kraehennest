@@ -8,6 +8,19 @@ import rbdb
 import util
 import ausgabe
 
+def print_link(a_id, name=None, color=None):
+    if name is None or color is None:
+        sql = "SELECT alliname, color FROM allis WHERE allinr = %s"
+        row = util.get_sql_row(sql, a_id)
+        if row is None:
+            raise KeyError(a_id)
+        else:
+            name = row[0]
+            color = row[1]
+    print '<a href="' + ausgabe.prefix + '/show/allianz/' + str(a_id) + '">'
+    print '<div style="color:' + color + ';">' + name + '</div>'
+    print '</a>'
+
 class Allianz:
     """Eine Klasse um Allianzdaten ein- und auszulesen.
     """

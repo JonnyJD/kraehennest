@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-import cgitb
-cgitb.enable()
+#import cgitb
+#cgitb.enable()
 
 import cgi
 import libxml2
@@ -24,6 +24,26 @@ def get_ritter_id_form(rittername):
 class Reich:
     """Eine Klasse um Reichsdaten ein- und auszulesen.
     """
+
+    def __init__(self, r_id=None):
+        """
+        @param r_id: Ritternummer
+        @raise KeyError: Kein Eintrag mit dieser C{r_id} vorhanden.
+        """
+
+        if r_id is not None:
+            sql = "SELECT rittername, allinr, alliname, allicolor"
+            sql += " FROM ritter JOIN allis ON ritter.alli = allinr"
+            sql += " WHERE ritternr = %s"
+            row = util.get_sql_row(sql, r_id)
+            if row is None:
+                raise KeyError(r_id)
+            else:
+                self.id = r_id
+                self.name = row[0]
+                self.ally = row[1]
+                self.allyname = row[2]
+                self.allycolor = row[3]
 
     def get_name(self, r_id):
         sql = "SELECT rittername FROM ritter WHERE ritternr = %s"
@@ -163,28 +183,33 @@ if __name__ == '__main__':
     elif "id" in form:
         from armee import Armee
         from dorf import Dorf
+        import allianz
 
         r_id = form["id"].value
-        reich = Reich()
-        name = reich.get_name(r_id)
-        ausgabe.print_header('Reich: ' + name)
+        try:
+            reich = Reich(r_id)
+            ausgabe.print_header('Reich: ' + reich.name)
 
-        print type(form.value)
-        print '<table>'
-        dorf = Dorf()
-        dorftabelle = dorf.list_by_reich(r_id)
-        print '<tr><td><a href="#doerfer">D&ouml;rfer</a></td>'
-        print '<td>' + str(dorftabelle.length()) + '</td></tr>'
-        armee = Armee()
-        armeetabelle = armee.list_by_reich(r_id)
-        print '<tr><td><a href="#armeen">Armeen</a></td>'
-        print '<td>' + str(armeetabelle.length()) + '</td></tr>'
-        print '</table>'
+            print '<table>'
+            print '<tr><td>Allianz</td><td>'
+            allianz.print_link(reich.ally, reich.allyname, reich.allycolor)
+            print '</td></tr>'
+            dorf = Dorf()
+            dorftabelle = dorf.list_by_reich(r_id)
+            print '<tr><td><a href="#doerfer">D&ouml;rfer</a></td>'
+            print '<td>' + str(dorftabelle.length()) + '</td></tr>'
+            armee = Armee()
+            armeetabelle = armee.list_by_reich(r_id)
+            print '<tr><td><a href="#armeen">Armeen</a></td>'
+            print '<td>' + str(armeetabelle.length()) + '</td></tr>'
+            print '</table>'
 
-        print '<h2 id="doerfer">D&ouml;rfer</h2>'
-        dorftabelle.show()
-        print '<h2 id="armeen">Armeen</h2>'
-        armeetabelle.show()
+            print '<h2 id="doerfer">D&ouml;rfer</h2>'
+            dorftabelle.show()
+            print '<h2 id="armeen">Armeen</h2>'
+            armeetabelle.show()
+        except KeyError, e:
+            ausgabe.print_header("Unbekanntes Reich: " + e.args[0])
 
         ausgabe.print_footer()
 

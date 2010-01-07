@@ -83,17 +83,15 @@ class Dorf(Feld):
                     line.append(dorf[i][4:7])
                 elif cols[i] == "ritternr":
                     # nachfolgenden Ritternamen verlinken
-                    col = '<a href="' + ausgabe.prefix + '/show/reich/'
-                    col += str(dorf[i]) + '"'
+                    url = "/show/reich/" + str(dorf[i])
                     if cols[i+1] == "allicolor":
                         if dorf[i] == 174: # Keiner
-                            col += ' style="color:green"'
+                            link = ausgabe.link(url, dorf[i+2], "green")
                         else:
-                            col += ' style="color:' + dorf[i+1] + '"'
-                        col += '>' + dorf[i+2] + '</a>'
+                            link = ausgabe.link(url, dorf[i+2], dorf[i+1])
                     else:
-                        col += '>' + dorf[i+1] + '</a>'
-                    line.append(col)
+                        link = ausgabe.link(url, dorf[i+1])
+                    line.append(link)
                 elif cols[i] == "mauer":
                     mauer_string = {'o': "ohne", 'k': "kleine", 'm': "mittlere",
                             'g': "gro&szlig;e", 'u': "un&uuml;berwindbar",

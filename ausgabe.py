@@ -5,10 +5,18 @@ import os
 from datetime import date, datetime, time
 from types import *
 
+
+######################################################################
+#{ HTML-Ausgabe
+######################################################################
+
+# Prefix
 if 'SCRIPT_URL' in os.environ:
     prefix = re.match("(.*)/(show|send)", os.environ['SCRIPT_URL']).group(1)
 else:
+    # Der Prefix der URL, verschiedene Authorisationsbereiche
     prefix = ''
+
 
 def print_header(title=None, styles=None):
     print 'Content-type: text/html; charset=utf-8\n'
@@ -29,6 +37,71 @@ def print_header(title=None, styles=None):
 
 def print_footer():
     print '</body></html>'
+
+def link(url, text, color=None, br=False):
+    """Gibt ein gefuelltes HTML-A-Tag zurueck.
+    
+    Bei Bedarf mit nem C{BR} davor und dem Prefix wenn noetig.
+    Auch eine Farbe kann man festlegen.
+
+    @param url: Das absolute Linkziel
+    @param text: Der Linktext
+    @param color: Die Linkfarbe als Hexwert mit C{#}
+    @param br: Ob ein C{BR} davorgeschrieben werden sollte
+    @type br: C{BooleanType}
+    @return: Die HTML-tags als C{StringType}
+    """
+
+    link = ''
+    if br:
+        link += '<br />'
+    link += '<a href="' + prefix + url + '"'
+    if color is not None:
+        link += ' style="color:' + color + ';"'
+    link += '>' + text + '</a>'
+    return link
+
+
+class Tabelle:
+    """Eine HTML-Tabelle"""
+
+    def __init__(self):
+        self.__columns = []
+        self.__lines = []
+
+    def addColumn(self, col):
+        self.__columns.append(col)
+
+    def addLine(self, cols):
+        self.__lines.append(cols)
+
+    def length(self):
+        return len(self.__lines)
+
+    def show(self):
+        if self.length() > 0:
+            print '<table class="tabelle">'
+            print '<tr>'
+            for col in self.__columns:
+                print '<th>' + col + '</th>'
+            print '</tr>'
+            for line in self.__lines:
+                print '<tr>'
+                for col in line:
+                    if col is None:
+                        col = ""
+                    if type(col) in [IntType, LongType]:
+                        print '<td align="right">' + str(col) + '</td>'
+                    else:
+                        print '<td>' + str(col) + '</td>'
+                print '</tr>'
+            print '</table>'
+        else:
+            print '(keine)'
+
+######################################################################
+#{ Datumsformatierung
+######################################################################
 
 def date_delta_string(my_date):
     if my_date:
@@ -91,41 +164,5 @@ def datetime_delta_string(my_datetime):
     else:
         return "(unbekannt)"
 
-class Tabelle:
-    """Eine HTML-Tabelle"""
-
-    def __init__(self):
-        self.__columns = []
-        self.__lines = []
-
-    def addColumn(self, col):
-        self.__columns.append(col)
-
-    def addLine(self, cols):
-        self.__lines.append(cols)
-
-    def length(self):
-        return len(self.__lines)
-
-    def show(self):
-        if self.length() > 0:
-            print '<table class="tabelle">'
-            print '<tr>'
-            for col in self.__columns:
-                print '<th>' + col + '</th>'
-            print '</tr>'
-            for line in self.__lines:
-                print '<tr>'
-                for col in line:
-                    if col is None:
-                        col = ""
-                    if type(col) in [IntType, LongType]:
-                        print '<td align="right">' + str(col) + '</td>'
-                    else:
-                        print '<td>' + str(col) + '</td>'
-                print '</tr>'
-            print '</table>'
-        else:
-            print '(keine)'
 
 # vim:set shiftwidth=4 expandtab smarttab:

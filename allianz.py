@@ -30,10 +30,7 @@ def link(a_id, name=None, color=None):
         else:
             name = row[0]
             color = row[1]
-    link = '<a href="' + ausgabe.prefix + '/show/allianz/' + str(a_id) + '">'
-    link += '<div style="color:' + color + ';">' + name + '</div>'
-    link += '</a>'
-    return link
+    return ausgabe.link("/show/allianz/" + str(a_id), name, color)
 
 def list():
     """Listet alle Allianzen in einer verlinkten Tabelle."""

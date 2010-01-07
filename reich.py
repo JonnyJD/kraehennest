@@ -90,10 +90,7 @@ def list_by_allianz(a_id):
         while row != None:
             line = [row[0]]
             line.append(row[1])
-            zelle = '<a href="' + ausgabe.prefix + '/show/reich/'
-            zelle += str(row[0]) + '">'
-            zelle += str(row[2]) + '</a>'
-            line.append(zelle)
+            line.append(ausgabe.link("/show/reich/" + str(row[0]), row[2]))
             if a_id == -1:
                 line.append(allianz.link(row[3], row[5], row[4]))
             line.append(row[6])

@@ -374,17 +374,15 @@ class Armee(Feld):
                         line.append('<div style="color:red">Nein</div>')
                 elif cols[i] == "ritternr":
                     # nachfolgenden Ritternamen verlinken
-                    col = '<a href="' + ausgabe.prefix + '/show/reich/'
-                    col += str(armee[i]) + '"'
+                    url = "/show/reich/" + str(armee[i])
                     if cols[i+1] == "allicolor":
                         if armee[i] == 174: # Keiner
-                            col += ' style="color:green"'
+                            link = ausgabe.link(url, armee[i+2], "green")
                         else:
-                            col += ' style="color:' + armee[i+1] + '"'
-                        col += '>' + armee[i+2] + '</a>'
+                            link = ausgabe.link(url, armee[i+2], armee[i+1])
                     else:
-                        col += '>' + armee[i+1] + '</a>'
-                    line.append(col)
+                        link = ausgabe.link(url, armee[i+1])
+                    line.append(link)
                 elif cols[i] == "last_seen":
                     string = ausgabe.datetime_delta_string(armee[i])
                     delta = datetime.today() - armee[i]

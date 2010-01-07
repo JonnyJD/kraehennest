@@ -49,8 +49,11 @@ def list_maps():
     print_area_link("westen", [1,2,3],  "Der Westen", br=True)
     print_area_link("sueden", [1,2,3],  "Der Sueden", br=True)
     print '</td><td class="karten">'
-    print_area_link("drache", [1,2],    "Drachenhoehle")
+    print "(Piraten)"
+    print_area_link("drache", [1,2],    "Drachenhoehle", br=True)
+    print "<br />(Zentral)"
     print_area_link("axt", [1,2,3],     "Axtwaechterquest", br=True)
+    print "<br />(K&uuml;ste)"
     print_area_link("schuetzen", [1],   "Meisterschuetzenquest", br=True)
     print '</td></tr></table>'
     print '</div>'

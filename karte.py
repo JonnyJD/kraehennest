@@ -338,13 +338,19 @@ if __name__ == '__main__':
                             row += list.replace('"', "&quot;")
                         row += '\')" onmouseout="delPos()"'
                     row += '>'
-                    if config.is_kraehe() and armee.has(x,y):
-                        # Felddetail-Link
+                    if not config.is_kraehe():
+                        show_detail_link = False
+                    if armee.has(x,y):
+                        show_detail_link = True
+                    elif dorf.has(x,y) and dorf.get(x,y)["rittername"] != ".":
+                        show_detail_link = True
+                    else:
+                        show_detail_link = False
+                    if show_detail_link:
                         row += '<a href="' + ausgabe.prefix + '/show/feld/'
                         row += str(x) + '.' + str(y)
                         if level != "N":
                             row += '/' + level
-                        # link color vermeiden (taucht sonst manchmal auf)
                         row += '"'
                         if dorf.has(x,y):
                             row += ' style="color:'
@@ -352,8 +358,6 @@ if __name__ == '__main__':
                         row += ' target="_blank">'
                     if show_dorf and dorf.has(x,y):
                         dorf.get(x,y)
-                        row += '<div style="color:'
-                        row += dorf.entry['allyfarbe'] +';">'
                         if dorf.entry['rittername'] != ".":
                             row += dorf.entry['rittername'][0:3]
                         elif config.is_kraehe() and terrain.entry["typ"]:
@@ -362,8 +366,8 @@ if __name__ == '__main__':
                             row += "_"
                         else:
                             row += "."
-                        row += '</div>'
                     elif show_armeen:
+                        # Platzhalter fuer Dorf
                         row += '<div>&nbsp;</div>'
                     if show_armeen:
                         row += '<div class="armeen">'

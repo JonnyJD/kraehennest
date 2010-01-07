@@ -306,6 +306,8 @@ if __name__ == '__main__':
                     if config.is_kraehe():
                         row += ' onmouseover="showPos(\''
                         row += str(x) + "," + str(y)
+                        if config.is_kraehe() and terrain.entry["typ"]:
+                            row += " " + "." * terrain.entry["typ"]
                         if show_dorf and dorf.has(x,y):
                             dorf.get(x,y)
                             list = []

@@ -152,7 +152,7 @@ if __name__ == '__main__':
         print '    text-align:left;'
         print '    max-height: ' + str(fontsize-5) + 'px;'
         print '}'
-        print 'span {'
+        print 'span.armee {'
         print '    display: inline-block;'
         if fontsize > 8:
             print '    height: ' + str(fontsize-5) + 'px;'
@@ -367,10 +367,12 @@ if __name__ == '__main__':
                         row += '<div>&nbsp;</div>'
                     if show_armeen:
                         row += '<div class="armeen">'
-                        row += '<span></span>' # dummy fuer Formatierung
+                        # dummy fuer Formatierung
+                        row += '<span class="armee"></span>'
                         if armee.has(x,y):
                             for entry in armee.get(x,y):
-                                row += '<span style="background-color:'
+                                row += '<span class="armee"'
+                                row += ' style="background-color:'
                                 row += entry["allyfarbe"] + '"></span>'
                         row += '</div>'
                     if config.is_kraehe() and armee.has(x,y):

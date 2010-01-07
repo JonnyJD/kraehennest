@@ -2,7 +2,7 @@
 
 import re
 import os
-from datetime import datetime, time
+from datetime import date, datetime, time
 from types import *
 
 if 'SCRIPT_URL' in os.environ:
@@ -32,7 +32,26 @@ def print_footer():
 
 def date_delta_string(my_date):
     if my_date:
-        return datetime_delta_string(datetime.combine(my_date, time()))
+        days = (date.today() - my_date).days
+        months = days//30
+        years = days//365
+        prefix = "vor "
+        if years > 1:
+            return prefix + str(years) + " Jahren"
+        elif years == 1:
+            return prefix + str(years) + " Jahr"
+        elif months > 1:
+            return prefix + str(months) + " Monaten"
+        elif months == 1:
+            return prefix + str(months) + " Monat"
+        elif days >= 3:
+            return prefix + str(days) + " Tagen"
+        elif days == 2:
+            return "vorgestern"
+        elif days == 1:
+            return "gestern"
+        else:
+            return "heute"
     else:
         return "(unbekannt)"
 

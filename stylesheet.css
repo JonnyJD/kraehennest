@@ -23,7 +23,7 @@ div.box {
 /* "richtige" Tabellenzellen
  * (in der Karte "unrichtige" Zellen benutzt)
  */
-table.tabelle tr td {
+table.tabelle tr td, table.tabelle tr th {
 	padding-left:5px;
 	padding-right:5px;
 }

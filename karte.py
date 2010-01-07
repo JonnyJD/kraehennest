@@ -316,18 +316,22 @@ if __name__ == '__main__':
                                 else:
                                     list.append("?")
                             list = '|' + '|'.join(list)
-                            if show_armeen and armee.has(x,y):
-                                for entry in armee.get(x,y):
-                                    list += '|' + entry["allyfarbe"]
-                                    list += '|' + entry["name"]
-                                    if entry["size"] == None:
-                                        list += '|?'
-                                    else:
-                                        list += '|' + str(entry["size"])
-                                    if entry["strength"] == None:
-                                        list += '|?'
-                                    else:
-                                        list += '|' + str(entry["strength"])
+                        else:
+                            list = '|?' * 6
+                        if show_armeen and armee.has(x,y):
+                            for entry in armee.get(x,y):
+                                list += '|' + entry["allyfarbe"]
+                                list += '|' + entry["name"]
+                                if entry["size"] == None:
+                                    list += '|?'
+                                else:
+                                    list += '|' + str(entry["size"])
+                                if entry["strength"] == None:
+                                    list += '|?'
+                                else:
+                                    list += '|' + str(entry["strength"])
+                        if ((show_dorf and dorf.has(x,y))
+                                or (show_armeen and armee.has(x,y))):
                             list = list.replace("'", "\\'")
                             row += list.replace('"', "&quot;")
                         row += '\')" onmouseout="delPos()"'
@@ -339,8 +343,10 @@ if __name__ == '__main__':
                         if level != "N":
                             row += '/' + level
                         # link color vermeiden (taucht sonst manchmal auf)
-                        row += '" style="color:'
-                        row += dorf.get(x,y)['allyfarbe'] +';"'
+                        row += '"'
+                        if dorf.has(x,y):
+                            row += ' style="color:'
+                            row += dorf.get(x,y)['allyfarbe'] +';"'
                         row += ' target="_blank">'
                     if show_dorf and dorf.has(x,y):
                         dorf.get(x,y)

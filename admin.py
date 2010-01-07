@@ -7,6 +7,8 @@ import cgi
 import rbdb
 import util
 from datetime import datetime, timedelta
+
+import config
 import ausgabe
 
 def list_versions():
@@ -18,6 +20,10 @@ def list_versions():
     sql = "SELECT r_id, rittername, version, last_seen"
     sql += " FROM versionen"
     sql += " left JOIN ritter ON r_id = ritternr"
+    if config.is_tw():
+        sql += " WHERE version like '%TW-Edition%'"
+    elif not config.is_kraehe():
+        sql += " WHERE 0" # liste garnichts
     sql += " ORDER BY last_seen DESC"
     try:
         conn = rbdb.connect()
@@ -58,11 +64,15 @@ def list_versions():
 if __name__ == '__main__':
     form = cgi.FieldStorage()
 
-    if "list" in form:
+    if not config.is_admin():
+        ausgabe.print_header("Unberechtigter Zugriff")
+    elif "list" in form:
         if form["list"].value == "versionen":
             ausgabe.print_header("Versionsliste")
             list_versions()
-            ausgabe.print_footer()
+        else:
+            ausgabe.print_header("Administration")
+    ausgabe.print_footer()
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

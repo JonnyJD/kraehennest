@@ -187,7 +187,7 @@ if __name__ == '__main__':
             if show_armeen:
                 # Armeedetail
                 print '<div id="armeedetail" style="z-index:2; position:fixed;'
-                print ' top:170px; right:5px; width:13em; min-height:40em;'
+                print ' top:170px; right:5px; width:13em; min-height:10em;'
                 print ' font-size:9pt; background-color:#333333;'
                 print ' padding:5px;"><div>&nbsp;</div></div>'
                 print '<br /><div></div>'

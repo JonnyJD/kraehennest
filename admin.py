@@ -6,6 +6,7 @@
 import cgi
 import rbdb
 import util
+from datetime import datetime, timedelta
 import ausgabe
 
 def list_versions():
@@ -31,7 +32,18 @@ def list_versions():
                 zelle = '<a href="reich/' + str(row[0]) + '">' + row[1] + '</a>'
             line.append(zelle)
             line.append(row[2])
-            line.append(row[3])
+            string = ausgabe.datetime_delta_string(row[3])
+            delta = datetime.today() - row[3]
+            if delta > timedelta(hours=30):
+                    zelle = '<div style="color:red">'
+                    zelle += string + '</div>'
+                    line.append(zelle)
+            elif delta > timedelta(hours=6):
+                    zelle = '<div style="color:orange">'
+                    zelle += string + '</div>'
+                    line.append(zelle)
+            else:
+                line.append(string)
             tabelle.addLine(line)
             row = cursor.fetchone()
         print "Es sind", tabelle.length(), "Benutzerreiche in der Datenbank"

@@ -109,7 +109,7 @@ class Tabelle:
 
     def show(self):
         if self.length() > 0:
-            print '<table class="Tabelle">'
+            print '<table class="tabelle">'
             print '<tr>'
             for col in self.__columns:
                 print '<th>' + col + '</th>'

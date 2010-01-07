@@ -24,6 +24,6 @@ div.box {
  * (in der Karte "unrichtige" Zellen benutzt)
  */
 table.tabelle tr td {
-	padding-left:3px;
-	padding-right:3px;
+	padding-left:5px;
+	padding-right:5px;
 }

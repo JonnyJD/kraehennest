@@ -8,9 +8,26 @@ import ausgabe
 
 
 def print_link(link, name, br=False):
+    """Gibt eine bestimmten Kartenlink aus.
+    
+    @param link: Der Teil der URL nach C{/show/karte}
+    @param name: Der Linktext
+    @param br: ob ein C{BR} davorgesetzt werden soll
+    @type br: C{BooleanType}
+    """
+
     print ausgabe.link("/show/karte"+link, name, br=br)
 
 def print_area_link(area, levels, name, br=False):
+    """Gibt mehrere Levellinks fuer ein bestimmtes Gebiet aus.
+
+    @param area: Der Gebietsbezeichner
+    @param levels: Liste mit Untergrund-Leveln, Bsp.: C{[1,2,3]}
+    @param name: Der angezeigte Name des Gebiets
+    @param br: ob ein C{BR} davorgesetzt werden soll
+    @type br: C{BooleanType}
+    """
+
     if area != "":
         area = "/" + area
     print_link(area, name, br=br);
@@ -21,6 +38,8 @@ def print_area_link(area, levels, name, br=False):
     print "<br />"
 
 def list_maps():
+    """Gibt die verfuegbaren Kartenlinks in einer Tabelle aus."""
+
     print '<style type="text/css">'
     print 'td.karten { width:34%; }'
     print '</style>'
@@ -58,6 +77,68 @@ def list_maps():
     print '</td></tr></table>'
     print '</div>'
 
+def nav_link(direction, amount, text):
+    """Gibt eine Navigationslink zurueck.
+
+    @param direction: Ist C{"nord"}, C{"sued"}, C{"ost"} oder C{"west"}.
+    @param amount: Die Schrittweite
+    @type amount: C{IntType}
+    @param text: Der Linktext
+    @result: Der HTML-Link
+    @rtype: C{StringType}
+    """
+
+    x1 = int(form["x1"].value); x2 = int(form["x2"].value)
+    y1 = int(form["y1"].value); y2 = int(form["y2"].value)
+    if direction == "nord":
+        y1 -= amount; y2 = y1 + 21;
+    if direction == "sued":
+        y2 += amount; y1 = y2 - 21;
+    if direction == "ost":
+        x1 -= amount; x2 = x1 + 33;
+    if direction == "west":
+        x2 += amount; x1 = x2 - 33;
+    link = '/show/karte/'
+    link += str(x1) + '.' + str(y1) + '-' + str(x2) + '.' + str(y2)
+    if level != 'N':
+        link += '/' + level
+    if "size" in form and form["size"].value != "normal":
+        link += '/' + form["size"].value
+    return ausgabe.link(link, text)
+
+def level_link(direction):
+    """Gibt eine Level-link zurueck.
+
+    Linktext ist das Ziellevel.
+    @param direction: Ist C{"hoch"} oder C{"runter"}
+    @result: Der HTML-Link
+    @rtype: C{StringType}
+    """
+
+    x1 = int(form["x1"].value); x2 = int(form["x2"].value)
+    y1 = int(form["y1"].value); y2 = int(form["y2"].value)
+    if ((direction == "hoch" and level != 'N')
+            or (direction == "runter" and level != 'u5')):
+        link = '/show/karte/'
+        link += str(x1) + '.' + str(y1) + '-' + str(x2) + '.' + str(y2)
+        if direction == "hoch":
+            if level != "u1":
+                new_level = 'u' + str(int(level[1])-1)
+                link += '/' + new_level
+            else:
+                new_level = 'N'
+        if direction == "runter":
+            if level == "N":
+                new_level = 'u1'
+            else:
+                new_level = 'u' + str(int(level[1])+1)
+            link += '/' + new_level
+        if "size" in form and form["size"].value != "normal":
+            link += '/' + form["size"].value
+        return ausgabe.link(link, new_level)
+    else:
+        return '&nbsp;'
+
 
 # Aufruf direkt: Karten anzeigen
 if __name__ == '__main__':
@@ -90,6 +171,8 @@ if __name__ == '__main__':
     else:
         # Zeige eine Karte
 
+
+        # Bereite Layer und Bereiche vor
         if "level" in form:
             level = form["level"].value
         else:
@@ -122,6 +205,8 @@ if __name__ == '__main__':
         else:
             terrain.fetch_data(level)
 
+
+        # Bereite Formatierungen vor
         size = 32 
         fontsize = 9
         if "size" in form:
@@ -182,6 +267,7 @@ if __name__ == '__main__':
         print '}'
         print '</style>\n'
 
+        # Detailboxen
         if config.is_kraehe():
             if show_dorf:
                 # Dorfdetail
@@ -195,50 +281,6 @@ if __name__ == '__main__':
                 print 'top:170px; right:5px; width:13em; min-height:10em;',
                 print 'font-size:9pt; background-color:#333333;',
                 print 'padding:5px;"><div>&nbsp;</div></div>'
-
-        def nav_link(direction, amount, text):
-            x1 = int(form["x1"].value); x2 = int(form["x2"].value)
-            y1 = int(form["y1"].value); y2 = int(form["y2"].value)
-            if direction == "nord":
-                y1 -= amount; y2 = y1 + 21;
-            if direction == "sued":
-                y2 += amount; y1 = y2 - 21;
-            if direction == "ost":
-                x1 -= amount; x2 = x1 + 33;
-            if direction == "west":
-                x2 += amount; x1 = x2 - 33;
-            link = '/show/karte/'
-            link += str(x1) + '.' + str(y1) + '-' + str(x2) + '.' + str(y2)
-            if level != 'N':
-                link += '/' + level
-            if "size" in form and form["size"].value != "normal":
-                link += '/' + form["size"].value
-            return ausgabe.link(link, text)
-
-        def level_link(direction):
-            x1 = int(form["x1"].value); x2 = int(form["x2"].value)
-            y1 = int(form["y1"].value); y2 = int(form["y2"].value)
-            if ((direction == "hoch" and level != 'N')
-                    or (direction == "runter" and level != 'u5')):
-                link = '/show/karte/'
-                link += str(x1) + '.' + str(y1) + '-' + str(x2) + '.' + str(y2)
-                if direction == "hoch":
-                    if level != "u1":
-                        new_level = 'u' + str(int(level[1])-1)
-                        link += '/' + new_level
-                    else:
-                        new_level = 'N'
-                if direction == "runter":
-                    if level == "N":
-                        new_level = 'u1'
-                    else:
-                        new_level = 'u' + str(int(level[1])+1)
-                    link += '/' + new_level
-                if "size" in form and form["size"].value != "normal":
-                    link += '/' + form["size"].value
-                return ausgabe.link(link, new_level)
-            else:
-                return '&nbsp;'
 
         # Kartennavigation
         print '\n<table class="navi"',
@@ -296,11 +338,12 @@ if __name__ == '__main__':
         #
         width = size * (terrain.xmax - terrain.xmin + 1 + 2)
         print '\n\n<table class="karte" style="width:' + str(width) + 'px;">'
-        # X - Achse
         print '<tr style="height:' + str(size) + 'px;"><td></td>'
+        # X - Achse
         for x in range(terrain.xmin, terrain.xmax + 1):
             print '<td>' + str(x) + '</td>'
         for y in range(terrain.ymin, terrain.ymax + 1):
+            # Y - Achse
             print '<tr style="height:' + str(size) + 'px;">'
             print '<td>' + str(y)  + '</td>'
             for x in range(terrain.xmin, terrain.xmax + 1):
@@ -308,11 +351,14 @@ if __name__ == '__main__':
                     terrain.get(x,y)
                     row = '<td background="/img/terrain/' + str(size) + '/'
                     row += terrain.entry["terrain"] + '.gif"'
+
+                    # Detail-Mouse-Over
                     if config.is_kraehe():
                         row += ' onmouseover="showPos(\''
                         row += str(x) + "," + str(y)
                         if config.is_kraehe() and terrain.entry["typ"]:
                             row += " " + "." * terrain.entry["typ"]
+                        # fuer Dorf
                         if show_dorf and dorf.has(x,y):
                             dorf.get(x,y)
                             list = []
@@ -325,6 +371,7 @@ if __name__ == '__main__':
                             list = '|' + '|'.join(list)
                         else:
                             list = '|?' * 6
+                        # fuer Armeen
                         if show_armeen and armee.has(x,y):
                             for entry in armee.get(x,y):
                                 list += '|' + entry["allyfarbe"]
@@ -343,6 +390,8 @@ if __name__ == '__main__':
                             row += list.replace('"', "&quot;")
                         row += '\')" onmouseout="delPos()"'
                     row += '>'
+
+                    # Detail-Link
                     if not config.is_kraehe():
                         show_detail_link = False
                     if show_armeen and armee.has(x,y):
@@ -362,6 +411,8 @@ if __name__ == '__main__':
                             row += ' style="color:'
                             row += dorf.get(x,y)['allyfarbe'] +';"'
                         row += ' target="_blank">'
+
+                    # Dorf
                     if show_dorf and dorf.has(x,y):
                         dorf.get(x,y)
                         if dorf.entry['rittername'] != ".":
@@ -375,6 +426,8 @@ if __name__ == '__main__':
                     elif show_armeen:
                         # Platzhalter fuer Dorf
                         row += '<div>&nbsp;</div>'
+
+                    # Armeen
                     if show_armeen:
                         row += '<div class="armeen">'
                         if armee.has(x,y):
@@ -387,8 +440,9 @@ if __name__ == '__main__':
                         row += '</a>'
                     row += '</td>'
                     print row
-                else:
+                else: # not terrain.has(x,y):
                     print '<td></td>'
+            # y - Achse
             print '<td>' + str(y) + '</tr>'
         # X - Achse
         print '<tr style="height:' + str(size) + 'px;"><td></td>'

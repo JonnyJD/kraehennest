@@ -23,7 +23,7 @@ def status_string(status):
     
     @param status: Status Character aus der Datenbank
     @type status: C{StringType}
-    @return: C{StringType}
+    @rtype: C{StringType}
     """
     return {S_SOLD: "Taverne", S_HIDDEN: "versteckt",
             S_QUEST: "Quest", S_DEAD: "tot", None: None}[status]
@@ -73,7 +73,7 @@ class Armee(Feld):
         @type key: C{StringType}
         @param length: Die maximale Laenge
         @type length: C{IntType}
-        @return: C{BooleanType}
+        @rtype: C{BooleanType}
         """
 
         if db_col and not self.__cols_gathered:
@@ -97,7 +97,7 @@ class Armee(Feld):
         Des Weiteren wird die Liste der Datenbankfelder gefuellt
         @param entry: Zu pruefender Eintrag
         @type entry: C{Dict}
-        @return: C{BooleanType}
+        @rtype: C{BooleanType}
         """
 
         # Named Booleans
@@ -137,7 +137,7 @@ class Armee(Feld):
 
         @param entry: Zu pruefender Eintrag
         @type entry: C{Dict}
-        @return: C{BooleanType}
+        @rtype: C{BooleanType}
         """
         return (self.__is(INT, entry, MAN, NO_DB, "x", 3)
                 and self.__is(INT,entry, MAN, NO_DB, "y", 3)
@@ -150,7 +150,7 @@ class Armee(Feld):
         Es wird zurueckgegeben ob die Daten syntaktisch korrekt sind.
         @param entry: Zu pruefender Eintrag
         @type entry: C{Dict}
-        @return: C{BooleanType}
+        @rtype: C{BooleanType}
         """
 
         if self.__check_entry(entry):
@@ -166,7 +166,7 @@ class Armee(Feld):
         Es wird zurueckgegeben ob die Daten syntaktisch korrekt sind.
         @param entry: Zu pruefender Eintrag
         @type entry: C{Dict}
-        @return: C{BooleanType}
+        @rtype: C{BooleanType}
         """
 
         if self.__check_inactive(entry):
@@ -179,7 +179,7 @@ class Armee(Feld):
         """Deaktiviert alle Armeen in der inactive Liste.
         
         Gibt die Anzahl der deaktivierten Armeen zurueck
-        @return: C{IntType}
+        @rtype: C{IntType}
         """
 
         if len(self.__inactive_entries) > 0:
@@ -270,7 +270,7 @@ class Armee(Feld):
         Gibt den Erfolgsstatus zurueck
         @param entry: Zu pruefender Eintrag
         @type entry: C{Dict}
-        @return: C{BooleanType}
+        @rtype: C{BooleanType}
         """
 
         sql = "UPDATE armeen SET "
@@ -306,7 +306,7 @@ class Armee(Feld):
         und Aenderungen werden sofort ausgefuehrt.
 
         Gibt die Anzahl der aktualisierten Armeen zurueck.
-        @return: C{IntType}
+        @rtype: C{IntType}
         """
 
         new = self.new_entries
@@ -341,7 +341,7 @@ class Armee(Feld):
         noch nicht in der Datenbank vorhanden sind.
 
         Gibt die Anzahl der eingefuegten Armeen zurueck.
-        @return: C{IntType}
+        @rtype: C{IntType}
         """
 
         num_inserted = 0
@@ -379,7 +379,7 @@ class Armee(Feld):
 
         Die Anzahl der deaktivierten, aktualisierten und der neuen Eintraege
         wird zurueckgegeben.
-        @return: C{IntType}, C{IntType}, C{IntType}
+        @rtype: C{IntType}, C{IntType}, C{IntType}
         """
 
         self.__get_ritter_ids()
@@ -405,7 +405,7 @@ class Armee(Feld):
     def __get_entries(self):
         """Holt alle Eintraege im Bereich von der Datenbank.
         
-        @return: C{BooleanType}"""
+        @rtype: C{BooleanType}"""
 
         sql = "SELECT x, y, ritternr, allicolor, name, size, strength"
         sql += " FROM armeen"
@@ -445,7 +445,7 @@ class Armee(Feld):
         @type cols: C{List} of C{Dict}
         @param armeen: Armeeliste
         @type armeen: C{List} of C{Dict}
-        @return: L{ausgabe.Tabelle}
+        @rtype: L{ausgabe.Tabelle}
         """
 
         tabelle = ausgabe.Tabelle()
@@ -503,7 +503,7 @@ class Armee(Feld):
     def list_by_feld(self, level, x, y):
         """Holt alle Armeen auf einem Feld
         
-        @return: L{ausgabe.Tabelle}
+        @rtype: L{ausgabe.Tabelle}
         """
 
         cols = ["status", "ritternr", "allicolor", "rittername"]
@@ -528,7 +528,7 @@ class Armee(Feld):
     def list_by_reich(self, r_id):
         """Holt alle Armeen eines Reiches mit r_id
 
-        @return: L{ausgabe.Tabelle}
+        @rtype: L{ausgabe.Tabelle}
         """
 
         cols = ["active", "status", "level", "x", "y", "name", "last_seen"]
@@ -550,14 +550,14 @@ class Armee(Feld):
     def list_all(self):
         """Holt alle(!) Armeen
 
-        @return: L{ausgabe.Tabelle}
+        @rtype: L{ausgabe.Tabelle}
         """
         return self.list_by_allianz(-1)
 
     def list_by_allianz(self, a_id):
         """Holt alle Armeen eines Allianz mit a_id
         
-        @return: L{ausgabe.Tabelle}
+        @rtype: L{ausgabe.Tabelle}
         """
 
         cols = ["status", "level", "x", "y", "ritternr"]

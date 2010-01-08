@@ -12,19 +12,19 @@ from feld import Feld
 from reich import get_ritter_id_form
 import ausgabe
 
-MAN     = True;         OPT   = False
-DBCOL   = True;         NO_DB = False
-INT     = True;         STR   = False
-
 # Armeestati
-S_SOLD = 'S'    # Taverne
-S_HIDDEN = 'H'  # versteckt
-S_QUEST = 'Q'   # Quest
-S_DEAD = 'D'    # tot
+S_SOLD = 'S'    #: Taverne
+S_HIDDEN = 'H'  #: versteckt
+S_QUEST = 'Q'   #: Quest
+S_DEAD = 'D'    #: tot
 
 def status_string(status):
-    """Gibt einen String fuer einen Armeestatus zurueck"""
-
+    """Gibt einen String fuer einen Armeestatus zurueck
+    
+    @param status: Status Character aus der Datenbank
+    @type status: C{StringType}
+    @return: C{StringType}
+    """
     return {S_SOLD: "Taverne", S_HIDDEN: "versteckt",
             S_QUEST: "Quest", S_DEAD: "tot", None: None}[status]
 
@@ -48,6 +48,8 @@ class Armee(Feld):
     Danach koennen nurnoch die bereits geladenen Daten geholt werden."""
 
     def __init__(self):
+        """Stellt eine Datenbankverbindung her und initialisiert.
+        """
         Feld.__init__(self)
         self.table_name = "armeen"
         self.__entry_name_is_db_name = []
@@ -56,6 +58,24 @@ class Armee(Feld):
         self.__inactive_entries = []
 
     def __is(self, is_int, entry, mandatory, db_col, key, length):
+        """Prueft einen Wert  auf korrekten Typ.
+
+        Des Weiteren wird die Liste der Datenbankfelder gefuellt
+        @param is_int: Ob es ein Integer sein soll
+        @type is_int: C{BooleanType}
+        @param entry: Eintraege
+        @type entry: C{Dict}
+        @param mandatory: Ob es zwinged gefuellt sein muss
+        @type mandatory: C{BooleanType}
+        @param db_col: Ob es unter dem Namen in der Datenbank vorkommt
+        @type db_col: C{BooleanType}
+        @param key: Welcher Teil des Eintrags geprueft werden soll
+        @type key: C{StringType}
+        @param length: Die maximale Laenge
+        @type length: C{IntType}
+        @return: C{BooleanType}
+        """
+
         if db_col and not self.__cols_gathered:
             self.__entry_name_is_db_name.append(key)
         if key not in entry or entry[key] == None:
@@ -72,6 +92,19 @@ class Armee(Feld):
         return ret
 
     def __check_entry(self, entry):
+        """Prueft alle Werte im Eintrag auf korrekten Typ.
+
+        Des Weiteren wird die Liste der Datenbankfelder gefuellt
+        @param entry: Zu pruefender Eintrag
+        @type entry: C{Dict}
+        @return: C{BooleanType}
+        """
+
+        # Named Booleans
+        MAN     = True;         OPT   = False
+        DBCOL   = True;         NO_DB = False
+        INT     = True;         STR   = False
+
         # DBCOL meint, dass es direkt so in die Datenbank gehen wird
         ret =  (self.__is(STR,entry, MAN, DBCOL, "name", 30)
                 and self.__is(STR,entry, MAN, DBCOL, "img", 10)
@@ -100,6 +133,12 @@ class Armee(Feld):
         return ret
 
     def __check_inactive(self, entry):
+        """Wie L{__check_entry}, fuer Inaktiveintraege
+
+        @param entry: Zu pruefender Eintrag
+        @type entry: C{Dict}
+        @return: C{BooleanType}
+        """
         return (self.__is(INT, entry, MAN, NO_DB, "x", 3)
                 and self.__is(INT,entry, MAN, NO_DB, "y", 3)
                 and self.__is(STR,entry, MAN, NO_DB, "level", 2)
@@ -108,7 +147,11 @@ class Armee(Feld):
     def queue_entry(self, entry):
         """Nimmt eine Armee zum Eintragen erstmal in einer TODO-Liste auf.
         
-        Es wird zurueckgegeben ob die Daten syntaktisch korrekt sind."""
+        Es wird zurueckgegeben ob die Daten syntaktisch korrekt sind.
+        @param entry: Zu pruefender Eintrag
+        @type entry: C{Dict}
+        @return: C{BooleanType}
+        """
 
         if self.__check_entry(entry):
             self.new_entries.append(entry)
@@ -120,7 +163,11 @@ class Armee(Feld):
     def queue_inactive(self, entry):
         """Nimmt eine Armee zum Deaktivieren erstmal in einer TODO-Liste auf.
         
-        Es wird zurueckgegeben ob die Daten syntaktisch korrekt sind."""
+        Es wird zurueckgegeben ob die Daten syntaktisch korrekt sind.
+        @param entry: Zu pruefender Eintrag
+        @type entry: C{Dict}
+        @return: C{BooleanType}
+        """
 
         if self.__check_inactive(entry):
             self.__inactive_entries.append(entry)
@@ -129,7 +176,11 @@ class Armee(Feld):
             return False
 
     def __deactivate(self):
-        """Deaktiviert alle Armeen in der inactive Liste."""
+        """Deaktiviert alle Armeen in der inactive Liste.
+        
+        Gibt die Anzahl der deaktivierten Armeen zurueck
+        @return: C{IntType}
+        """
 
         if len(self.__inactive_entries) > 0:
             sql = "UPDATE armeen SET active=0 WHERE "
@@ -155,6 +206,9 @@ class Armee(Feld):
             return 0
 
     def __get_ritter_ids(self):
+        """Holt IDs fuer alle Ritter von denen nur Namen bekannt sind
+        """
+
         sqllist = []
         args = ()
         for entry in self.new_entries:
@@ -183,6 +237,9 @@ class Armee(Feld):
                 i += 1
 
     def __get_held_ids(self):
+        """Holt Armee-IDs fuer alle Helden von denen nur Namen bekannt sind
+        """
+
         sqllist = []
         args = ()
         i = 0
@@ -208,6 +265,14 @@ class Armee(Feld):
 
 
     def __update(self, entry):
+        """Datenbank mit Daten aus einem Eintrag aktualisieren
+
+        Gibt den Erfolgsstatus zurueck
+        @param entry: Zu pruefender Eintrag
+        @type entry: C{Dict}
+        @return: C{BooleanType}
+        """
+
         sql = "UPDATE armeen SET "
         sqllist = []
         args = ()
@@ -238,7 +303,11 @@ class Armee(Feld):
         """Gleicht die einzufuegenden Armeen mit in der DB vorhandenen ab.
         
         Identische Eintragungen werden aus der TODO-Liste entnommen
-        und Aenderungen werden sofort ausgefuehrt."""
+        und Aenderungen werden sofort ausgefuehrt.
+
+        Gibt die Anzahl der aktualisierten Armeen zurueck.
+        @return: C{IntType}
+        """
 
         new = self.new_entries
         num_updated = 0
@@ -269,7 +338,11 @@ class Armee(Feld):
         """Fuegt alle in der TODO-Liste verbliebenen Eintraege in die DB ein.
 
         Es wird hier davon ausgegangen, dass diese Eintraege
-        noch nicht in der Datenbank vorhanden sind."""
+        noch nicht in der Datenbank vorhanden sind.
+
+        Gibt die Anzahl der eingefuegten Armeen zurueck.
+        @return: C{IntType}
+        """
 
         num_inserted = 0
         for entry in self.new_entries:
@@ -303,8 +376,11 @@ class Armee(Feld):
         Die Eintraege werden als Aktualisierung oder Anfuegung
         der Datenbank hinzugefuegt.
         Es wird geprueft ob Eintraege nicht schon in der Datenbank sind.
-        Die Anzahl der aktualisierten und der neuen Eintraege
-        wird zurueckgegeben."""
+
+        Die Anzahl der deaktivierten, aktualisierten und der neuen Eintraege
+        wird zurueckgegeben.
+        @return: C{IntType}, C{IntType}, C{IntType}
+        """
 
         self.__get_ritter_ids()
         self.__get_held_ids()
@@ -327,7 +403,9 @@ class Armee(Feld):
             print "FEHLER: Level '" + level + "' ist ung&uuml;ltig"
 
     def __get_entries(self):
-        """Holt alle Eintraege im Bereich von der Datenbank."""
+        """Holt alle Eintraege im Bereich von der Datenbank.
+        
+        @return: C{BooleanType}"""
 
         sql = "SELECT x, y, ritternr, allicolor, name, size, strength"
         sql += " FROM armeen"
@@ -361,6 +439,15 @@ class Armee(Feld):
             return False
 
     def __list(self, cols, armeen):
+        """Erstellt eine Tabelle aus den Armeen
+
+        @param cols: Die Spaltenueberschriften
+        @type cols: C{List} of C{Dict}
+        @param armeen: Armeeliste
+        @type armeen: C{List} of C{Dict}
+        @return: L{ausgabe.Tabelle}
+        """
+
         tabelle = ausgabe.Tabelle()
         for col in cols:
             if col in ["max_bp", "max_ap", "ruf"]:
@@ -414,7 +501,10 @@ class Armee(Feld):
         return tabelle
 
     def list_by_feld(self, level, x, y):
-        """Holt alle Armeen auf einem Feld"""
+        """Holt alle Armeen auf einem Feld
+        
+        @return: L{ausgabe.Tabelle}
+        """
 
         cols = ["status", "ritternr", "allicolor", "rittername"]
         cols += ["name", "last_seen"]
@@ -433,10 +523,13 @@ class Armee(Feld):
             return self.__list(cols, armeen)
         except rbdb.Error, e:
             util.print_html_error(e)
-            return False
+            return None
 
     def list_by_reich(self, r_id):
-        """Holt alle Armeen eines Reiches mit r_id"""
+        """Holt alle Armeen eines Reiches mit r_id
+
+        @return: L{ausgabe.Tabelle}
+        """
 
         cols = ["active", "status", "level", "x", "y", "name", "last_seen"]
         cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
@@ -452,13 +545,20 @@ class Armee(Feld):
             return self.__list(cols, armeen)
         except rbdb.Error, e:
             util.print_html_error(e)
-            return False
+            return None
 
     def list_all(self):
+        """Holt alle(!) Armeen
+
+        @return: L{ausgabe.Tabelle}
+        """
         return self.list_by_allianz(-1)
 
     def list_by_allianz(self, a_id):
-        """Holt alle Armeen eines Allianz mit a_id"""
+        """Holt alle Armeen eines Allianz mit a_id
+        
+        @return: L{ausgabe.Tabelle}
+        """
 
         cols = ["status", "level", "x", "y", "ritternr"]
         if a_id == -1:
@@ -484,7 +584,7 @@ class Armee(Feld):
             return self.__list(cols, armeen)
         except rbdb.Error, e:
             util.print_html_error(e)
-            return False
+            return None
 
     def process_xml(self, node):
         """Liest Daten aus einem XML-Dokument ein"""

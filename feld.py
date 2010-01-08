@@ -198,7 +198,8 @@ if __name__ == '__main__':
     print "<h2>Armeen</h2>"
     armee = Armee()
     armeetabelle = armee.list_by_feld(level, x, y)
-    print "Anzahl Armeen:", armeetabelle.length()
+    if armeetabelle.length() > 0:
+        print "Anzahl Armeen:", armeetabelle.length()
     armeetabelle.show()
 
     ausgabe.print_footer()

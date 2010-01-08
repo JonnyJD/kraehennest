@@ -1,4 +1,5 @@
 #!/usr/bin/python
+"""Armeedaten einlesen und ausgeben"""
 
 #import cgitb
 #cgitb.enable()
@@ -22,6 +23,8 @@ S_QUEST = 'Q'   # Quest
 S_DEAD = 'D'    # tot
 
 def status_string(status):
+    """Gibt einen String fuer einen Armeestatus zurueck"""
+
     return {S_SOLD: "Taverne", S_HIDDEN: "versteckt",
             S_QUEST: "Quest", S_DEAD: "tot", None: None}[status]
 
@@ -484,6 +487,7 @@ class Armee(Feld):
             return False
 
     def process_xml(self, node):
+        """Liest Daten aus einem XML-Dokument ein"""
 
         sicht = util.get_view_type(node)
         if sicht == "turm":

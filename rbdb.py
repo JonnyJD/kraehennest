@@ -10,7 +10,6 @@ DictCursor = MySQLdb.cursors.DictCursor
 
 def connect():
     """Stellt eine Verbindung her zur RB Datenbank.
-
     """
     try:
         conn = MySQLdb.connect (host   = config.db_host,

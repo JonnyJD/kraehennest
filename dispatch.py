@@ -1,4 +1,5 @@
 #!/usr/bin/python
+"""Reicht einkommende XML-Dokumente auf passende Module auf"""
 
 #import cgitb
 #cgitb.enable()
@@ -10,6 +11,11 @@ from terrain import Terrain
 from armee import Armee
 
 def process(doc):
+    """Reicht bestimmte Knoten zu Modulen weiter
+    
+    @param doc: das auseinanderzunehmende Dokument
+    """
+
     data = doc.xpathEval('/data')[0]
 
     nodes = data.xpathEval('auge')

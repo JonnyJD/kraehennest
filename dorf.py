@@ -1,4 +1,5 @@
 #!/usr/bin/python
+"""Modul zum einlesen und ausgeben von Dorfdaten"""
 
 #import cgitb
 #cgitb.enable()
@@ -155,10 +156,19 @@ class Dorf(Feld):
             return False
 
     def list_all(self):
+        """Gibt eine Tabelle aller Doerfer
+        
+        @return: L{ausgabe.Tabelle}
+        """
         return self.list_by_allianz(-1)
 
     def list_by_allianz(self, a_id):
-        """Holt alle Doerfer eines Allianz mit a_id"""
+        """Holt alle Doerfer eines Allianz mit a_id
+
+        @param a_id: Id der Allianz
+        @type a_id: C{IntType}
+        @return: L{ausgabe.Tabelle}
+        """
 
         cols = ["koords", "dorf.ritternr"]
         if a_id == -1:

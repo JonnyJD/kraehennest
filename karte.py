@@ -1,4 +1,5 @@
 #!/usr/bin/python
+"""Modul um die Karte anzuzeigen und eine Kartenuebersicht zu generieren"""
 
 #import cgitb
 #cgitb.enable()
@@ -84,7 +85,7 @@ def nav_link(direction, amount, text):
     @param amount: Die Schrittweite
     @type amount: C{IntType}
     @param text: Der Linktext
-    @result: Der HTML-Link
+    @return: Der HTML-Link
     @rtype: C{StringType}
     """
 
@@ -111,7 +112,7 @@ def level_link(direction):
 
     Linktext ist das Ziellevel.
     @param direction: Ist C{"hoch"} oder C{"runter"}
-    @result: Der HTML-Link
+    @return: Der HTML-Link
     @rtype: C{StringType}
     """
 

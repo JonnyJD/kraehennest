@@ -96,7 +96,8 @@ class Allianz:
     """Eine Allianz."""
 
     def __init__(self, a_id):
-        """
+        """Laed eine Armee
+
         @param a_id: Allianznummer
         @raise KeyError: Kein Eintrag mit dieser C{a_id} vorhanden.
         """

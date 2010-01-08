@@ -19,6 +19,12 @@ else:
 
 
 def print_header(title=None, styles=None):
+    """Gibt den HTML-Header aus
+
+    @param title: Titel des Dokuments
+    @param styles: Die in den Header zu schreibenden styles
+    """
+
     print 'Content-type: text/html; charset=utf-8\n'
     print '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"'
     print '          "http://www.w3.org/TR/html4/loose.dtd">'
@@ -36,6 +42,7 @@ def print_header(title=None, styles=None):
         print '<h1>' + title + '</h1>'
 
 def print_footer():
+    """Gibt den HTML-Footer aus bzw. schliesst Body und HTML tag"""
     print '</body></html>'
 
 def link(url, text, color=None, br=False):
@@ -70,15 +77,26 @@ class Tabelle:
         self.__lines = []
 
     def addColumn(self, col):
+        """Fuegt eine Spalte hinzu
+
+        @param col: Titel der Spalte
+        """
         self.__columns.append(col)
 
     def addLine(self, cols):
+        """Fuegt eine Zeile hinzu
+
+        @param cols: Eine Liste der Zelleintraege
+        """
         self.__lines.append(cols)
 
     def length(self):
+        """Anzahl der Zeilen"""
         return len(self.__lines)
 
     def show(self):
+        """Gibt die Tabelle als HTML aus"""
+
         if self.length() > 0:
             print '<table class="tabelle">'
             print '<tr>'
@@ -104,6 +122,8 @@ class Tabelle:
 ######################################################################
 
 def date_delta_string(my_date):
+    """Gibt die seit einem Datum vergangene Zeitspanne aus"""
+
     if my_date:
         days = (date.today() - my_date).days
         months = days//30
@@ -129,6 +149,8 @@ def date_delta_string(my_date):
         return "(unbekannt)"
 
 def datetime_delta_string(my_datetime):
+    """Gibt die seit Einer Zeit vergangene Zeitspanne aus"""
+
     if my_datetime:
         seconds = (datetime.now() - my_datetime).seconds
         minutes = seconds//60

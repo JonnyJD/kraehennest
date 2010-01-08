@@ -1,4 +1,5 @@
 #!/usr/bin/python
+"""Administrative Aufgaben"""
 
 #import cgitb
 #cgitb.enable()
@@ -12,6 +13,8 @@ import config
 import ausgabe
 
 def list_versions():
+    """Listet fuer jeden Ritter die benutze Kraehenaugenversion und Zeit"""
+
     tabelle = ausgabe.Tabelle()
     tabelle.addColumn("r_id")
     tabelle.addColumn("rittername")

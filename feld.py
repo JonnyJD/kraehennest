@@ -1,4 +1,6 @@
 #!/usr/bin/python
+"""Die Grundstruktur von Klassen die Daten zu einem bestimmten Feld bearbeiten.
+"""
 
 #import cgitb
 #cgitb.enable()
@@ -31,16 +33,33 @@ class Feld:
         self.cursor = self.conn.cursor()
 
     def disconnect(self):
+        """Beende die Verbindung zur Datenbank
+        """
         self.cursor.close()
         self.conn.close()
 
     def try_execute_safe(self, sql, args):
+        """Fuehrt eine SQL-Query aus
+
+        @param sql: Query mit Platzhaltern
+        @param args: Tupel mit Variablen
+        """
         return util.try_execute_safe(self.cursor, sql, args)
 
     def try_executemany_safe(self, sql, arglist):
+        """Fuehrt eine SQL-Query mit mehrmals aus
+
+        @param sql: Query mit Platzhaltern
+        @param arglist: Liste von Tupeln mit Variablen
+        """
         return util.try_executemany_safe(self.cursor, sql, arglist[:])
 
     def try_execute_safe_secondary(self, sql, args):
+        """Fuehrt eine SQL-Query mit einem zweiten Cursor aus
+
+        @param sql: Query mit Platzhaltern
+        @param args: Tupel mit Variablen
+        """
         cursor = self.conn.cursor()
         affectedrows = util.try_execute_safe(cursor, sql, args)
         cursor.close()
@@ -135,9 +154,13 @@ class Feld:
 
 
     def has(self, x, y):
+        """Fragt ab ob auf diesem Feld ein Eintrag existiert
+        """
         return (x,y) in self.entries
 
     def get(self, x, y):
+        """Gibt den Eintrag auf diesem Feld zurueck
+        """
         self.entry = self.entries[x,y]
         return self.entry
 

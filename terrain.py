@@ -1,4 +1,5 @@
 #!/usr/bin/python
+"""Modul um Terraindaten einzulesen und auszugeben"""
 
 #import cgitb
 #cgitb.enable()

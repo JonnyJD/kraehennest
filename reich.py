@@ -155,7 +155,8 @@ class Reich:
     """Eine Klasse fuer Daten rund um ein Reich, inklusive Ritter."""
 
     def __init__(self, r_id=None):
-        """
+        """Holt die Daten eines Reiches
+
         @param r_id: Ritternummer
         @raise KeyError: Kein Eintrag mit dieser C{r_id} vorhanden.
         """

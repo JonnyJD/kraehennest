@@ -17,14 +17,15 @@ import libxml2
 import rbdb
 import util
 import ausgabe
-from types import *
+from types import StringType
 
 def get_ritter_id_form(rittername):
     """
-    Gibt das HTML-Formular als String mit dem Ritternamen nachgeschlagen werden
+    Gibt das HTML-Formular mit dem Ritternamen nachgeschlagen werden
 
     @param rittername: Der Name eines Ritters
     @return: Das HTML-Formular um nach dem C{ritternamen} zu suchen.
+    @rtype: C{StringType}
     """
 
     form ='''<form method="post"
@@ -41,7 +42,7 @@ def get_ritter_id_form(rittername):
 def list():
     """Gibt eine Tabelle aller Reiche und ihrer Herrscher.
     
-    @return: L{Tabelle<ausgabe.Tabelle>}
+    @rtype: L{Tabelle<ausgabe.Tabelle>}
     """
     return list_by_allianz(-1)
 
@@ -49,7 +50,7 @@ def list_by_allianz(a_id):
     """Liste alle Reiche die Mitglied einer bestimmten Allianz sind.
     
     @param a_id: Allianznummer
-    @return: L{Tabelle<ausgabe.Tabelle>}
+    @rtype: L{Tabelle<ausgabe.Tabelle>}
     """
 
     import allianz

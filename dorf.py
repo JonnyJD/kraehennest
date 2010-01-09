@@ -25,7 +25,9 @@ class Dorf(Feld):
 
 
     def __get_entries(self):
-        """Holt alle Eintraege im Bereich von der Datenbank."""
+        """Holt alle Eintraege im Bereich von der Datenbank.
+        
+        @rtype: C{BooleanType}"""
 
         sql = """SELECT koords, dorfname, dorflevel, aktdatum, mauer,
                         rittername, allis.alli, alliname, allicolor
@@ -56,6 +58,11 @@ class Dorf(Feld):
 
 
     def __list(self, cols, doerfer):
+        """Erstellt eine Tabelle der Doerfer
+        
+        @rtype: L{Tabelle<ausgabe.Tabelle>}
+        """
+
         tabelle = ausgabe.Tabelle()
         for col in cols:
             if col == "koords":
@@ -105,7 +112,10 @@ class Dorf(Feld):
         return tabelle
 
     def list_by_feld(self, x, y):
-        """Holt das Dorf auf einem Feld"""
+        """Holt das Dorf auf einem Feld
+        
+        @rtype: L{Tabelle<ausgabe.Tabelle>}
+        """
 
         cols = ["dorf.ritternr", "allicolor", "rittername", "dorfname"]
         cols += ["aktdatum", "dorflevel", "mauer"]
@@ -122,10 +132,13 @@ class Dorf(Feld):
             return self.__list(cols, armeen)
         except rbdb.Error, e:
             util.print_html_error(e)
-            return False
+            return None
 
     def list_by_reich(self, r_id):
-        """Holt alle Doerfer eines Reiches mit r_id"""
+        """Holt alle Doerfer eines Reiches mit r_id
+        
+        @rtype: L{Tabelle<ausgabe.Tabelle>}
+        """
 
         cols = ["koords", "dorfname", "aktdatum", "dorflevel", "mauer"]
         sql = "SELECT " + ", ".join(cols)
@@ -140,7 +153,7 @@ class Dorf(Feld):
             return self.__list(cols, armeen)
         except rbdb.Error, e:
             util.print_html_error(e)
-            return False
+            return None
 
     def list_all(self):
         """Gibt eine Tabelle aller Doerfer
@@ -154,7 +167,7 @@ class Dorf(Feld):
 
         @param a_id: Id der Allianz
         @type a_id: C{IntType}
-        @return: L{Tabelle<ausgabe.Tabelle>}
+        @rtype: L{Tabelle<ausgabe.Tabelle>}
         """
 
         cols = ["koords", "dorf.ritternr"]
@@ -184,7 +197,7 @@ class Dorf(Feld):
             return self.__list(cols, armeen)
         except rbdb.Error, e:
             util.print_html_error(e)
-            return False
+            return None
 
 
 # Aufruf als Skript

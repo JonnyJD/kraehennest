@@ -3,7 +3,7 @@
 import re
 import os
 from datetime import date, datetime, time
-from types import *
+from types import IntType, LongType
 
 
 ######################################################################
@@ -95,11 +95,15 @@ class Tabelle:
 
     def length(self):
         """Anzahl der Zeilen
+
+        @rtype: C{IntType}
         """
         return len(self.__lines)
 
     def show(self):
-        """Gibt die Tabelle als HTML aus"""
+        """Gibt die Tabelle als HTML aus
+        
+        @rtype: C{StringType}"""
 
         if self.length() > 0:
             print '<table class="tabelle">'

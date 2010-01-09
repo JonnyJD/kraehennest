@@ -32,6 +32,8 @@ class Feld:
 
         @param sql: Query mit Platzhaltern
         @param args: Tupel mit Variablen
+        @return: Anzahl der Aenderungen
+        @rtype: C{IntType}
         """
         return util.try_execute_safe(self.cursor, sql, args)
 
@@ -40,6 +42,8 @@ class Feld:
 
         @param sql: Query mit Platzhaltern
         @param arglist: Liste von Tupeln mit Variablen
+        @return: Anzahl der Aenderungen
+        @rtype: C{IntType}
         """
         return util.try_executemany_safe(self.cursor, sql, arglist[:])
 
@@ -48,6 +52,8 @@ class Feld:
 
         @param sql: Query mit Platzhaltern
         @param args: Tupel mit Variablen
+        @return: Anzahl der Aenderungen
+        @rtype: C{IntType}
         """
         cursor = self.conn.cursor()
         affectedrows = util.try_execute_safe(cursor, sql, args)
@@ -58,8 +64,9 @@ class Feld:
     def queue_entry(self, fields):
         """Nimmt ein Feld zum Eintragen erstmal in einer TODO-Liste auf.
         
-        Es wird zurueckgegeben ob die Daten syntaktisch korrekt sind."""
-
+        Es wird zurueckgegeben ob die Daten syntaktisch korrekt sind.
+        @rtype: C{BooleanType}
+        """
         return True
 
 
@@ -69,8 +76,9 @@ class Feld:
         Die Eintraege werden als Aktualisierung oder Anfuegung
         der Datenbank hinzugefuegt.
         Es wird geprueft ob Eintraege nicht schon in der Datenbank sind.
-        Die Anzahl der aktualisierten und der neuen Eintraege
-        wird zurueckgegeben."""
+        @return: Anzahl der aktualisierten und der neuen Eintraege
+        @rtype: C{IntType}
+        """
 
         return 0
 
@@ -115,7 +123,10 @@ class Feld:
             print "Die angegebenene Grenzen sind ungueltig <br />"
 
     def get_border(self):
-        """Findet die tatsaechlichen Grenzen der aktuellen Karte heraus."""
+        """Findet die tatsaechlichen Grenzen der aktuellen Karte heraus.
+        
+        @rtype: C{BooleanType}
+        """
 
         self.xmin, self.xmax, self.ymin, self.ymax = 0, 0, 0, 0
         sql = "SELECT MIN(X), MAX(x), MIN(y), MAX(y) FROM "
@@ -137,8 +148,10 @@ class Feld:
             return False
 
     def __get_entries(self):
-        """Holt alle Eintraege im Bereich von der Datenbank."""
-
+        """Holt alle Eintraege im Bereich von der Datenbank.
+        
+        @rtype: C{BooleanType}
+        """
         return True
 
 
@@ -151,6 +164,8 @@ class Feld:
 
     def get(self, x, y):
         """Gibt den Eintrag auf diesem Feld zurueck
+
+        @rtype: meist C{Dict}
         """
         self.entry = self.entries[x,y]
         return self.entry

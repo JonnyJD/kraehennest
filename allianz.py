@@ -16,9 +16,10 @@ def link(a_id, name=None, color=None):
     Name und Farbe werden bei Bedarf aus der Datenbank gefischt.
 
     @param a_id: Allianz ID
-    @param name: Name der Allianz (optional)
-    @param color: Farbe der Allianz (optional)
+    @param name: Name der Allianz
+    @param color: Farbe der Allianz
     @return: gefaerbter HTML-link
+    @rtype: C{StrintType}
     @raise KeyError: Wenn keine Allianz mit der C{a_id} gefunden wird
     """
 

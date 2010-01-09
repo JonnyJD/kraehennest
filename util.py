@@ -18,6 +18,7 @@ def try_execute_safe(cursor, sql, args):
     """Fuehrt eine Datenbankquery aus
 
     @return: Anzahl der Aenderungen
+    @rtype: C{IntType}
     """
     try:
         cursor.execute(sql, args)
@@ -31,6 +32,7 @@ def try_executemany_safe(cursor, sql, arglist):
     """Fuehrt eine mehrere Datenbankqueries aus
 
     @return: Anzahl der Aenderungen
+    @rtype: C{IntType}
     """
     try:
         cursor.executemany(sql, arglist[:])
@@ -110,6 +112,8 @@ def track_client(node):
 
 def get_view_type(node):
     """Gibt die Art der Sichtung aus einem XML-Dokumente aus
+
+    @rtype: C{StringType}
     """
     sicht_elems = node.xpathEval('/data/auge/sicht')
     if len(sicht_elems) > 0:

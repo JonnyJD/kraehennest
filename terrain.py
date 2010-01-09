@@ -43,6 +43,10 @@ class Terrain(Feld):
             return None
 
     def __check_entry(self, entry):
+        """Prueft auf Korrektheit der Daten
+
+        @rtype: C{BooleanType}
+        """
         return (entry["x"].isdigit() and entry["y"].isdigit()
                 and entry["terrain"].isalnum() and len(entry["terrain"]) <= 5
                 and entry["level"].isalnum() and len(entry["level"]) <= 2)
@@ -68,6 +72,12 @@ class Terrain(Feld):
 
 
     def __update(self, feld):
+        """Aktualisiert die Datenbank mit den Feldern
+
+        @return: aktualisierte Eintraege
+        @rtype: C{IntType}
+        """
+
         sql = "UPDATE felder SET terrain = %s"
         args = feld["terrain"],
         if feld["typ"] != None:
@@ -82,7 +92,10 @@ class Terrain(Feld):
         """Gleicht die einzufuegenden Felder mit in der DB vorhandenen ab.
         
         Identische Eintragungen werden aus der TODO-Liste entnommen
-        und Aenderungen werden sofort ausgefuehrt."""
+        und Aenderungen werden sofort ausgefuehrt.
+        @return: Aktualisierungen
+        @rtype: C{IntType}
+        """
 
         new = self.new_entries
         num_updated = 0
@@ -115,7 +128,11 @@ class Terrain(Feld):
 
 
     def __insert_type(self):
-        """Fuegt einen Eintrag mit einer Untertypangabe zur Datenbank hinzu."""
+        """Fuegt einen Eintrag mit einer Untertypangabe zur Datenbank hinzu.
+        
+        @return: Anzahl Inserts
+        @rtype: C{IntType}
+        """
 
         sql = "INSERT INTO felder (x, y, level, terrain, typ)"
         sql += " VALUES (%s, %s, %s, %s, %s)"
@@ -139,7 +156,10 @@ class Terrain(Feld):
         """Fuegt alle in der TODO-Liste verbliebenen Eintraege in die DB ein.
 
         Es wird hier davon ausgegangen, dass diese Eintraege
-        noch nicht in der Datenbank vorhanden sind."""
+        noch nicht in der Datenbank vorhanden sind.
+        @return: Anzahl Inserts
+        @rtype: C{IntType}
+        """
 
         typenum = self.__insert_type()
         if len(self.new_entries) > 0:
@@ -160,8 +180,9 @@ class Terrain(Feld):
         Die Eintraege werden als Aktualisierung oder Anfuegung
         der Datenbank hinzugefuegt.
         Es wird geprueft ob Eintraege nicht schon in der Datenbank sind.
-        Die Anzahl der aktualisierten und der neuen Eintraege
-        wird zurueckgegeben."""
+        @return: Anzahl der aktualisierten und der neuen Eintraege
+        @rtype: C{IntType}, C{IntType}
+        """
 
         update_count = self.__check_old()
         insert_count = self.__insert()
@@ -223,7 +244,11 @@ class Terrain(Feld):
             print "FEHLER: Level '" + level + "' ist ung&uuml;ltig"
 
     def __get_entries(self):
-        """Holt alle Eintraege im Bereich von der Datenbank."""
+        """Holt alle Eintraege im Bereich von der Datenbank.
+        
+        @return: Erfolgsstatus
+        @rtype: C{BooleanType}
+        """
 
         sql = "SELECT x, y, terrain, typ FROM felder"
         sql += " WHERE level='" + self.level + "'"

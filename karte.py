@@ -414,6 +414,9 @@ if __name__ == '__main__':
                             list = list.replace("'", "\\'")
                             row += list.replace('"', "&quot;")
                         row += '\')" onmouseout="delPos()"'
+                    if not config.is_kraehe() and dorf.has(x,y):
+                        row += ' style="color:'
+                        row += dorf.get(x,y)['allyfarbe'] +';"'
                     row += '>'
 
                     # Detail-Link

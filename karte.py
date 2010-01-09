@@ -397,7 +397,11 @@ if __name__ == '__main__':
                             # Armeen anhaengen
                             for entry in armee.entry:
                                 list += '|' + entry["allyfarbe"]
-                                list += '|' + entry["rittername"]
+                                if (entry["rittername"] == "Keiner"
+                                        and len(armee.entry) >= viel_armeen):
+                                    list += '|' + entry["name"]
+                                else:
+                                    list += '|' + entry["rittername"]
                                 list += '|' + __format(entry["size"])
                                 list += '|' + __format(entry["strength"])
                                 # mehr Infos bei wenigen Armeen

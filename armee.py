@@ -1,8 +1,8 @@
 #!/usr/bin/python
 """Armeedaten einlesen und ausgeben"""
 
-#import cgitb
-#cgitb.enable()
+import cgitb
+cgitb.enable()
 
 import rbdb
 import util
@@ -125,6 +125,12 @@ class Armee(Feld):
         @type entry: C{Dict}
         @rtype: C{BooleanType}
         """
+
+        # Named Booleans
+        MAN     = True;         OPT   = False
+        DBCOL   = True;         NO_DB = False
+        INT     = True;         STR   = False
+
         return (self.__is(INT, entry, MAN, NO_DB, "x", 3)
                 and self.__is(INT,entry, MAN, NO_DB, "y", 3)
                 and self.__is(STR,entry, MAN, NO_DB, "level", 2)

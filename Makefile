@@ -24,7 +24,13 @@ serverconf:
 
 doc:
 	epydoc --output=/var/www/doc.kraehen.org/tools/nest \
+		--show-imports \
 		--name=Kraehenauge --exclude=config *.py
+
+doctest:
+	epydoc --check -v --simple-term \
+		--exclude=config *.py \
+		| grep -v __package__
 
 clean:
 	rm serverurl.conf test.xml

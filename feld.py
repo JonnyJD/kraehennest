@@ -9,23 +9,12 @@ import rbdb
 import util
 
 class Feld:
-    """Eine abstrakte Klasse um Felddaten ein- und auszulesen.
-    
-    Einlesen:
-    Mit queue_entry(fields) werden die Felder einzeln uebergeben.
-    Mit exec_queue() werden dann alle eingetragen, falls nicht vorhanden.
-
-    Auslesen:
-    Mit set_add_cond() kann man eine weitere Bedingung vorgeben.
-    Danach wird mit fetch_data([level[, xmin[, xmax[, ymin[, ymax]]]]])
-    alles passende von der Datenbank geladen.
-    Mit has(x,y) und get(x,y) kann man dann einzeln zugreifen.
-    
-    Beenden:
-    Mit disconnect() kann die Datenbankverbindung beendet werden.
-    Danach koennen nurnoch die bereits geladenen Daten geholt werden."""
+    """Eine abstrakte Klasse um Felddaten ein- und auszulesen.  
+    """
 
     def __init__(self):
+        """Stellt eine Verbindung zur Datenbank her und initialisiert
+        """
         self.entries = dict()
         self.new_entries = []
         self.add_cond = ""
@@ -155,6 +144,8 @@ class Feld:
 
     def has(self, x, y):
         """Fragt ab ob auf diesem Feld ein Eintrag existiert
+
+        @rtype: C{BooleanType}
         """
         return (x,y) in self.entries
 

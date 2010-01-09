@@ -41,7 +41,7 @@ def get_ritter_id_form(rittername):
 def list():
     """Gibt eine Tabelle aller Reiche und ihrer Herrscher.
     
-    @return: L{ausgabe.Tabelle}
+    @return: L{Tabelle<ausgabe.Tabelle>}
     """
     return list_by_allianz(-1)
 
@@ -49,7 +49,7 @@ def list_by_allianz(a_id):
     """Liste alle Reiche die Mitglied einer bestimmten Allianz sind.
     
     @param a_id: Allianznummer
-    @return: L{ausgabe.Tabelle}
+    @return: L{Tabelle<ausgabe.Tabelle>}
     """
 
     import allianz

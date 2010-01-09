@@ -5,11 +5,14 @@ import sys
 import MySQLdb
 import MySQLdb.cursors
 
-Error = MySQLdb.Error
-DictCursor = MySQLdb.cursors.DictCursor
+Error = MySQLdb.Error #: SQL-Fehler
+DictCursor = MySQLdb.cursors.DictCursor #: Cursor der C{Dict} rows liefert
 
 def connect():
     """Stellt eine Verbindung her zur RB Datenbank.
+
+    @return: Verbindung
+    @rtype: C{Connection}
     """
     try:
         conn = MySQLdb.connect (host   = config.db_host,

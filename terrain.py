@@ -10,32 +10,20 @@ import util
 from feld import Feld
 
 class Terrain(Feld):
-    """Eine Klasse um Terraindaten ein- und auszulesen.
-    
-    Einlesen:
-    Mit queue_entry(fields) werden die Felder einzeln uebergeben.
-    Mit exec_queue() werden dann alle eingetragen, falls nicht vorhanden.
-    Mit replace_uniform_area(level, x1, y1, x2, y2, terrain)
-    und replace_line(level, x, y, terrain_list)
-    koennen Terraindaten manuell eingetragen werden
-
-    Auslesen:
-    Mit set_add_cond() kann man eine weitere Bedingung vorgeben.
-    (dabei sollte man die sql strings absichern!)
-    Danach wird mit fetch_data([level[, xmin[, xmax[, ymin[, ymax]]]]])
-    alles passende von der Datenbank geladen.
-    Mit has(x,y) und get(x,y) kann man dann einzeln zugreifen.
-    
-    Beenden:
-    Mit disconnect() kann die Datenbankverbindung beendet werden.
-    Danach koennen nurnoch die bereits geladenen Daten geholt werden."""
+    """Eine Klasse um Terraindaten ein- und auszulesen.  
+    """
 
     def __init__(self):
+        """Verbindung mit der Datenbank und Initialisierung
+        """
         Feld.__init__(self)
         self.table_name = "felder"
 
     def __type(self, fields):
-        """Findet den Untertyp (I,II,III) eines Feldes heraus."""
+        """Findet den Untertyp (I,II,III) eines Feldes heraus.
+        
+        @rtype: C{IntType}
+        """
 
         if len(fields) >= 5:
             type = fields[len(fields)-1]
@@ -63,7 +51,9 @@ class Terrain(Feld):
     def queue_entry(self, fields):
         """Nimmt ein Feld zum Eintragen erstmal in einer TODO-Liste auf.
         
-        Es wird zurueckgegeben ob die Daten syntaktisch korrekt sind."""
+        @return: Ob die Daten syntaktisch korrekt sind
+        @rtype: C{BooleanType}
+        """
 
         if len(fields) >= 4:
             f = {"level": fields[0], "x": fields[1], "y": fields[2],
@@ -178,6 +168,18 @@ class Terrain(Feld):
         return update_count, insert_count
 
     def replace_uniform_area(self, level, x1, y1, x2, y2, terrain):
+        """Ersetzt einen rechteckigen Bereich der Karte
+
+        Gedacht zur interaktiven/manuellen Nutzung
+        @param level: Das Level
+        @param x1: linke Grenze
+        @param y1: obere Grenze
+        @param x2: rechte Grenze
+        @param y2: untere Grenze
+        @param terrain: Zu schreibende Terrainart
+        @type terrain: C{IntType} oder C{StringType}
+        """
+
         for x in range(x1,x2+1):
             for y in range(y1,y2+1):
                 f = {"level": level, "x": str(x), "y": str(y),
@@ -190,6 +192,12 @@ class Terrain(Feld):
         print updated, "aktualisiert", inserted, "eingefuegt"
 
     def replace_line(self, level, x, y, terrain_list):
+        """Ersetzt einen (Teil)Zeile der Karte
+
+        Gedacht zur interaktiven/manuellen Nutzung
+        @param terrain_list: Zu schreibende Terrainarten
+        @type terrain_list: C{List}: C{IntType}/C{StringType}
+        """
         for i in range(0,len(terrain_list)):
             f = {"level": level, "x": str(x), "y": str(y),
                     "terrain": str(terrain_list[i]), "typ": None}
@@ -236,6 +244,12 @@ class Terrain(Feld):
             return False
 
     def process(self, data):
+        """Verarbeitet Landschaftsdaten als Text
+        
+        @param data: Felddaten
+        @type data: C{StringType}
+        """
+
         lines = data.splitlines()
         if len(lines) > 0:
             for line in lines:
@@ -252,6 +266,12 @@ class Terrain(Feld):
             print 'Es wurden keine Landschaftsdaten gesendet.', "<br />"
 
     def process_xml(self, node):
+        """Verarbeitet Landschaftsdaten als XML
+
+        @param node: Landschaftsdaten
+        @type node: XML Knoten
+        """
+
         felder = node.xpathEval('feld')
         if len(felder) > 0:
             for feld in felder:

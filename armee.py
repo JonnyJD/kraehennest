@@ -30,22 +30,8 @@ def status_string(status):
 
 
 class Armee(Feld):
-    """Eine Klasse um Armeedaten ein- und auszulesen.
-    
-    Einlesen:
-    Mit queue_entry(fields) werden die Felder einzeln uebergeben.
-    Mit exec_queue() werden dann alle eingetragen, falls nicht vorhanden.
-
-    Auslesen:
-    Mit set_add_cond() kann man eine weitere Bedingung vorgeben.
-    (dabei sollte man die sql strings absichern!)
-    Danach wird mit fetch_data([level[, xmin[, xmax[, ymin[, ymax]]]]])
-    alles passende von der Datenbank geladen.
-    Mit has(x,y) und get(x,y) kann man dann einzeln zugreifen.
-    
-    Beenden:
-    Mit disconnect() kann die Datenbankverbindung beendet werden.
-    Danach koennen nurnoch die bereits geladenen Daten geholt werden."""
+    """Eine Klasse um Armeedaten ein- und auszulesen.  
+    """
 
     def __init__(self):
         """Stellt eine Datenbankverbindung her und initialisiert.
@@ -445,7 +431,7 @@ class Armee(Feld):
         @type cols: C{List} of C{Dict}
         @param armeen: Armeeliste
         @type armeen: C{List} of C{Dict}
-        @rtype: L{ausgabe.Tabelle}
+        @rtype: L{Tabelle<ausgabe.Tabelle>}
         """
 
         tabelle = ausgabe.Tabelle()
@@ -503,7 +489,7 @@ class Armee(Feld):
     def list_by_feld(self, level, x, y):
         """Holt alle Armeen auf einem Feld
         
-        @rtype: L{ausgabe.Tabelle}
+        @rtype: L{Tabelle<ausgabe.Tabelle>}
         """
 
         cols = ["status", "ritternr", "allicolor", "rittername"]
@@ -528,7 +514,7 @@ class Armee(Feld):
     def list_by_reich(self, r_id):
         """Holt alle Armeen eines Reiches mit r_id
 
-        @rtype: L{ausgabe.Tabelle}
+        @rtype: L{Tabelle<ausgabe.Tabelle>}
         """
 
         cols = ["active", "status", "level", "x", "y", "name", "last_seen"]
@@ -550,14 +536,14 @@ class Armee(Feld):
     def list_all(self):
         """Holt alle(!) Armeen
 
-        @rtype: L{ausgabe.Tabelle}
+        @rtype: L{Tabelle<ausgabe.Tabelle>}
         """
         return self.list_by_allianz(-1)
 
     def list_by_allianz(self, a_id):
         """Holt alle Armeen eines Allianz mit a_id
         
-        @rtype: L{ausgabe.Tabelle}
+        @rtype: L{Tabelle<ausgabe.Tabelle>}
         """
 
         cols = ["status", "level", "x", "y", "ritternr"]

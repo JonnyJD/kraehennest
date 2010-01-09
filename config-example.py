@@ -4,24 +4,32 @@ import re
 import os
 
 # Datenbank
-db_host = "localhost"
-db_user = ""
-db_passwd = ""
-db = ""
+db_host = "localhost"   #: Hostname der Datenbank
+db_user = ""            #: Benutzer der Datenbank
+db_passwd = ""          #: Passwort der Datenbank
+db = ""                 #: Name der Datenbank
 
 def get_username():
+    """Gebe den Namen des aktuell eingeloggten Benutzes zurueck.
+    """
     if 'REMOTE_USER' in os.environ:
         return os.environ['REMOTE_USER']
     else:
         return ""
 
 def is_admin(username=None):
+    """Ob der aktuelle (oder ein bestimmter) Benutzer Admin ist
+    """
     return False
 
 def is_kraehe(username=None):
+    """Ob der aktuelle Benutzer (oder ein bestimmter) eine Kraehe ist
+    """
     return not re.match("/tw", os.environ['SCRIPT_URL'])
 
 def is_tw(username=None):
+    """Ob der aktuelle Benutzer (oder ein bestimmter) ein TW ist
+    """
     return re.match("/tw", os.environ['SCRIPT_URL'])
 
 # vim:set shiftwidth=4 expandtab smarttab:

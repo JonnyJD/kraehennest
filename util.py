@@ -15,6 +15,10 @@ def print_html_error(e):
     print "<br />"
 
 def try_execute_safe(cursor, sql, args):
+    """Fuehrt eine Datenbankquery aus
+
+    @return: Anzahl der Aenderungen
+    """
     try:
         cursor.execute(sql, args)
         return cursor.rowcount
@@ -24,6 +28,10 @@ def try_execute_safe(cursor, sql, args):
         return 0
 
 def try_executemany_safe(cursor, sql, arglist):
+    """Fuehrt eine mehrere Datenbankqueries aus
+
+    @return: Anzahl der Aenderungen
+    """
     try:
         cursor.executemany(sql, arglist[:])
         return cursor.rowcount
@@ -32,6 +40,11 @@ def try_executemany_safe(cursor, sql, arglist):
         return 0
 
 def get_sql_row(sql, args):
+    """Fuehrt eine Datenbankabfrage aus
+
+    @return: Gewonnene Werte
+    @rtype: C{List}
+    """
     conn = rbdb.connect()
     cursor = conn.cursor()
     try_execute_safe(cursor, sql, args)
@@ -39,6 +52,10 @@ def get_sql_row(sql, args):
     conn.close()
 
 def print_xml(xml_node):
+    """Gibt einen XML-Knoten aus
+
+    @rtype: C{StringType}
+    """
     print xml_node.serialize().replace("<","&lt;").replace(">","&gt;"), "<br />"
 
 

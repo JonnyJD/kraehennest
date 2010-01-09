@@ -14,8 +14,7 @@ from types import *
 if 'SCRIPT_URL' in os.environ:
     prefix = re.match("(.*)/(show|send)", os.environ['SCRIPT_URL']).group(1)
 else:
-    # Der Prefix der URL, verschiedene Authorisationsbereiche
-    prefix = ''
+    prefix = '' #: Der Prefix der URL, verschiedene Authorisationsbereiche
 
 
 def print_header(title=None, styles=None):
@@ -42,7 +41,8 @@ def print_header(title=None, styles=None):
         print '<h1>' + title + '</h1>'
 
 def print_footer():
-    """Gibt den HTML-Footer aus bzw. schliesst Body und HTML tag"""
+    """Gibt den HTML-Footer aus bzw. schliesst Body und HTML tag
+    """
     print '</body></html>'
 
 def link(url, text, color=None, br=False):
@@ -53,10 +53,11 @@ def link(url, text, color=None, br=False):
 
     @param url: Das absolute Linkziel
     @param text: Der Linktext
-    @param color: Die Linkfarbe als Hexwert mit C{#}
+    @param color: Die Linkfarbe (Name oder Hexcode)
     @param br: Ob ein C{BR} davorgeschrieben werden sollte
     @type br: C{BooleanType}
-    @return: Die HTML-tags als C{StringType}
+    @return: Die HTML-tags
+    @rtype: C{StringType}
     """
 
     link = ''
@@ -73,6 +74,8 @@ class Tabelle:
     """Eine HTML-Tabelle"""
 
     def __init__(self):
+        """Erstellt eine leere Tabelle
+        """
         self.__columns = []
         self.__lines = []
 
@@ -91,7 +94,8 @@ class Tabelle:
         self.__lines.append(cols)
 
     def length(self):
-        """Anzahl der Zeilen"""
+        """Anzahl der Zeilen
+        """
         return len(self.__lines)
 
     def show(self):
@@ -122,7 +126,10 @@ class Tabelle:
 ######################################################################
 
 def date_delta_string(my_date):
-    """Gibt die seit einem Datum vergangene Zeitspanne aus"""
+    """Gibt die seit einem Datum vergangene Zeitspanne aus
+    
+    @rtype: C{StringType}
+    """
 
     if my_date:
         days = (date.today() - my_date).days
@@ -149,7 +156,10 @@ def date_delta_string(my_date):
         return "(unbekannt)"
 
 def datetime_delta_string(my_datetime):
-    """Gibt die seit Einer Zeit vergangene Zeitspanne aus"""
+    """Gibt die seit Einer Zeit vergangene Zeitspanne aus
+
+    @rtype: C{StringType}
+    """
 
     if my_datetime:
         seconds = (datetime.now() - my_datetime).seconds

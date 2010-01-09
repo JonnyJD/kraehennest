@@ -12,21 +12,8 @@ from feld import Feld
 import ausgabe
 
 class Dorf(Feld):
-    """Eine Klasse um Dorfdaten ein- und auszulesen.
-    
-    Einlesen:
-    Mit queue_entry(fields) werden die Felder einzeln uebergeben.
-    Mit exec_queue() werden dann alle eingetragen, falls nicht vorhanden.
-
-    Auslesen:
-    Mit set_add_cond() kann man eine weitere Bedingung vorgeben.
-    Danach wird mit fetch_data([level[, xmin[, xmax[, ymin[, ymax]]]]])
-    alles passende von der Datenbank geladen.
-    Mit has(x,y) und get(x,y) kann man dann einzeln zugreifen.
-    
-    Beenden:
-    Mit disconnect() kann die Datenbankverbindung beendet werden.
-    Danach koennen nurnoch die bereits geladenen Daten geholt werden."""
+    """Eine Klasse um Dorfdaten ein- und auszulesen.  
+    """
 
     def fetch_data(self,
             xmin=None, xmax=None, ymin=None, ymax=None):
@@ -158,7 +145,7 @@ class Dorf(Feld):
     def list_all(self):
         """Gibt eine Tabelle aller Doerfer
         
-        @return: L{ausgabe.Tabelle}
+        @return: L{Tabelle<ausgabe.Tabelle>}
         """
         return self.list_by_allianz(-1)
 
@@ -167,7 +154,7 @@ class Dorf(Feld):
 
         @param a_id: Id der Allianz
         @type a_id: C{IntType}
-        @return: L{ausgabe.Tabelle}
+        @return: L{Tabelle<ausgabe.Tabelle>}
         """
 
         cols = ["koords", "dorf.ritternr"]

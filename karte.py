@@ -419,7 +419,7 @@ if __name__ == '__main__':
                     # Detail-Link
                     if not config.is_kraehe():
                         show_detail_link = False
-                    if show_armeen and armee.has(x,y):
+                    elif show_armeen and armee.has(x,y):
                         show_detail_link = True
                     elif (show_dorf and dorf.has(x,y)
                             and dorf.get(x,y)["rittername"] != "."):

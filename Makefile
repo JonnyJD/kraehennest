@@ -24,7 +24,7 @@ serverconf:
 
 doc:
 	epydoc --output=/var/www/doc.kraehen.org/tools/nest \
-		--show-imports \
+		--show-imports --inheritance=grouped \
 		--name=Kraehenauge --exclude=config *.py
 
 doctest:

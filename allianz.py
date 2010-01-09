@@ -19,7 +19,7 @@ def link(a_id, name=None, color=None):
     @param name: Name der Allianz
     @param color: Farbe der Allianz
     @return: gefaerbter HTML-link
-    @rtype: C{StrintType}
+    @rtype: C{StringType}
     @raise KeyError: Wenn keine Allianz mit der C{a_id} gefunden wird
     """
 

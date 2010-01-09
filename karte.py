@@ -145,7 +145,7 @@ def level_link(direction):
 def __format(var):
     """Formatierte Ausgabe einer Variable
 
-    @param field: Eingabevariable
+    @param var: Eingabevariable
     @return: C{"?"} bei None, sonst C{str(var)}
     @rtype: C{StringType}
     """

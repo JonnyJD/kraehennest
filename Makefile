@@ -23,7 +23,7 @@ serverconf:
 	>> serverurl.conf
 
 doc:
-	epydoc --output=/var/www/doc.kraehen.org/tools/nest \
+	epydoc -v --output=/var/www/doc.kraehen.org/tools/nest \
 		--show-imports --inheritance=grouped \
 		--name=Kraehenauge --exclude=config *.py
 

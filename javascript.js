@@ -33,11 +33,23 @@ function showPos(liste) {
 	document.getElementById("dorfdetail").innerHTML = descRow;
 	if (liste.length > 7) {
 		descRow = '<table class="detail">';
-		for (i=7; i < liste.length; i+=4) {
+		numFields = parseInt(liste[7],10);
+		mid = Math.ceil(numFields/2);
+		for (i=8; i < liste.length; i+=numFields) {
 			descRow += '<tr><td style="text-align:left;' +
 			       	' color:' + liste[i] + '">' +
-				liste[i+1] + '</td><td>' + liste[i+2] +
-				'</td><td>' + liste[i+3] + '</td></tr>';
+				liste[i+1] + '</td>';
+			for (j=i+2; j < (i + numFields); j++) {
+				if (numFields > 5 && (j-8) % numFields == mid) {
+					descRow += '</tr><tr>'
+				}
+				if (parseInt(liste[j],10)) {
+					descRow += '<td style="text-align:right">' + liste[j] + '</td>';
+				} else {
+					descRow += '<td>' + liste[j] + '</td>';
+				}
+			}
+			descRow += '</tr>';
 		}
 		descRow += '</table>';
 		document.getElementById("armeedetail").innerHTML = descRow;

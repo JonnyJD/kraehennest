@@ -7,6 +7,8 @@
 import config
 import ausgabe
 
+viel_armeen = 8;
+"""Gibt an ab welcher Armeezahl auf einem Feld weniger Infos gezeigt werden"""
 
 def print_link(link, name, br=False):
     """Gibt eine bestimmten Kartenlink aus.
@@ -139,6 +141,18 @@ def level_link(direction):
         return ausgabe.link(link, new_level)
     else:
         return '&nbsp;'
+
+def __format(var):
+    """Formatierte Ausgabe einer Variable
+
+    @param field: Eingabevariable
+    @return: C{"?"} bei None, sonst C{str(var)}
+    @return: C{StringType}
+    """
+    if var == None:
+        return "?"
+    else:
+        return str(var)
 
 
 # Aufruf direkt: Karten anzeigen
@@ -374,17 +388,23 @@ if __name__ == '__main__':
                             list = '|?' * 6
                         # fuer Armeen
                         if show_armeen and armee.has(x,y):
-                            for entry in armee.get(x,y):
+                            armee.get(x,y)
+                            # Anzahl Infos pro Armee
+                            if len(armee.entry) < viel_armeen:
+                                list += '|7'
+                            else:
+                                list += '|4'
+                            # Armeen anhaengen
+                            for entry in armee.entry:
                                 list += '|' + entry["allyfarbe"]
-                                list += '|' + entry["name"]
-                                if entry["size"] == None:
-                                    list += '|?'
-                                else:
-                                    list += '|' + str(entry["size"])
-                                if entry["strength"] == None:
-                                    list += '|?'
-                                else:
-                                    list += '|' + str(entry["strength"])
+                                list += '|' + entry["rittername"]
+                                list += '|' + __format(entry["size"])
+                                list += '|' + __format(entry["strength"])
+                                # mehr Infos bei wenigen Armeen
+                                if len(armee.entry) < viel_armeen:
+                                    list += '|(' + entry["name"] + ')'
+                                    list += '|' + __format(entry["ap"])
+                                    list += '|' + __format(entry["bp"])
                         if ((show_dorf and dorf.has(x,y))
                                 or (show_armeen and armee.has(x,y))):
                             list = list.replace("'", "\\'")

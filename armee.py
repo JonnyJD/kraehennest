@@ -399,7 +399,8 @@ class Armee(Feld):
         
         @rtype: C{BooleanType}"""
 
-        sql = "SELECT x, y, ritternr, allicolor, name, size, strength"
+        sql = "SELECT x, y, ritternr, allicolor, rittername, size, strength"
+        sql += ", name, ap, bp"
         sql += " FROM armeen"
         sql += " JOIN ritter ON r_id = ritternr"
         sql += " JOIN allis ON ritter.alli = allinr"
@@ -418,9 +419,12 @@ class Armee(Feld):
                     entry["allyfarbe"] = '#00A000'
                 else: 
                     entry["allyfarbe"] = row[3]
-                entry["name"] = row[4]
+                entry["rittername"] = row[4]
                 entry["size"] = row[5]
                 entry["strength"] = row[6]
+                entry["name"] = row[7]
+                entry["ap"] = row[8]
+                entry["bp"] = row[9]
                 if (row[0],row[1]) not in self.entries:
                     self.entries[row[0],row[1]] = []
                 self.entries[row[0],row[1]].append(entry)

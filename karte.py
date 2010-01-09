@@ -7,7 +7,7 @@
 import config
 import ausgabe
 
-viel_armeen = 8;
+viel_armeen = 8
 """Gibt an ab welcher Armeezahl auf einem Feld weniger Infos gezeigt werden"""
 
 def print_link(link, name, br=False):
@@ -147,7 +147,7 @@ def __format(var):
 
     @param field: Eingabevariable
     @return: C{"?"} bei None, sonst C{str(var)}
-    @return: C{StringType}
+    @rtype: C{StringType}
     """
     if var == None:
         return "?"

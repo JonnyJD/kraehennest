@@ -173,6 +173,9 @@ if __name__ == '__main__':
     print '          "http://www.w3.org/TR/html4/loose.dtd">'
     print '<html><head>'
     print '<title>' + title + '</title>'
+    print '<meta name="robots" content="noindex, nofollow" />'
+    print'<meta http-equiv="content-type" content="text/html; charset=UTF-8" />'
+    print '<meta http-equiv="expires" content="0" />'
     print '<link rel="stylesheet" type="text/css" href="',
     print ausgabe.prefix + '/show/stylesheet">'
     if config.is_kraehe():

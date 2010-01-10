@@ -31,8 +31,11 @@ def print_header(title=None, styles=None):
     print '<head>'
     if title:
         print '<title>' + title + '</title>'
+    print '<meta name="robots" content="noindex, nofollow" />'
+    print'<meta http-equiv="content-type" content="text/html; charset=UTF-8" />'
+    print '<meta http-equiv="expires" content="0" />'
     print '<link rel="stylesheet" type="text/css" href="',
-    print prefix + '/show/stylesheet">'
+    print prefix + '/show/stylesheet" />'
     if styles:
         print styles
     print '</head>\n'

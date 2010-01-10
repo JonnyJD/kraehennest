@@ -43,6 +43,26 @@ def translate(column):
     else:
         return column.capitalize()
 
+def schiffstyp(img):
+    """Uebersetzt ein Schiffsbild in einen Schiffstyp
+
+    (Beim der eigenen Armeen sieht man nur das Bild, nicht die Typbezeichnung.)
+    
+    @param img: Schiffsbild aus dem Spiel
+    @type img: C{StringType}
+    @return: Schiffstyp aus dem Spiel
+    @rtype: C{StringType}
+    """
+    dictionary = {'s8_1k': "Flo&szlig;", 's8_2k': "Fischerboot",
+            's8_3k': "Pinasse", 's8_4k': "Kutter", 's8_5k': "Ketch",
+            's8_6k': "Kogge", 's8_7k': "Karavelle", 's8_8k': "Karacke",
+            's8_9k': "Galeone", 's8_10k': "Brigg", 's8_11k': "Korvette",
+            's8_12k': "Fregatte"}
+    if column in dictionary:
+        return dictionary[img]
+    else:
+        return column
+
 
 class Armee(Feld):
     """Eine Klasse um Armeedaten ein- und auszulesen.  
@@ -674,7 +694,7 @@ class Armee(Feld):
                     entry["max_ap"] = aps[0].prop("max")
             schiffe = armee.xpathEval('schiff') 
             if len(schiffe) == 1:
-                entry["schiffstyp"] = schiffe[0].prop("typ")
+                entry["schiffstyp"] = schiffstyp(schiffe[0].prop("typ"))
                 #entry["schiffslast"] = schiffe[0].prop("last")
             else:
                 entry["schiffstyp"] = None;

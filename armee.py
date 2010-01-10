@@ -58,10 +58,10 @@ def schiffstyp(img):
             's8_6k': "Kogge", 's8_7k': "Karavelle", 's8_8k': "Karacke",
             's8_9k': "Galeone", 's8_10k': "Brigg", 's8_11k': "Korvette",
             's8_12k': "Fregatte"}
-    if column in dictionary:
+    if img in dictionary:
         return dictionary[img]
     else:
-        return column
+        return img
 
 
 class Armee(Feld):
@@ -498,6 +498,8 @@ class Armee(Feld):
                         line.append("Ja")
                     else:
                         line.append('<div style="color:red">Nein</div>')
+                elif cols[i] == "img":
+                    line.append('<img src="/img/armee/' + armee[i] + '.gif" />')
                 elif cols[i] == "ritternr":
                     # nachfolgenden Ritternamen verlinken
                     url = "/show/reich/" + str(armee[i])
@@ -543,7 +545,7 @@ class Armee(Feld):
         """
 
         cols = ["status", "ritternr", "allicolor", "rittername"]
-        cols += ["name", "last_seen"]
+        cols += ["img", "name", "last_seen"]
         cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
         cols += ["schiffstyp"]
         sql = "SELECT " + ", ".join(cols)
@@ -568,7 +570,8 @@ class Armee(Feld):
         @rtype: L{Tabelle<ausgabe.Tabelle>}
         """
 
-        cols = ["active", "status", "level", "x", "y", "name", "last_seen"]
+        cols = ["active", "status", "level", "x", "y", "img", "name"]
+        cols += ["last_seen"]
         cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
         cols += ["schiffstyp"]
         sql = "SELECT " + ", ".join(cols)

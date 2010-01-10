@@ -38,6 +38,19 @@ def get_ritter_id_form(rittername):
     form += '<input type="submit" value="hole ID"></form>'
     return form
 
+def translate(column):
+    """Uebersetzt den Datenbanknamen fuer die Anzeige
+    
+    @param column: Name in der Datenbank (oder Variable)
+    @return: Anzeigename (mit HTML entities)
+    @rtype: C{StringType}
+    """
+    dictionary = {'r_id': "ID"}
+    if column in dictionary:
+        return dictionary[column]
+    else:
+        return column.capitalize()
+
 
 def list():
     """Gibt eine Tabelle aller Reiche und ihrer Herrscher.
@@ -56,7 +69,7 @@ def list_by_allianz(a_id):
     import allianz
 
     tabelle = ausgabe.Tabelle()
-    tabelle.addColumn("r_id")
+    tabelle.addColumn(translate("r_id"))
     tabelle.addColumn("Top10")
     tabelle.addColumn("Name")
     if a_id == -1:

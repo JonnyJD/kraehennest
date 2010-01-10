@@ -1,8 +1,8 @@
 #!/usr/bin/python
 """Armeedaten einlesen und ausgeben"""
 
-import cgitb
-cgitb.enable()
+#import cgitb
+#cgitb.enable()
 
 import rbdb
 import util
@@ -27,6 +27,21 @@ def status_string(status):
     """
     return {S_SOLD: "Taverne", S_HIDDEN: "versteckt",
             S_QUEST: "Quest", S_DEAD: "tot", None: None}[status]
+
+def translate(column):
+    """Uebersetzt den Datenbanknamen fuer die Anzeige
+    
+    @param column: Name in der Datenbank (oder Variable)
+    @return: Anzeigename (mit HTML entities)
+    @rtype: C{StringType}
+    """
+    dictionary = {'strength': "St&auml;rke", 'size': "Gr&ouml;&szlig;e",
+            'last_seen': "zuletzt gesehen",
+            'bp': "BP", 'ap': "AP"}
+    if column in dictionary:
+        return dictionary[column]
+    else:
+        return column.capitalize()
 
 
 class Armee(Feld):
@@ -448,13 +463,13 @@ class Armee(Feld):
         virtual = ["ritternr", "allicolor", "ruf", "max_bp", "max_ap"]
         for i in range(0,len(cols)):
             if cols[i] == "size" and cols[i+1] == "ruf":
-                tabelle.addColumn(cols[i], 3)
+                tabelle.addColumn(translate(cols[i]), 3)
             elif cols[i] == "bp" and cols[i+1] == "max_bp":
-                tabelle.addColumn(cols[i], 3)
+                tabelle.addColumn(translate(cols[i]), 3)
             elif cols[i] == "ap" and cols[i+1] == "max_ap":
-                tabelle.addColumn(cols[i], 3)
+                tabelle.addColumn(translate(cols[i]), 3)
             elif cols[i] not in virtual:
-                tabelle.addColumn(cols[i])
+                tabelle.addColumn(translate(cols[i]))
         for armee in armeen:
             line = []
             for i in range(0, len(armee)):

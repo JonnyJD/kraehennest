@@ -11,6 +11,21 @@ from datetime import date, datetime, timedelta
 from feld import Feld
 import ausgabe
 
+
+def translate(column):
+    """Uebersetzt den Datenbanknamen fuer die Anzeige
+    
+    @param column: Name in der Datenbank (oder Variable)
+    @return: Anzeigename (mit HTML entities)
+    @rtype: C{StringType}
+    """
+    dictionary = {'aktdatum': "zuletzt gesehen"}
+    if column in dictionary:
+        return dictionary[column]
+    else:
+        return column.capitalize()
+
+
 class Dorf(Feld):
     """Eine Klasse um Dorfdaten ein- und auszulesen.  
     """
@@ -66,10 +81,10 @@ class Dorf(Feld):
         tabelle = ausgabe.Tabelle()
         for col in cols:
             if col == "koords":
-                tabelle.addColumn("x")
-                tabelle.addColumn("y")
+                tabelle.addColumn("X")
+                tabelle.addColumn("Y")
             elif col not in ["ritternr", "allicolor"]:
-                tabelle.addColumn(col)
+                tabelle.addColumn(translate(col))
         for dorf in doerfer:
             line = []
             for i in range(0, len(dorf)):

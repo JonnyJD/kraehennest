@@ -62,7 +62,7 @@ def list_versions():
         util.print_html_error(e)
         return False
 
-def list_delete():
+def list_too_many_armies():
     """Listet Ritter mit ueberzaehligen Armeen"""
 
     tabelle = ausgabe.Tabelle()
@@ -91,6 +91,34 @@ def list_delete():
         util.print_html_error(e)
         return False
 
+def list_dangling_armies():
+    """Listet Armeen mit unbekanntem Ritter"""
+
+    tabelle = ausgabe.Tabelle()
+    tabelle.addColumn("Armee")
+    tabelle.addColumn("r_id")
+    tabelle.addColumn("Admin")
+    sql = "SELECT h_id, name, r_id"
+    sql += " FROM armeen"
+    sql += " WHERE r_id NOT IN (SELECT distinct ritternr FROM ritter)"
+    sql += " ORDER BY r_id"
+    try:
+        conn = rbdb.connect()
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        row = cursor.fetchone()
+        while row != None:
+            line = [row[1]]
+            line.append(row[2])
+            line.append(ausgabe.link("/delete/armee/" + str(row[0]), "[del]"))
+            tabelle.addLine(line)
+            row = cursor.fetchone()
+        print "Es haben", tabelle.length(), "Armeen keine Ritter mehr"
+        tabelle.show()
+        return True
+    except rbdb.Error, e:
+        util.print_html_error(e)
+        return False
 
 
 # Aufruf als Skript: Reich eintragen
@@ -105,7 +133,12 @@ if __name__ == '__main__':
             list_versions()
         elif form["list"].value == "delete":
             ausgabe.print_header("L&ouml;schliste")
-            list_delete()
+            print '<div style="float:left">'
+            list_too_many_armies()
+            print '</div>'
+            print '<div style="float:left">'
+            list_dangling_armies()
+            print '</div>'
         else:
             ausgabe.print_header("Administration")
     ausgabe.print_footer()

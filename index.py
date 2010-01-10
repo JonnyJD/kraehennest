@@ -30,6 +30,7 @@ if __name__ == "__main__":
         print '<h2>Administration</h2>'
         print '<a href="/karte/datenpflege.php">Datenpflege</a>'
         print ausgabe.link("/show/versionen", "Versionsliste", br=True)
+        print ausgabe.link("/delete", "L&ouml;schliste", br=True)
         print '</div>'
     karte.list_maps()
 

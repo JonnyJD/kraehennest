@@ -17,9 +17,9 @@ def list_versions():
 
     tabelle = ausgabe.Tabelle()
     tabelle.addColumn("r_id")
-    tabelle.addColumn("rittername")
-    tabelle.addColumn("version")
-    tabelle.addColumn("last_seen")
+    tabelle.addColumn("Rittername")
+    tabelle.addColumn("Version")
+    tabelle.addColumn("zuletzt gesehen")
     sql = "SELECT r_id, rittername, version, last_seen"
     sql += " FROM versionen"
     sql += " left JOIN ritter ON r_id = ritternr"
@@ -56,7 +56,37 @@ def list_versions():
             tabelle.addLine(line)
             row = cursor.fetchone()
         print "Es sind", tabelle.length(), "Benutzerreiche in der Datenbank"
-        return tabelle.show()
+        tabelle.show()
+        return True
+    except rbdb.Error, e:
+        util.print_html_error(e)
+        return False
+
+def list_delete():
+    """Listet Ritter mit ueberzaehligen Armeen"""
+
+    tabelle = ausgabe.Tabelle()
+    tabelle.addColumn("Rittername")
+    tabelle.addColumn("Armeen")
+    sql = "SELECT ritternr, rittername, count(distinct h_id) as armeezahl"
+    sql += " FROM ritter"
+    sql += " JOIN armeen ON ritternr = r_id"
+    sql += " GROUP BY ritternr, rittername"
+    sql += " HAVING armeezahl > 4"
+    sql += " ORDER BY ritternr"
+    try:
+        conn = rbdb.connect()
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        row = cursor.fetchone()
+        while row != None:
+            line = [ausgabe.link("/show/reich/" + str(row[0]), row[1])]
+            line.append(row[2])
+            tabelle.addLine(line)
+            row = cursor.fetchone()
+        print "Es haben", tabelle.length(), "Reiche mehr als 4 Armeen"
+        tabelle.show()
+        return True
     except rbdb.Error, e:
         util.print_html_error(e)
         return False
@@ -73,6 +103,9 @@ if __name__ == '__main__':
         if form["list"].value == "versionen":
             ausgabe.print_header("Versionsliste")
             list_versions()
+        elif form["list"].value == "delete":
+            ausgabe.print_header("L&ouml;schliste")
+            list_delete()
         else:
             ausgabe.print_header("Administration")
     ausgabe.print_footer()

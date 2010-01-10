@@ -129,9 +129,8 @@ class Tabelle:
         return len(self.__lines)
 
     def show(self):
-        """Gibt die Tabelle als HTML aus
-        
-        @rtype: C{StringType}"""
+        """Gibt die Tabelle als HTML aus 
+        """
 
         if self.length() > 0:
             print '<table class="tabelle">'

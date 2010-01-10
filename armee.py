@@ -8,9 +8,11 @@ import rbdb
 import util
 import re
 from datetime import datetime, timedelta
+
 from feld import Feld
 from reich import get_ritter_id_form
 import ausgabe
+import config
 
 # Armeestati
 S_SOLD = 'S'    #: Taverne
@@ -68,15 +70,59 @@ class Armee(Feld):
     """Eine Klasse um Armeedaten ein- und auszulesen.  
     """
 
-    def __init__(self):
+    def __init__(self, h_id=None):
         """Stellt eine Datenbankverbindung her und initialisiert.
+
+        Bei Eingabe iner h_id wird eine Armeeinstanz eingelesen
+        @param h_id: Armee-ID
+        @type h_id: C{IntType}
         """
-        Feld.__init__(self)
-        self.table_name = "armeen"
-        self.__entry_name_is_db_name = []
-        self.__cols_gathered = False
-        self.__int_columns = []
-        self.__inactive_entries = []
+
+        if h_id is None:
+            Feld.__init__(self)
+            self.table_name = "armeen"
+            self.__entry_name_is_db_name = []
+            self.__cols_gathered = False
+            self.__int_columns = []
+            self.__inactive_entries = []
+        else:
+            cols = ["active", "status", "level", "x", "y"]
+            cols += ["ritternr", "allicolor", "rittername"]
+            cols += ["img", "name", "last_seen"]
+            cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
+            cols += ["schiffstyp"]
+            sql = "SELECT " + ", ".join(cols)
+            sql += " FROM armeen"
+            sql += " JOIN ritter ON armeen.r_id = ritternr"
+            sql += " JOIN allis ON ritter.alli = allis.allinr"
+            sql += " WHERE h_id = %s"
+            row = util.get_sql_row(sql, h_id)
+            if row is None:
+                raise KeyError(h_id)
+            else:
+                self.__table = self.__list(cols, [row])
+                self.id = h_id
+                self.owner = row[5]
+                self.owner_name = row[7]
+                self.name = row[9]
+
+    def show(self):
+        """Zeigt die Armee in einer L{Tabelle<ausgabe.Tabelle>}
+        """
+        self.__table.show()
+
+    def delete(self):
+        """L&ouml;scht die Armee sofern ein Admin eingeloggt ist
+        """
+        if config.is_admin():
+            sql = "DELETE FROM armeen WHERE h_id = %s"
+            if util.sql_execute(sql, self.id) > 0:
+                ausgabe.print_important("wurde gel&ouml;scht")
+            else:
+                ausgabe.print_important("wurde nicht gel&ouml;scht")
+        else:
+            ausgabe.print_important("darf nur der Admin l&ouml;schen")
+
 
     def __is(self, is_int, entry, mandatory, db_col, key, length):
         """Prueft einen Wert  auf korrekten Typ.
@@ -488,6 +534,8 @@ class Armee(Feld):
                 tabelle.addColumn(translate(cols[i]), 3)
             elif cols[i] == "ap" and cols[i+1] == "max_ap":
                 tabelle.addColumn(translate(cols[i]), 3)
+            elif config.is_admin() and cols[i] == "h_id":
+                tabelle.addColumn("Admin")
             elif cols[i] not in virtual:
                 tabelle.addColumn(translate(cols[i]))
         for armee in armeen:
@@ -533,6 +581,9 @@ class Armee(Feld):
                         line.append(armee[i])
                 elif cols[i] == "status":
                     line.append(status_string(armee[i]))
+                elif config.is_admin() and cols[i] == "h_id":
+                    url = "/delete/armee/" + str(armee[i])
+                    line.append(ausgabe.link(url, "[delete]"))
                 elif cols[i-1] not in ["ritternr", "allicolor"]:
                     line.append(armee[i])
             tabelle.addLine(line)
@@ -574,6 +625,8 @@ class Armee(Feld):
         cols += ["last_seen"]
         cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
         cols += ["schiffstyp"]
+        if config.is_admin():
+            cols += ["h_id"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"
@@ -735,6 +788,22 @@ if __name__ == '__main__':
         armeetabelle = armee.list_all()
         print "Anzahl Armeen:", armeetabelle.length()
         armeetabelle.show()
+    elif "action" in form:
+        if config.is_admin() and form["action"].value == "delete":
+            h_id = form["id"].value
+            ausgabe.print_header("Armee " + h_id + " l&ouml;schen")
+            armee = Armee(h_id)
+            armee.show()
+            if "confirmation" in form and form["confirmation"].value == "yes":
+                armee.delete()
+            else:
+                message = "Wollen sie diese Armee wirklich l&ouml;schen?"
+                url = "/delete/armee/" + str(h_id) + "/yes"
+                ausgabe.confirmation(message, url)
+        else:
+            action = form["action"].value
+            message = "Werde " + action + " nicht ausf&uuml;hren!"
+            ausgabe.print_header(message)
     else:
         print "leer"
 

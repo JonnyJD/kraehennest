@@ -186,8 +186,8 @@ class Reich:
                 self.id = r_id
                 self.name = row[0]
                 self.ally = row[1]
-                self.allyname = row[2]
-                self.allycolor = row[3]
+                self.ally_name = row[2]
+                self.ally_color = row[3]
 
 
 
@@ -222,7 +222,7 @@ if __name__ == '__main__':
 
             print '<table>'
             print '<tr><td>Allianz</td><td>',
-            print allianz.link(reich.ally, reich.allyname, reich.allycolor),
+            print allianz.link(reich.ally, reich.ally_name, reich.ally_color),
             print '</td></tr>'
             dorf = Dorf()
             dorftabelle = dorf.list_by_reich(r_id)

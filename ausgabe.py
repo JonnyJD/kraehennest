@@ -11,10 +11,11 @@ from types import IntType, LongType
 ######################################################################
 
 # Prefix
+prefix = '' #: Der Prefix der URL, verschiedene Authorisationsbereiche
 if 'SCRIPT_URL' in os.environ:
-    prefix = re.match("(.*)/(show|send)", os.environ['SCRIPT_URL']).group(1)
-else:
-    prefix = '' #: Der Prefix der URL, verschiedene Authorisationsbereiche
+    match = re.match("(.*)/(show|send)", os.environ['SCRIPT_URL'])
+    if match:
+        prefix = match.group(1)
 
 
 def print_header(title=None, styles=None):
@@ -71,6 +72,11 @@ def link(url, text, color=None, br=False):
         link += ' style="color:' + color + ';"'
     link += '>' + text + '</a>'
     return link
+
+def print_important(message):
+    """Gibt eine wichtige Nachricht gross und farbig in HTML aus
+    """
+    print '<h2 style="color:red">' + message + '</h2>'
 
 
 class Tabelle:
@@ -153,6 +159,21 @@ class Tabelle:
             print '</table>'
         else:
             print '(keine)'
+
+
+def confirmation(message, url):
+    """Zeigt einen "Wollen sie wirklich?"-Dialog
+
+    @param message: Nachricht/Frage
+    @param url: Bei "Ja" auszufuehrender link
+    """
+
+    tabelle = Tabelle()
+    tabelle.addColumn('<h2 style="color:red">'+ message + '</h2>', 2)
+    line = [link(url, "Ja", "green")]
+    line.append(link("javascript:back()", "Nein", "red"))
+    tabelle.addLine(line)
+    tabelle.show()
 
 ######################################################################
 #{ Datumsformatierung

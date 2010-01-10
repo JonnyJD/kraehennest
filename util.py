@@ -50,8 +50,22 @@ def get_sql_row(sql, args):
     conn = rbdb.connect()
     cursor = conn.cursor()
     try_execute_safe(cursor, sql, args)
-    return cursor.fetchone()
+    row = cursor.fetchone()
     conn.close()
+    return row
+
+def sql_execute(sql, args):
+    """Fuehrt eine Datenbankaktion aus
+
+    @return: Anzahl der Aenderungen
+    @rtype: C{List}
+    """
+    conn = rbdb.connect()
+    cursor = conn.cursor()
+    try_execute_safe(cursor, sql, args)
+    count = cursor.rowcount
+    conn.close()
+    return count
 
 def print_xml(xml_node):
     """Gibt einen XML-Knoten aus

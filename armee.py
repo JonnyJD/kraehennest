@@ -445,11 +445,16 @@ class Armee(Feld):
         """
 
         tabelle = ausgabe.Tabelle()
-        for col in cols:
-            if col in ["max_bp", "max_ap", "ruf"]:
-                tabelle.addColumn("/")
-            if col not in ["ritternr", "allicolor"]:
-                tabelle.addColumn(col)
+        virtual = ["ritternr", "allicolor", "ruf", "max_bp", "max_ap"]
+        for i in range(0,len(cols)):
+            if cols[i] == "size" and cols[i+1] == "ruf":
+                tabelle.addColumn(cols[i], 3)
+            elif cols[i] == "bp" and cols[i+1] == "max_bp":
+                tabelle.addColumn(cols[i], 3)
+            elif cols[i] == "ap" and cols[i+1] == "max_ap":
+                tabelle.addColumn(cols[i], 3)
+            elif cols[i] not in virtual:
+                tabelle.addColumn(cols[i])
         for armee in armeen:
             line = []
             for i in range(0, len(armee)):

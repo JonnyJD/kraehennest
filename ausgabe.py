@@ -77,19 +77,38 @@ class Tabelle:
         """Erstellt eine leere Tabelle
         """
         self.__columns = []
+        self.__colspan = []
+        self.__padding = []
         self.__lines = []
 
-    def addColumn(self, col):
+    def addColumn(self, col, colspan=None):
         """Fuegt eine Spalte hinzu
 
         @param col: Titel der Spalte
+        @type col: C{StringType}
+        @param colspan: Fuer wieviele Content-Spalten
+        @type colspan: C{IntType}
         """
         self.__columns.append(col)
+        if colspan is not None:
+            self.__colspan.append(colspan)
+            self.__padding.append(True)
+            for i in range(1,colspan-1):
+                # vorerst die inneren Columns ohne Padding "7/12 AP"
+                # spaeter vielleicht eine Bool-Liste mitgeben
+                self.__padding.append(False)
+            self.__padding.append(True)
+        else:
+            self.__colspan.append(0)
+            self.__padding.append(True)
 
-    def addLine(self, cols):
+    def addLine(self, cols, padding=False):
         """Fuegt eine Zeile hinzu
 
+        Das Padding der Spalte kann nur fuer alle Zeilen abgeschaltet werden.
+
         @param cols: Eine Liste der Zelleintraege
+        @type cols: C{List} of C{StringType}
         """
         self.__lines.append(cols)
 
@@ -108,18 +127,25 @@ class Tabelle:
         if self.length() > 0:
             print '<table class="tabelle">'
             print '<tr>'
-            for col in self.__columns:
-                print '<th>' + col + '</th>'
+            for i in range(0,len(self.__columns)):
+                if self.__colspan[i] > 0:
+                    cell = '<th colspan="' + str(self.__colspan[i]) + '">'
+                    print cell + self.__columns[i] + '</th>'
+                else:
+                    print '<th>' + self.__columns[i] + '</th>'
             print '</tr>'
             for line in self.__lines:
                 print '<tr>'
-                for col in line:
-                    if col is None:
-                        col = ""
-                    if type(col) in [IntType, LongType]:
-                        print '<td align="right">' + str(col) + '</td>'
+                for i in range(0,len(line)):
+                    if line[i] is None:
+                        line[i] = ""
+                    if type(line[i]) in [IntType, LongType]:
+                        cell = '<td style="text-align:right;">'
+                    elif not self.__padding[i]:
+                        cell = '<td style="padding:0px;">'
                     else:
-                        print '<td>' + str(col) + '</td>'
+                        cell = '<td>'
+                    print cell + str(line[i]) + '</td>'
                 print '</tr>'
             print '</table>'
         else:

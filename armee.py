@@ -509,7 +509,8 @@ class Armee(Feld):
 
         cols = ["status", "ritternr", "allicolor", "rittername"]
         cols += ["name", "last_seen"]
-        cols += ["strength", "size", "bp", "ap", "schiffstyp"]
+        cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
+        cols += ["schiffstyp"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"

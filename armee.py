@@ -36,7 +36,7 @@ def translate(column):
     @rtype: C{StringType}
     """
     dictionary = {'strength': "St&auml;rke", 'size': "Gr&ouml;&szlig;e",
-            'last_seen': "zuletzt gesehen",
+            'active': "da?", 'level': "Lvl", 'last_seen': "zuletzt gesehen",
             'bp': "BP", 'ap': "AP"}
     if column in dictionary:
         return dictionary[column]

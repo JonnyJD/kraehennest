@@ -42,6 +42,9 @@ def print_header(title=None, styles=None):
     print '</head>\n'
     print '<body>'
     if title:
+        if title != "Kr&auml;hennest":
+            text = "zur&uuml;ck zum Index"
+            print '<div style="float:right;">' + link("/show", text) + '</div>'
         print '<h1>' + title + '</h1>'
 
 def print_footer():

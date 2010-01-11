@@ -818,8 +818,8 @@ if __name__ == '__main__':
         try:
             if config.is_admin() and form["action"].value == "free":
                 h_id = form["id"].value
-                ausgabe.print_header("Armee " + h_id + " freigeben")
                 armee = Armee(h_id)
+                ausgabe.print_header("Armee " + h_id + " freigeben")
                 armee.show()
                 if "confirmation" in form and form["confirmation"].value=="yes":
                     armee.free()
@@ -829,8 +829,8 @@ if __name__ == '__main__':
                     ausgabe.confirmation(message, url)
             elif config.is_admin() and form["action"].value == "delete":
                 h_id = form["id"].value
-                ausgabe.print_header("Armee " + h_id + " l&ouml;schen")
                 armee = Armee(h_id)
+                ausgabe.print_header("Armee " + h_id + " l&ouml;schen")
                 armee.show()
                 if "confirmation" in form and form["confirmation"].value=="yes":
                     armee.delete()

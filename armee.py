@@ -819,7 +819,7 @@ if __name__ == '__main__':
             if config.is_admin() and form["action"].value == "free":
                 h_id = form["id"].value
                 ausgabe.print_header("Armee " + h_id + " freigeben")
-                    armee = Armee(h_id)
+                armee = Armee(h_id)
                 armee.show()
                 if "confirmation" in form and form["confirmation"].value=="yes":
                     armee.free()

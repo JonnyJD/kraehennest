@@ -93,8 +93,8 @@ class Armee(Feld):
             cols += ["schiffstyp"]
             sql = "SELECT " + ", ".join(cols)
             sql += " FROM armeen"
-            sql += " JOIN ritter ON armeen.r_id = ritternr"
-            sql += " JOIN allis ON ritter.alli = allis.allinr"
+            sql += " LEFT JOIN ritter ON armeen.r_id = ritternr"
+            sql += " LEFT JOIN allis ON ritter.alli = allis.allinr"
             sql += " WHERE h_id = %s"
             row = util.get_sql_row(sql, h_id)
             if row is None:
@@ -553,7 +553,9 @@ class Armee(Feld):
                     # nachfolgenden Ritternamen verlinken
                     url = "/show/reich/" + str(armee[i])
                     if cols[i+1] == "allicolor":
-                        if armee[i] == 174: # Keiner
+                        if armee[i] is None:
+                            link = "(nicht existent)"
+                        elif armee[i] == 174: # Keiner
                             link = ausgabe.link(url, armee[i+2], "green")
                         else:
                             link = ausgabe.link(url, armee[i+2], armee[i+1])

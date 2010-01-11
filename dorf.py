@@ -95,7 +95,9 @@ class Dorf(Feld):
                     # nachfolgenden Ritternamen verlinken
                     url = "/show/reich/" + str(dorf[i])
                     if cols[i+1] == "allicolor":
-                        if dorf[i] == 174: # Keiner
+                        if dorf[i] is None:
+                            link = "(nicht existent)"
+                        elif dorf[i] == 174: # Keiner
                             link = ausgabe.link(url, dorf[i+2], "green")
                         else:
                             link = ausgabe.link(url, dorf[i+2], dorf[i+1])

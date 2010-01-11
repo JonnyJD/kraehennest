@@ -130,7 +130,7 @@ class Armee(Feld):
 
         if config.is_admin():
             sql = "UPDATE armeen"
-            sql += " SET active = 0, status = " + S_SOLD + ", r_id = NULL"
+            sql += " SET active = 0, status = '" + S_SOLD + "', r_id = NULL"
             sql += " WHERE h_id = %s"
             if util.sql_execute(sql, self.id) > 0:
                 ausgabe.print_important("wurde freigegeben")

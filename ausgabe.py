@@ -17,6 +17,25 @@ if 'SCRIPT_URL' in os.environ:
     if match:
         prefix = match.group(1)
 
+def test_referer(url):
+    """Gleicht HTTP-Referer mit einer URL auf diesem host ab
+
+    @param url: Die URL ohne host
+    @type url: C{StringType}
+    @rtype: C{BooleanType}
+    """
+
+    global message
+    uri = 'http://' + os.environ['HTTP_HOST'] + url
+    if "HTTP_REFERER" in os.environ:
+        if os.environ['HTTP_REFERER'] == uri:
+            return True
+        elif os.environ['HTTP_REFERER'] == uri + "/yes":
+            return True
+        else:
+            return False
+    else:
+        return False
 
 def print_header(title=None, styles=None):
     """Gibt den HTML-Header aus

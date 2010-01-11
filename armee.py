@@ -816,34 +816,40 @@ if __name__ == '__main__':
         armeetabelle.show()
     elif "action" in form:
         try:
+            if "confirmation" in form and form["confirmation"].value=="yes":
+                confirmation = True
+            else:
+                confirmation = False
             if config.is_admin() and form["action"].value == "free":
                 h_id = form["id"].value
                 armee = Armee(h_id)
                 ausgabe.print_header("Armee " + h_id + " freigeben")
                 armee.show()
-                if "confirmation" in form and form["confirmation"].value=="yes":
+                url = "/free/armee/" + str(h_id)
+                if confirmation and ausgabe.test_referer(url):
                     armee.free()
                 else:
                     message = "Wollen sie diese Armee wirklich freigeben?"
-                    url = "/free/armee/" + str(h_id) + "/yes"
+                    url += "/yes"
                     ausgabe.confirmation(message, url)
             elif config.is_admin() and form["action"].value == "delete":
                 h_id = form["id"].value
                 armee = Armee(h_id)
                 ausgabe.print_header("Armee " + h_id + " l&ouml;schen")
                 armee.show()
-                if "confirmation" in form and form["confirmation"].value=="yes":
+                url = "/delete/armee/" + str(h_id)
+                if confirmation and ausgabe.test_referer(url):
                     armee.delete()
                 else:
                     message = "Wollen sie diese Armee wirklich l&ouml;schen?"
-                    url = "/delete/armee/" + str(h_id) + "/yes"
+                    url += "/yes"
                     ausgabe.confirmation(message, url)
             else:
                 action = form["action"].value
                 message = "Werde " + action + " nicht ausf&uuml;hren!"
                 ausgabe.print_header(message)
         except KeyError, e:
-            ausgabe.print_header("Unbekanntes Armee: " + e.args[0])
+            ausgabe.print_header("Unbekannte Armee: " + e.args[0])
     else:
         print "leer"
 

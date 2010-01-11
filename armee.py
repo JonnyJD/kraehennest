@@ -114,6 +114,7 @@ class Armee(Feld):
     def delete(self):
         """L&ouml;scht die Armee sofern ein Admin eingeloggt ist
         """
+
         if config.is_admin():
             sql = "DELETE FROM armeen WHERE h_id = %s"
             if util.sql_execute(sql, self.id) > 0:
@@ -122,6 +123,21 @@ class Armee(Feld):
                 ausgabe.print_important("wurde nicht gel&ouml;scht")
         else:
             ausgabe.print_important("darf nur der Admin l&ouml;schen")
+
+    def free(self):
+        """Befreit die Armee vom Besitzer sofern ein Admin eingeloggt ist
+        """
+
+        if config.is_admin():
+            sql = "UPDATE armeen"
+            sql += " SET active = 0, status = " + S_SOLD + ", r_id = NULL"
+            sql += " WHERE h_id = %s"
+            if util.sql_execute(sql, self.id) > 0:
+                ausgabe.print_important("wurde freigegeben")
+            else:
+                ausgabe.print_important("wurde nicht freigegeben")
+        else:
+            ausgabe.print_important("darf nur der Admin freigegeben")
 
 
     def __is(self, is_int, entry, mandatory, db_col, key, length):
@@ -589,8 +605,8 @@ class Armee(Feld):
                         url = "/delete/armee/" + str(armee[i])
                         line.append(ausgabe.link(url, "[delete]"))
                     else:
-                        # hier nur disown
-                        line.append("")
+                        url = "/free/armee/" + str(armee[i])
+                        line.append(ausgabe.link(url, "[free]"))
                 elif cols[i-1] in ["ritternr", "allicolor"]:
                     # rittername wurde schon abgehakt
                     pass
@@ -799,7 +815,18 @@ if __name__ == '__main__':
         print "Anzahl Armeen:", armeetabelle.length()
         armeetabelle.show()
     elif "action" in form:
-        if config.is_admin() and form["action"].value == "delete":
+        if config.is_admin() and form["action"].value == "free":
+            h_id = form["id"].value
+            ausgabe.print_header("Armee " + h_id + " freigeben")
+            armee = Armee(h_id)
+            armee.show()
+            if "confirmation" in form and form["confirmation"].value == "yes":
+                armee.delete()
+            else:
+                message = "Wollen sie diese Armee wirklich freigeben?"
+                url = "/free/armee/" + str(h_id) + "/yes"
+                ausgabe.confirmation(message, url)
+        elif config.is_admin() and form["action"].value == "delete":
             h_id = form["id"].value
             ausgabe.print_header("Armee " + h_id + " l&ouml;schen")
             armee = Armee(h_id)

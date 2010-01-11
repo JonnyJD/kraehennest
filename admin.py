@@ -114,8 +114,8 @@ def list_dangling_armies():
                 url = "/delete/armee/" + str(row[0])
                 line.append(ausgabe.link(url, "[del]"))
             else:
-                # hier nur disown
-                line.append("")
+                url = "/disown/armee/" + str(row[0])
+                line.append(ausgabe.link(url, "[free]"))
             tabelle.addLine(line)
             row = cursor.fetchone()
         print "Es haben", tabelle.length(), "Armeen keine Ritter mehr"

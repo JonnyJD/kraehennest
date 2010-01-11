@@ -16,11 +16,15 @@ def list_versions():
     """Listet fuer jeden Ritter die benutze Kraehenaugenversion und Zeit"""
 
     tabelle = ausgabe.Tabelle()
+    if config.is_kraehe():
+        tabelle.addColumn("Account")
     tabelle.addColumn("r_id")
     tabelle.addColumn("Rittername")
     tabelle.addColumn("Version")
     tabelle.addColumn("zuletzt gesehen")
     sql = "SELECT r_id, rittername, version, last_seen"
+    if config.is_kraehe():
+        sql += ", username"
     sql += " FROM versionen"
     sql += " left JOIN ritter ON r_id = ritternr"
     if config.is_tw():
@@ -34,7 +38,10 @@ def list_versions():
         cursor.execute(sql)
         row = cursor.fetchone()
         while row != None:
-            line = [row[0]]
+            line = []
+            if config.is_kraehe():
+                line.append(row[4])
+            line.append(row[0])
             if row[1] is None:
                 zelle = '<a href="reich/' + str(row[0]) + '">?</a>'
             else:

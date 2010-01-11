@@ -815,32 +815,35 @@ if __name__ == '__main__':
         print "Anzahl Armeen:", armeetabelle.length()
         armeetabelle.show()
     elif "action" in form:
-        if config.is_admin() and form["action"].value == "free":
-            h_id = form["id"].value
-            ausgabe.print_header("Armee " + h_id + " freigeben")
-            armee = Armee(h_id)
-            armee.show()
-            if "confirmation" in form and form["confirmation"].value == "yes":
-                armee.delete()
+        try:
+            if config.is_admin() and form["action"].value == "free":
+                h_id = form["id"].value
+                ausgabe.print_header("Armee " + h_id + " freigeben")
+                    armee = Armee(h_id)
+                armee.show()
+                if "confirmation" in form and form["confirmation"].value=="yes":
+                    armee.free()
+                else:
+                    message = "Wollen sie diese Armee wirklich freigeben?"
+                    url = "/free/armee/" + str(h_id) + "/yes"
+                    ausgabe.confirmation(message, url)
+            elif config.is_admin() and form["action"].value == "delete":
+                h_id = form["id"].value
+                ausgabe.print_header("Armee " + h_id + " l&ouml;schen")
+                armee = Armee(h_id)
+                armee.show()
+                if "confirmation" in form and form["confirmation"].value=="yes":
+                    armee.delete()
+                else:
+                    message = "Wollen sie diese Armee wirklich l&ouml;schen?"
+                    url = "/delete/armee/" + str(h_id) + "/yes"
+                    ausgabe.confirmation(message, url)
             else:
-                message = "Wollen sie diese Armee wirklich freigeben?"
-                url = "/free/armee/" + str(h_id) + "/yes"
-                ausgabe.confirmation(message, url)
-        elif config.is_admin() and form["action"].value == "delete":
-            h_id = form["id"].value
-            ausgabe.print_header("Armee " + h_id + " l&ouml;schen")
-            armee = Armee(h_id)
-            armee.show()
-            if "confirmation" in form and form["confirmation"].value == "yes":
-                armee.delete()
-            else:
-                message = "Wollen sie diese Armee wirklich l&ouml;schen?"
-                url = "/delete/armee/" + str(h_id) + "/yes"
-                ausgabe.confirmation(message, url)
-        else:
-            action = form["action"].value
-            message = "Werde " + action + " nicht ausf&uuml;hren!"
-            ausgabe.print_header(message)
+                action = form["action"].value
+                message = "Werde " + action + " nicht ausf&uuml;hren!"
+                ausgabe.print_header(message)
+        except KeyError, e:
+            ausgabe.print_header("Unbekanntes Armee: " + e.args[0])
     else:
         print "leer"
 

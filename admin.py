@@ -98,7 +98,7 @@ def list_dangling_armies():
     tabelle.addColumn("Armee")
     tabelle.addColumn("r_id")
     tabelle.addColumn("Admin")
-    sql = "SELECT h_id, name, r_id"
+    sql = "SELECT h_id, name, r_id, max_dauer"
     sql += " FROM armeen"
     sql += " WHERE r_id NOT IN (SELECT distinct ritternr FROM ritter)"
     sql += " ORDER BY r_id"
@@ -110,7 +110,12 @@ def list_dangling_armies():
         while row != None:
             line = [row[1]]
             line.append(row[2])
-            line.append(ausgabe.link("/delete/armee/" + str(row[0]), "[del]"))
+            if row[3] is None: # kein Soeldner
+                url = "/delete/armee/" + str(row[0])
+                line.append(ausgabe.link(url, "[del]"))
+            else:
+                # hier nur disown
+                line.append("")
             tabelle.addLine(line)
             row = cursor.fetchone()
         print "Es haben", tabelle.length(), "Armeen keine Ritter mehr"

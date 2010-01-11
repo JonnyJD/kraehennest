@@ -526,7 +526,8 @@ class Armee(Feld):
         """
 
         tabelle = ausgabe.Tabelle()
-        virtual = ["ritternr", "allicolor", "ruf", "max_bp", "max_ap"]
+        secondary = ["ruf", "max_bp", "max_ap"]
+        virtual = ["ritternr", "allicolor", "max_dauer"]
         for i in range(0,len(cols)):
             if cols[i] == "size" and cols[i+1] == "ruf":
                 tabelle.addColumn(translate(cols[i]), 3)
@@ -536,7 +537,7 @@ class Armee(Feld):
                 tabelle.addColumn(translate(cols[i]), 3)
             elif config.is_admin() and cols[i] == "h_id":
                 tabelle.addColumn("Admin")
-            elif cols[i] not in virtual:
+            elif cols[i] not in virtual + secondary:
                 tabelle.addColumn(translate(cols[i]))
         for armee in armeen:
             line = []
@@ -582,9 +583,16 @@ class Armee(Feld):
                 elif cols[i] == "status":
                     line.append(status_string(armee[i]))
                 elif config.is_admin() and cols[i] == "h_id":
-                    url = "/delete/armee/" + str(armee[i])
-                    line.append(ausgabe.link(url, "[delete]"))
-                elif cols[i-1] not in ["ritternr", "allicolor"]:
+                    if armee[i+1] is None: # keine max_dauer
+                        url = "/delete/armee/" + str(armee[i])
+                        line.append(ausgabe.link(url, "[delete]"))
+                    else:
+                        # hier nur disown
+                        line.append("")
+                elif cols[i-1] in ["ritternr", "allicolor"]:
+                    # rittername wurde schon abgehakt
+                    pass
+                elif cols[i] not in virtual:
                     line.append(armee[i])
             tabelle.addLine(line)
         return tabelle
@@ -626,7 +634,7 @@ class Armee(Feld):
         cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
         cols += ["schiffstyp"]
         if config.is_admin():
-            cols += ["h_id"]
+            cols += ["h_id", "max_dauer"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"

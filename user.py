@@ -5,20 +5,36 @@ import util
 import config
 
 
-def last_seen_auge(username=None):
-    """Gibt zurueck wann der Benutzer zum letzten Mal das Auge benutzt hat
+class User:
+    """Ein eingeloggter Benutzer des Nestes"""
 
-    @rtype: C{DateTime}
-    """
+    def __init__(self):
+        """erstellt eine Instanz fuer den aktuell eingeloggten Benutzer
+        """
 
-    if username is None:
-        username = config.get_username()
-    sql = "SELECT last_seen FROM versionen WHERE username = %s"
-    row = util.get_sql_row(sql, username)
-    if row is None:
-        return None
-    else:
-        return row[0]
+        self.name = config.get_username()
+        """Benutzername/Login
+        @type: C{StringType}
+        """
+        sql = "SELECT r_id, rittername, last_seen"
+        sql += " FROM versionen"
+        sql += " LEFT JOIN ritter ON r_id = ritternr"
+        sql += " WHERE username = %s"
+        row = util.get_sql_row(sql, self.name)
+        if row is None:
+            raise KeyError(self.name)
+        else:
+            self.r_id = row[0]
+            """ID des zugehoerigen Reiches
+            @type: C{IntType}
+            """
+            self.rittername = row[1]
+            """Name des zugehoerigen Reiches
+            @type: C{StringType}
+            """
+            self.last_seen_auge = row[2]
+            """Wann der Benutzer zum letzten Mal das Auge benutzt hat
+            @type: C{DateTime}"""
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

@@ -6,31 +6,35 @@
 
 from datetime import datetime, timedelta
 import config
-import user
+from user import User
 import karte
 import ausgabe
 
 
 # Aufruf als Skript
 if __name__ == "__main__":
-    username = config.get_username()
-    augenzeit = user.last_seen_auge()
-    if augenzeit:
-        delta = datetime.now() - augenzeit
-    else:
-        delta = timedelta(weeks=9999)
+    try:
+        user = User()
+        if user.last_seen_auge:
+            delta = datetime.now() - user.last_seen_auge
+        else:
+            delta = timedelta(weeks=9999)
 
-    styles = "#augenzeit {"
-    styles += "    font-weight:bold;"
-    if delta > timedelta(hours=48):
-        styles += "    color:red;"
-    styles += "}"
-    ausgabe.print_header("Kr&auml;hennest",styles)
+        styles = "#augenzeit {"
+        styles += "    font-weight:bold;"
+        if delta > timedelta(hours=48):
+            styles += "    color:red;"
+        styles += "}"
+        ausgabe.print_header("Kr&auml;hennest",styles)
 
-    augenstring = ausgabe.datetime_delta_string(augenzeit)
-    print '<p>Der eingeloggte Benutzer <strong>' + username + '</strong>',
-    print 'hat zuletzt <span id="augenzeit">' + augenstring + '</span>',
-    print 'das Kr&auml;henauge benutzt.</p>'
+        augenstring = ausgabe.datetime_delta_string(user.last_seen_auge)
+        print '<p>Der eingeloggte Benutzer <strong>' + user.name + '</strong>',
+        print 'hat zuletzt <span id="augenzeit">' + augenstring + '</span>',
+        print 'das Kr&auml;henauge benutzt.</p>'
+    except KeyError, e:
+        user = None
+        ausgabe.print_header("Kr&auml;hennest")
+
 
     # Uebersichtsseiten
     if config.is_kraehe():
@@ -45,9 +49,12 @@ if __name__ == "__main__":
     if config.is_kraehe():
         print '<div class="box">'
         print '<h2>Direktlinks</h2>'
-        print ausgabe.link("/show/reich/174", "Keiner")
+        print ausgabe.link("/show/allianz/60", "Kr&auml;hen")
+        if user and user.r_id:
+            url = "/show/reich/" + str(user.r_id)
+            print ausgabe.link(url, user.rittername, br=True)
+        print ausgabe.link("/show/reich/174", "Keiner", br=True)
         print ausgabe.link("/show/reich/113", "Plunkett", br=True)
-        print ausgabe.link("/show/allianz/60", "Kr&auml;hen", br=True)
         print '</div>'
     # Adminbereich
     if config.is_admin():

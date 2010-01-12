@@ -145,10 +145,10 @@ if __name__ == '__main__':
             list_versions()
         elif form["list"].value == "delete":
             ausgabe.print_header("L&ouml;schliste")
-            print '<div style="float:left">'
+            print '<div class="box">'
             list_too_many_armies()
             print '</div>'
-            print '<div style="float:left">'
+            print '<div class="box">'
             list_dangling_armies()
             print '</div>'
         else:

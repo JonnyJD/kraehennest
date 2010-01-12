@@ -41,6 +41,12 @@ if __name__ == "__main__":
         print ausgabe.link("/show/doerfer", "D&ouml;rfer", br=True)
         print ausgabe.link("/show/armeen", "Armeen", br=True)
         print '</div>'
+    # Direktlinks
+    if config.is_kraehe():
+        print '<div class="box">'
+        print '<h2>Direktlinks</h2>'
+        print ausgabe.link("/show/reich/174", "Keiner")
+        print '</div>'
     # Adminbereich
     if config.is_admin():
         print '<div class="box">'

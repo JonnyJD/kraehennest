@@ -31,13 +31,19 @@ def is_kraehe(username=None):
 
     @rtype: C{BooleanType}
     """
-    return not re.match("/tw", os.environ['SCRIPT_URL'])
+    if 'SCRIPT_URL' in os.environ:
+        return not re.match("/tw", os.environ['SCRIPT_URL'])
+    else:
+        return False
 
 def is_tw(username=None):
     """Ob der aktuelle Benutzer (oder ein bestimmter) ein TW ist
 
     @rtype: C{BooleanType}
     """
-    return re.match("/tw", os.environ['SCRIPT_URL'])
+    if 'SCRIPT_URL' in os.environ:
+        return re.match("/tw", os.environ['SCRIPT_URL'])
+    else:
+        return False
 
 # vim:set shiftwidth=4 expandtab smarttab:

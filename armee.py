@@ -371,6 +371,7 @@ class Armee(Feld):
                 args += entry[key],
         sqllist.append("last_seen=NOW()")
         if "pos" in entry and entry["pos"] == "taverne":
+            entry["update_self"] = True #: hier auch versteckte freigeben
             sqllist.append("active=0")
             sqllist.append("status='" + S_SOLD + "'")
         elif "status" in entry and entry["status"] == S_HIDDEN:

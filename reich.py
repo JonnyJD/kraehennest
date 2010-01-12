@@ -176,6 +176,10 @@ class Reich:
         """
 
         if r_id is not None:
+            self.id = r_id
+            """ID des Reiches
+            @type: C{IntType}
+            """
             sql = "SELECT rittername, allinr, alliname, allicolor"
             sql += " FROM ritter JOIN allis ON ritter.alli = allinr"
             sql += " WHERE ritternr = %s"
@@ -183,11 +187,22 @@ class Reich:
             if row is None:
                 raise KeyError(r_id)
             else:
-                self.id = r_id
                 self.name = row[0]
+                """Name des Reiches
+                @type: C{StringType}
+                """
                 self.ally = row[1]
+                """ID der Allianz in der das Reich ist
+                @type: C{IntType}
+                """
                 self.ally_name = row[2]
+                """Name der Allianz in der das Reich ist
+                @type: C{StringType}
+                """
                 self.ally_color = row[3]
+                """Farbe der Allianz in der das Reich ist
+                @type: C{StringType}
+                """
 
 
 

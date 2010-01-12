@@ -103,12 +103,19 @@ class Allianz:
         @raise KeyError: Kein Eintrag mit dieser C{a_id} vorhanden.
         """
 
+        self.id = a_id
+        """ID der Allianz
+        @type: C{IntType}
+        """
         sql = "SELECT alliname FROM allis WHERE allinr = %s"
         row = util.get_sql_row(sql, a_id)
         if row is None:
             raise KeyError(a_id)
         else:
             self.name = row[0]
+            """Name der Allianz
+            @type: C{StringType}
+            """
 
 
 # Aufruf als Skript

@@ -86,6 +86,10 @@ class Armee(Feld):
             self.__int_columns = []
             self.__inactive_entries = []
         else:
+            self.id = h_id
+            """ID der Armee
+            @type: C{IntType}
+            """
             cols = ["active", "status", "level", "x", "y"]
             cols += ["ritternr", "allicolor", "rittername"]
             cols += ["img", "name", "last_seen"]
@@ -101,10 +105,18 @@ class Armee(Feld):
                 raise KeyError(h_id)
             else:
                 self.__table = self.__list(cols, [row])
-                self.id = h_id
                 self.owner = row[5]
+                """ID des Besitzers der Armee
+                @type: C{IntType}
+                """
                 self.owner_name = row[7]
+                """Name des besitzenden Ritters
+                @type: C{StringType}
+                """
                 self.name = row[9]
+                """Name der Armee
+                @type: C{StringType}
+                """
 
     def show(self):
         """Zeigt die Armee in einer L{Tabelle<ausgabe.Tabelle>}

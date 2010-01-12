@@ -57,7 +57,9 @@ def print_header(title=None, styles=None):
     print '<link rel="stylesheet" type="text/css" href="',
     print prefix + '/show/stylesheet" />'
     if styles:
+        print '<style type="text/css">'
         print styles
+        print '</style>'
     print '</head>\n'
     print '<body>'
     if title:

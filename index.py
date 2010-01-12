@@ -4,16 +4,33 @@
 #import cgitb
 #cgitb.enable()
 
+from datetime import datetime, timedelta
 import config
+import user
 import karte
 import ausgabe
 
 
 # Aufruf als Skript
 if __name__ == "__main__":
-    ausgabe.print_header("Kr&auml;hennest")
+    username = config.get_username()
+    augenzeit = user.last_seen_auge()
+    if augenzeit:
+        delta = datetime.now() - augenzeit
+    else:
+        delta = timedelta(weeks=9999)
 
-    print '<p>eingeloggter Benutzer: ' + config.get_username() + '</p>'
+    styles = "#augenzeit {"
+    styles += "    font-weight:bold;"
+    if delta > timedelta(hours=48):
+        styles += "    color:red;"
+    styles += "}"
+    ausgabe.print_header("Kr&auml;hennest",styles)
+
+    augenstring = ausgabe.datetime_delta_string(augenzeit)
+    print '<p>Der eingeloggte Benutzer <strong>' + username + '</strong>',
+    print 'hat zuletzt <span id="augenzeit">' + augenstring + '</span>',
+    print 'das Kr&auml;henauge benutzt.</p>'
 
     # Uebersichtsseiten
     if config.is_kraehe():

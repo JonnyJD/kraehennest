@@ -46,6 +46,8 @@ if __name__ == "__main__":
         print '<div class="box">'
         print '<h2>Direktlinks</h2>'
         print ausgabe.link("/show/reich/174", "Keiner")
+        print ausgabe.link("/show/reich/113", "Plunkett", br=True)
+        print ausgabe.link("/show/allianz/60", "Kr&auml;hen", br=True)
         print '</div>'
     # Adminbereich
     if config.is_admin():

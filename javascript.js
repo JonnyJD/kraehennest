@@ -1,9 +1,18 @@
+function my_unescape(str) {
+    /* Das ist keine Standard HTML-Entity
+     * damit es wirklich nicht als "|" interpretiert wird
+     */
+    return str.replace(/&vbar;/g, "|")
+}
 function showPos(liste) {
     var descRow;
     if (liste.indexOf("|") == -1) {
         descRow = '<div style="float:left; width:7em;">' + liste + '</div>';
     } else {
         liste = liste.split("|");
+        for (i=0; i < liste.length; i++) {
+            liste[i] = my_unescape(liste[i])
+        }
         descRow = '<div style="float:left; width:7em;">'  + liste[0] + '</div>';
         descRow += '<div style="float:left; width:15em;">'+ liste[1] + '</div>';
         descRow += '<div style="float:left; width:15em;">'+ liste[2] + '</div>';

@@ -6,6 +6,7 @@
 
 import config
 import ausgabe
+from types import StringType
 
 viel_armeen = 8
 """Gibt an ab welcher Armeezahl auf einem Feld weniger Infos gezeigt werden"""
@@ -142,6 +143,22 @@ def level_link(direction):
     else:
         return '&nbsp;'
 
+def __escape(var):
+    """Escape eine Variable fuer die javascript Detailansicht
+
+    @param var: Eingabevariable
+    @rtype: wie Eingabe
+    """
+    if type(var) is StringType:
+        # &vbar; ist keine Standard HTML-Entity
+        # damit sie wirklich nicht als "|" interpretiert wird
+        escaped = var.replace("|", "&vbar;")
+        escaped = escaped.replace("'", "\\'")
+        escaped = escaped.replace('"', "&quot;")
+        return escaped
+    else:
+        return var
+
 def __format(var):
     """Formatierte Ausgabe einer Variable
 
@@ -152,7 +169,7 @@ def __format(var):
     if var == None:
         return "?"
     else:
-        return str(var)
+        return __escape(str(var))
 
 
 # Aufruf direkt: Karten anzeigen
@@ -382,10 +399,7 @@ if __name__ == '__main__':
                             list = []
                             for col in ['rittername', 'alliname', 'dorfname',
                                     'dorflevel', 'mauer', 'aktdatum']:
-                                if dorf.entry[col]:
-                                    list.append(str(dorf.entry[col]))
-                                else:
-                                    list.append("?")
+                                list.append(__format(dorf.entry[col]))
                             list = '|' + '|'.join(list)
                         else:
                             list = '|?' * 6
@@ -399,23 +413,22 @@ if __name__ == '__main__':
                                 list += '|4'
                             # Armeen anhaengen
                             for entry in armee.entry:
-                                list += '|' + entry["allyfarbe"]
+                                list += '|' + __escape(entry["allyfarbe"])
                                 if (entry["rittername"] == "Keiner"
                                         and len(armee.entry) >= viel_armeen):
-                                    list += '|' + entry["name"]
+                                    list += '|' + __escape(entry["name"])
                                 else:
-                                    list += '|' + entry["rittername"]
+                                    list += '|' + __escape(entry["rittername"])
                                 list += '|' + __format(entry["size"])
                                 list += '|' + __format(entry["strength"])
                                 # mehr Infos bei wenigen Armeen
                                 if len(armee.entry) < viel_armeen:
-                                    list += '|(' + entry["name"] + ')'
+                                    list += '|(' + __escape(entry["name"]) + ')'
                                     list += '|' + __format(entry["ap"])
                                     list += '|' + __format(entry["bp"])
                         if ((show_dorf and dorf.has(x,y))
                                 or (show_armeen and armee.has(x,y))):
-                            list = list.replace("'", "\\'")
-                            row += list.replace('"', "&quot;")
+                            row += list
                         row += '\')" onmouseout="delPos()"'
                     if show_dorf and not config.is_kraehe() and dorf.has(x,y):
                         row += ' style="color:'

@@ -283,6 +283,7 @@ if __name__ == '__main__':
         if fontsize > 8:
             print '    height: ' + str(fontsize-5) + 'px;'
             print '    width: ' + str(fontsize-5) + 'px;'
+            print '    border:1px solid black;'
         else:
             print '    height: 0px;'
             print '    width: 0px;'

@@ -687,7 +687,7 @@ class Armee(Feld):
         return self.list_by_allianz(-1)
 
     def list_by_allianz(self, a_id):
-        """Holt alle Armeen eines Allianz mit a_id
+        """Holt alle Armeen einer Allianz mit a_id
         
         @rtype: L{Tabelle<ausgabe.Tabelle>}
         """

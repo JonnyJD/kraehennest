@@ -294,9 +294,6 @@ if __name__ == '__main__':
         if fontsize > 8:
             print '    height: ' + str(fontsize-5) + 'px;'
             print '    width: ' + str(fontsize-5) + 'px;'
-            #print '    border-width:1px;'
-            #print '    border-style:solid;'
-            #print '    border-color:black;'
             print '    border: 1px solid black;'
         else:
             print '    height: 0px;'
@@ -308,11 +305,13 @@ if __name__ == '__main__':
         print 'span.bright {'
         print '    border: 1px solid black;'
         print '}'
-        print 'a.dark, span.dark {'
-        print '    text-shadow: white 1px 1px 1px;'
+        print 'a.dark {'
+        print '    text-shadow: white 1px 1px 1px,  white -1px -1px 1px,',
+        print '                 white -1px 1px 1px, white 1px -1px 1px;'
         print '}'
-        print 'a.bright, span.bright {'
-        print '    text-shadow: black 1px 1px 1px;'
+        print 'a.bright {'
+        print '    text-shadow: black 1px 1px 1px,  black -1px -1px 1px,',
+        print '                 black -1px 1px 1px, black 1px -1px 1px;'
         print '}'
         print 'table.detail tr td, #dorfdetail, #armeedetail {'
         print '    font-size:9pt;'

@@ -196,7 +196,7 @@ if __name__ == '__main__':
     print '<meta http-equiv="expires" content="0" />'
     print '<link rel="stylesheet" type="text/css" href="',
     print ausgabe.prefix + '/show/stylesheet">'
-    if config.is_kraehe():
+    if config.is_kraehe() or (config.is_tw() and config.is_tester()):
         print '<script src="/show/javascript" type="text/javascript"></script>'
     print '</head>\n'
     print '<body>\n'
@@ -226,6 +226,10 @@ if __name__ == '__main__':
             dorf.fetch_data()
 
         if config.is_kraehe() and form["layer"].value not in ["clean", "leer"]:
+            show_armeen = True
+            armee = Armee()
+            armee.fetch_data(level)
+        elif config.is_tw() and config.is_tester() and form["layer"].value not in ["clean", "leer"]:
             show_armeen = True
             armee = Armee()
             armee.fetch_data(level)
@@ -329,7 +333,7 @@ if __name__ == '__main__':
         print '</style>\n'
 
         # Detailboxen
-        if config.is_kraehe():
+        if config.is_kraehe() or (config.is_tw() and config.is_tester()):
             if show_dorf:
                 # Dorfdetail
                 print '<div id="dorfdetail" style="z-index:2; position:fixed;',
@@ -414,7 +418,7 @@ if __name__ == '__main__':
                     row += terrain.entry["terrain"] + '.gif"'
 
                     # Detail-Mouse-Over
-                    if config.is_kraehe():
+                    if config.is_kraehe() or (config.is_tw() and config.is_tester()):
                         row += ' onmouseover="showPos(\''
                         row += str(x) + "," + str(y)
                         if config.is_kraehe() and terrain.entry["typ"]:

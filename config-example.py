@@ -26,6 +26,13 @@ def is_admin(username=None):
     """
     return False
 
+def is_tester(username=None):
+    """Ob der aktuelle (oder ein bestimmter) Benutzer Trunk testet
+
+    @rtype: C{BooleanType}
+    """
+    return False
+
 def is_kraehe(username=None):
     """Ob der aktuelle Benutzer (oder ein bestimmter) eine Kraehe ist
 

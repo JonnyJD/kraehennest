@@ -810,7 +810,7 @@ class Armee(Feld):
         if (inactive + updated + added) > 0:
             print "Es wurden", inactive, "Armeen deaktiviert,",
             print updated, "aktualisiert und",
-            print added, "neu hinzugef&auml;gt.", "<br />"
+            print added, "neu hinzugef&uuml;gt.", "<br />"
         else:
             print "Keine Armeen ge&auml;ndert.", "<br />"
 

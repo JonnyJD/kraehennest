@@ -341,6 +341,9 @@ if __name__ == '__main__':
                 print 'top:5px; left:38px; width:85em;',
                 print 'padding:5px;"><div>&nbsp;</div></div>'
                 print '<br /><div></div>'
+            else:
+                # unsichtbarer Dummy fuer das javascript
+                print '<div id="dorfdetail" style="display:none;"></div>'
             if show_armeen:
                 # Armeedetail
                 print '<div id="armeedetail" style="z-index:2; position:fixed;',
@@ -482,7 +485,7 @@ if __name__ == '__main__':
                         if level != "N":
                             row += '/' + level
                         row += '"'
-                        if dorf.has(x,y):
+                        if show_dorf and dorf.has(x,y):
                             dorf.get(x,y)
                             row += ' style="color:' + dorf.entry['allyfarbe']
                             if util.brightness(dorf.entry['allyfarbe']) < 55:

@@ -197,7 +197,8 @@ if __name__ == '__main__':
     print '<link rel="stylesheet" type="text/css" href="',
     print ausgabe.prefix + '/show/stylesheet">'
     if config.is_kraehe() or (config.is_tw() and config.is_tester()):
-        print '<script src="/show/javascript" type="text/javascript"></script>'
+        print '<script src="' + ausgabe.prefix + '/show/javascript"',
+        print 'type="text/javascript"></script>'
     print '</head>\n'
     print '<body>\n'
 
@@ -311,11 +312,11 @@ if __name__ == '__main__':
         print '}'
         print 'a.dark {'
         print '    text-shadow: white 1px 1px 1px,  white -1px -1px 1px,',
-        print '                 white -1px 1px 1px, white 1px -1px 1px;'
+        print ' white -1px 1px 1px, white 1px -1px 1px;'
         print '}'
         print 'a.bright {'
         print '    text-shadow: black 1px 1px 1px,  black -1px -1px 1px,',
-        print '                 black -1px 1px 1px, black 1px -1px 1px;'
+        print ' black -1px 1px 1px, black 1px -1px 1px;'
         print '}'
         print 'table.detail tr td, #dorfdetail, #armeedetail {'
         print '    font-size:9pt;'

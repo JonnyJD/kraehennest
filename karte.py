@@ -279,17 +279,40 @@ if __name__ == '__main__':
         print '    text-align:left;'
         print '    max-height: ' + str(fontsize-5) + 'px;'
         print '}'
-        print 'span.armee {'
+        print 'span.armee_dark {'
         print '    display: inline-block;'
         if fontsize > 8:
             print '    height: ' + str(fontsize-5) + 'px;'
             print '    width: ' + str(fontsize-5) + 'px;'
-            print '    border-width:1px;'
-            print '    border-style:solid;'
-            #print '    border-color:black;'
+            print '    border: 1px solid white;'
         else:
             print '    height: 0px;'
             print '    width: 0px;'
+        print '}'
+        print 'span.armee_bright {'
+        print '    display: inline-block;'
+        if fontsize > 8:
+            print '    height: ' + str(fontsize-5) + 'px;'
+            print '    width: ' + str(fontsize-5) + 'px;'
+            #print '    border-width:1px;'
+            #print '    border-style:solid;'
+            #print '    border-color:black;'
+            print '    border: 1px solid black;'
+        else:
+            print '    height: 0px;'
+            print '    width: 0px;'
+        print '}'
+        print 'span.dark {'
+        print '    border: 1px solid white;'
+        print '}'
+        print 'span.bright {'
+        print '    border: 1px solid black;'
+        print '}'
+        print 'a.dark, span.dark {'
+        print '    text-shadow: white 1px 1px 1px;'
+        print '}'
+        print 'a.bright, span.bright {'
+        print '    text-shadow: black 1px 1px 1px;'
         print '}'
         print 'table.detail tr td, #dorfdetail, #armeedetail {'
         print '    font-size:9pt;'
@@ -456,8 +479,12 @@ if __name__ == '__main__':
                             row += '/' + level
                         row += '"'
                         if dorf.has(x,y):
-                            row += ' style="color:'
-                            row += dorf.get(x,y)['allyfarbe'] +';"'
+                            dorf.get(x,y)
+                            row += ' style="color:' + dorf.entry['allyfarbe']
+                            if util.brightness(dorf.entry['allyfarbe']) < 55:
+                                row += ';" class="dark"'
+                            else:
+                                row += ';" class="bright"'
                         row += ' target="_blank">'
 
                     # Dorf
@@ -480,12 +507,12 @@ if __name__ == '__main__':
                         row += '<div class="armeen">'
                         if armee.has(x,y):
                             for entry in armee.get(x,y):
-                                row += '<span class="armee"'
+                                if util.brightness(entry["allyfarbe"]) < 55:
+                                    row += '<span class="armee_dark"'
+                                else:
+                                    row += '<span class="armee_bright"'
                                 row += ' style="background-color:'
-                                row += entry["allyfarbe"] + ';'
-                                row += ' border-color:'
-                                row += util.sw_invert(entry["allyfarbe"])
-                                row += ';"></span>'
+                                row += entry["allyfarbe"] + ';"></span>'
                         row += '</div>'
                     if show_detail_link:
                         row += '</a>'

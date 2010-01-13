@@ -140,6 +140,7 @@ def invert(color):
 
     @type color: C{StringType}
     @rtype: C{StringType}
+    @raise ValueError: keine Hex-Farbe
     """
     
     if color[0] == '#':
@@ -147,17 +148,18 @@ def invert(color):
         green = ("0" + hex(255 - int(color[3:5], 16))[2:4])[-2:]
         blue  = ("0" + hex(255 - int(color[5:7], 16))[2:4])[-2:]
         return '#' + red + green + blue
-    elif color == "green":
-        return "red"
-    elif color == "red":
-        return "green"
+    else:
+        raise ValueError(color)
 
-def sw_invert(color):
-    """Invertiert eine Hex-Farbe in Schwarz-Weiss.
+def brightness(color):
+    """Helligkeit einer HEX-Farbe
+
+    Maximum ist 255 und bei 125 sollte der Uebergang sein
 
     @type color: C{StringType}
     @return: Schwarz oder Weiss
-    @rtype: C{StringType}
+    @rtype: C{IntType}
+    @raise ValueError: keine Hex-Farbe
     """
     
     if color[0] == '#':
@@ -165,17 +167,17 @@ def sw_invert(color):
         green = int(color[3:5], 16)
         blue  = int(color[5:7], 16)
         # from http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
-        brightness = (red*299 + green*587 + blue*114) / 1000
-        # maximum ist 255
-        #if brightness < 125:
-        if brightness < 55:
-            return "white"
-        else:
-            return "black"
+        return (red*299 + green*587 + blue*114) / 1000
     elif color == "red":
-        return "white"
+        return 76
+    elif color == "green":
+        return 75
+    elif color == "black":
+        return 0
+    elif color == "white":
+        return 255
     else:
-        return "black"
+        raise ValueError(color)
 
 def color_diff(color1, color2):
     """Unterschied zwischen zwei Farben.
@@ -185,6 +187,7 @@ def color_diff(color1, color2):
     @type color1: C{StringType}
     @type color2: C{StringType}
     @rtype: C{IntType}
+    @raise ValueError: keine Hex-Farbe
     """
     
     if color[0] == '#':
@@ -199,7 +202,7 @@ def color_diff(color1, color2):
         blue_diff  = ( max(blue1, blue2) - min(blue1, blue2) )
         return red_diff + green_diff + blue_diff
     else:
-        return None
+        raise ValueError(color)
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

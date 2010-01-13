@@ -42,7 +42,7 @@ function showPos(liste) {
                 if (numFields > 5 && (j-8) % numFields == mid) {
                     descRow += '</tr><tr>'
                 }
-                if (parseInt(liste[j],10)) {
+                if (!isNaN(parseInt(liste[j],10)) || liste[j] == "?") {
                     descRow += '<td style="text-align:right">'
                             + liste[j] + '</td>';
                 } else {

@@ -310,11 +310,11 @@ if __name__ == '__main__':
         print 'span.bright {'
         print '    border: 1px solid black;'
         print '}'
-        print 'a.dark {'
+        print 'a.dark, td.dark {'
         print '    text-shadow: white 1px 1px 1px,  white -1px -1px 1px,',
         print ' white -1px 1px 1px, white 1px -1px 1px;'
         print '}'
-        print 'a.bright {'
+        print 'a.bright, td.bright {'
         print '    text-shadow: black 1px 1px 1px,  black -1px -1px 1px,',
         print ' black -1px 1px 1px, black 1px -1px 1px;'
         print '}'
@@ -335,15 +335,11 @@ if __name__ == '__main__':
 
         # Detailboxen
         if config.is_kraehe() or (config.is_tw() and config.is_tester()):
-            if show_dorf:
-                # Dorfdetail
-                print '<div id="dorfdetail" style="z-index:2; position:fixed;',
-                print 'top:5px; left:38px; width:85em;',
-                print 'padding:5px;"><div>&nbsp;</div></div>'
-                print '<br /><div></div>'
-            else:
-                # unsichtbarer Dummy fuer das javascript
-                print '<div id="dorfdetail" style="display:none;"></div>'
+            # Dorfdetail / Koordinateninfo (deshalb immer)
+            print '<div id="dorfdetail" style="z-index:2; position:fixed;',
+            print 'top:5px; left:38px; width:85em;',
+            print 'padding:5px;"><div>&nbsp;</div></div>'
+            print '<br /><div></div>'
             if show_armeen:
                 # Armeedetail
                 print '<div id="armeedetail" style="z-index:2; position:fixed;',
@@ -467,6 +463,10 @@ if __name__ == '__main__':
                     if show_dorf and not config.is_kraehe() and dorf.has(x,y):
                         row += ' style="color:'
                         row += dorf.get(x,y)['allyfarbe'] +';"'
+                        if util.brightness(dorf.get(x,y)['allyfarbe']) < 55:
+                            row += ' class="dark"'
+                        else:
+                            row += ' class="bright"'
                     row += '>'
 
                     # Detail-Link

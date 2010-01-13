@@ -135,5 +135,71 @@ def get_view_type(node):
     else:
         return "keine"
 
+def invert(color):
+    """Invertiert eine Hex-Farbe
+
+    @type color: C{StringType}
+    @rtype: C{StringType}
+    """
+    
+    if color[0] == '#':
+        red   = ("0" + hex(255 - int(color[1:3], 16))[2:4])[-2:]
+        green = ("0" + hex(255 - int(color[3:5], 16))[2:4])[-2:]
+        blue  = ("0" + hex(255 - int(color[5:7], 16))[2:4])[-2:]
+        return '#' + red + green + blue
+    elif color == "green":
+        return "red"
+    elif color == "red":
+        return "green"
+
+def sw_invert(color):
+    """Invertiert eine Hex-Farbe in Schwarz-Weiss.
+
+    @type color: C{StringType}
+    @return: Schwarz oder Weiss
+    @rtype: C{StringType}
+    """
+    
+    if color[0] == '#':
+        red   = int(color[1:3], 16)
+        green = int(color[3:5], 16)
+        blue  = int(color[5:7], 16)
+        # from http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
+        brightness = (red*299 + green*587 + blue*114) / 1000
+        # maximum ist 255
+        #if brightness < 125:
+        if brightness < 55:
+            return "white"
+        else:
+            return "black"
+    elif color == "red":
+        return "white"
+    else:
+        return "black"
+
+def color_diff(color1, color2):
+    """Unterschied zwischen zwei Farben.
+    
+    Maximum ist 765 und 500 sollte als Kontrast sein.
+
+    @type color1: C{StringType}
+    @type color2: C{StringType}
+    @rtype: C{IntType}
+    """
+    
+    if color[0] == '#':
+        red1   = int(color1[1:3], 16)
+        green1 = int(color1[3:5], 16)
+        blue1  = int(color1[5:7], 16)
+        red2   = int(color2[1:3], 16)
+        green2 = int(color2[3:5], 16)
+        blue2  = int(color2[5:7], 16)
+        red_diff   = ( max(red1, red2) - min(red1, red2) )
+        green_diff = ( max(green1, green2) - min(green1, green2) )
+        blue_diff  = ( max(blue1, blue2) - min(blue1, blue2) )
+        return red_diff + green_diff + blue_diff
+    else:
+        return None
+
 
 # vim:set shiftwidth=4 expandtab smarttab:

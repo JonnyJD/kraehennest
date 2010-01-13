@@ -6,6 +6,7 @@
 
 import config
 import ausgabe
+import util
 from types import StringType
 
 viel_armeen = 8
@@ -283,7 +284,9 @@ if __name__ == '__main__':
         if fontsize > 8:
             print '    height: ' + str(fontsize-5) + 'px;'
             print '    width: ' + str(fontsize-5) + 'px;'
-            print '    border:1px solid black;'
+            print '    border-width:1px;'
+            print '    border-style:solid;'
+            #print '    border-color:black;'
         else:
             print '    height: 0px;'
             print '    width: 0px;'
@@ -479,7 +482,10 @@ if __name__ == '__main__':
                             for entry in armee.get(x,y):
                                 row += '<span class="armee"'
                                 row += ' style="background-color:'
-                                row += entry["allyfarbe"] + '"></span>'
+                                row += entry["allyfarbe"] + ';'
+                                row += ' border-color:'
+                                row += util.sw_invert(entry["allyfarbe"])
+                                row += ';"></span>'
                         row += '</div>'
                     if show_detail_link:
                         row += '</a>'

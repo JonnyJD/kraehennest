@@ -303,6 +303,8 @@ if __name__ == '__main__':
         print '}'
         print 'div.armeen {'
         print '    margin-left: ' + str(fontsize-5) + 'px;'
+        if show_armeen and not show_dorf:
+            print '    margin-top:5px;'
         print '    text-align:left;'
         print '    max-height: ' + str(fontsize-5) + 'px;'
         print '}'
@@ -468,6 +470,8 @@ if __name__ == '__main__':
                     row = '<td style="background-image:url(/img/terrain/'
                     row += str(size) + '/' + terrain.entry["terrain"]
                     row += '.gif)'
+                    if show_armeen and not show_dorf:
+                        row += '; vertical-align:top'
                     if show_dorf and not config.is_kraehe() and dorf.has(x,y):
                         row += '; color:'
                         row += dorf.get(x,y)['allyfarbe']
@@ -561,9 +565,9 @@ if __name__ == '__main__':
                         else:
                             row += "."
                         row += '</div>'
-                    elif show_armeen:
-                        # Platzhalter fuer Dorf
-                        row += '<div>&nbsp;</div>'
+                    #elif show_armeen:
+                    #    # Platzhalter fuer Dorf
+                    #    row += '<div>&nbsp;</div>'
 
                     # Armeen
                     if show_armeen:

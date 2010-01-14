@@ -181,7 +181,13 @@ class Armee(Feld):
             entry[key] = int(entry[key])
         else:
             # wie lange waere der String in der Datenbank (latin1)
-            ret = len(unicode(entry[key],'utf-8').encode('latin-1')) <= length
+            try:
+                l = len(unicode(entry[key],'utf-8').encode('latin-1'))
+                ret = l <= length
+            except UnicodeEncodeError:
+                # solche nicht-latin Unicode Strings landen trotzdem
+                # problemlos in der DB Oo
+                ret = len(entry[key]) <= length
         if not ret:
             print entry[key], "ist nicht zul&auml;ssig als", key, "<br />"
         return ret

@@ -280,7 +280,7 @@ if __name__ == '__main__':
         print '    text-align:center;'
         print '}'
         print 'div.armeen {'
-        print '    margin-left: ' + str(fontsize-3) + 'px;'
+        print '    margin-left: ' + str(fontsize-5) + 'px;'
         print '    text-align:left;'
         print '    max-height: ' + str(fontsize-5) + 'px;'
         print '}'

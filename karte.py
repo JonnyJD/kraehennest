@@ -215,9 +215,12 @@ if __name__ == '__main__':
         else:
             level = 'N'
 
-        if form["layer"].value in ["clean", "leer"]:
-            show_dorf = False
-        elif level != "N":
+        if "layer" in form:
+            layer = form["layer"].value.split()
+        else:
+            layer = []
+
+        if level != "N" or "doerfer" not in layer:
             show_dorf = False
         else:
             show_dorf = True
@@ -226,11 +229,11 @@ if __name__ == '__main__':
                 dorf.set_add_cond("datediff(now(), aktdatum) < 180")
             dorf.fetch_data()
 
-        if config.is_kraehe() and form["layer"].value not in ["clean", "leer"]:
+        if config.is_kraehe() and "armeen" in layer:
             show_armeen = True
             armee = Armee()
             armee.fetch_data(level)
-        elif config.is_tw() and config.is_tester() and form["layer"].value not in ["clean", "leer"]:
+        elif config.is_tw() and config.is_tester() and "armeen" in layer:
             show_armeen = True
             armee = Armee()
             armee.fetch_data(level)

@@ -38,21 +38,62 @@ def print_area_link(area, levels, name, br=False):
     print_link(area, name, br=br);
     for level in levels:
         link = area + "/u" + str(level)
-        new_name = name + " Level U" + str(level)
-        print_link(link, new_name, br=True)
-    print "<br />"
+        new_name = "U" + str(level)
+        print_link(link, new_name)
 
 def list_maps():
     """Gibt die verfuegbaren Kartenlinks in einer Tabelle aus."""
 
-    print '<style type="text/css">'
-    print 'td.karten { width:34%; }'
-    print '</style>'
+    print \
+"""
+<style type="text/css">
+td.karten { width:34%; }
+</style>
 
-    print '<div class="box" style="clear:both; width:100%;">'
-    print '<h2>Karten</h2>'
-    print '<table style="width:100%">'
-    print '<tr><td class="karten">'
+<script type="text/javascript">
+    function genLink() {
+        var form = document.getElementById("linkform");
+        var x1 = form.x1.value;
+        if (document.URL.search(/tw/)) {
+            var link = "/tw/show/karte/";
+        } else {
+            var link = "/show/karte/";
+        }
+        link += form.x1.value + "." + form.x2.value + "-";
+        link += form.y1.value + "." + form.y2.value;
+        for (var i=0; i < form.level.length; i++)
+            if (form.level[i].checked)
+                level = form.level[i].value;
+        if (level != "N")
+            link += "/" + level;
+        layer = new Array();
+        for (var i=0; i < form.layer.length; i++)
+            if (form.layer[i].checked)
+                layer.push(form.layer[i].value);
+        if (layer.length > 0) {
+            layer = layer.join("+");
+            if (layer != "armeen+doerfer")
+                link += "/" + layer;
+        }
+        for (var i=0; i < form.size.length; i++)
+            if (form.size[i].checked)
+                size = form.size[i].value;
+        if (size != "normal")
+            link += "/" + size;
+
+        var linkTD = document.getElementById("link");
+        var linkTag = document.createElement("a");
+        linkTag.href = link;
+        linkTag.appendChild(document.createTextNode(link));
+        linkTD.replaceChild(linkTag, linkTD.childNodes[1]);
+    }
+</script>
+
+<div class="box" style="clear:both; width:100%;">
+<h2>Karten</h2>
+<table style="width:100%">
+<tr><td class="karten">
+"""
     if config.is_kraehe():
         text = '<span style="font-weight:bold;">Kraehengebiet</span>'
         print_area_link("kraehen", [], text)
@@ -60,6 +101,73 @@ def list_maps():
         text = '<span style="font-weight:bold;">Der Osten</span>'
         print_area_link("osten", [], text)
     print '<br />'
+    print_area_link("osten", [1,2,3,4], "Der Osten", br=True)
+    print_area_link("westen", [1,2,3],  "Der Westen", br=True)
+    print_area_link("sueden", [1,2,3],  "Der Sueden", br=True)
+    print '<br />\n<br />'
+    print "(Piraten)"
+    print_area_link("drache", [1,2],    "Drachenhoehle", br=True)
+    print "<br />(Zentral)"
+    print_area_link("axt", [1,2,3],     "Axtwaechterquest", br=True)
+    print "<br />(K&uuml;ste)"
+    print_area_link("schuetzen", [1],   "Meisterschuetzenquest", br=True)
+    print '</td><td class="karten">'
+    # Formular fuer individuelle Karte
+    print '<form id="linkform" onclick="genLink()"><table>'
+    print '<tr><td>Gebiet:&nbsp;</td><td colspan="2">'
+    if config.is_kraehe():
+      print \
+"""
+<input name="x1" type="text" size="3" maxlength="3" value="256">,
+<input name="x2" type="text" size="3" maxlength="3" value="280">
+&nbsp;&nbsp; - &nbsp;&nbsp;
+<input name="y1" type="text" size="3" maxlength="3" value="289">,
+<input name="y2" type="text" size="3" maxlength="3" value="303">
+"""
+    else:
+      print \
+"""
+<input name="x1" type="text" size="3" maxlength="3" value="261">,
+<input name="x2" type="text" size="3" maxlength="3" value="287">
+&nbsp;&nbsp; - &nbsp;&nbsp;
+<input name="y1" type="text" size="3" maxlength="3" value="292">,
+<input name="y2" type="text" size="3" maxlength="3" value="322">
+"""
+    print """
+</td></tr>
+<tr><td>Level:&nbsp;</td><td colspan="2">
+<input name="level" type="radio" value="N" checked>N
+<input name="level" type="radio" value="u1">U1
+<input name="level" type="radio" value="u2">U2
+<input name="level" type="radio" value="u3">U3
+<input name="level" type="radio" value="u4">U4
+</td></tr>
+<tr><td>Layer:&nbsp;</td><td>
+<input name="layer" value="armeen" type="checkbox" checked> Armeen
+</td><td>
+<input name="layer" value="doerfer" type="checkbox" checked> D&ouml;rfer
+<input name="layer" value="neu" type="checkbox"> neu
+</td></tr>
+<tr><td style="vertical-align:top;">Gr&ouml;&szlig;e:&nbsp;</td><td>
+<input name="size" type="radio" value="normal" checked> normal <br />
+<input name="size" type="radio" value="small"> small
+</td><td>
+<input name="size" type="radio" value="verysmall"> verysmall <br />
+<input name="size" type="radio" value="tiny"> tiny
+</td></tr>
+<tr><td colspan="3">
+<input type="button" onclick="javascript:genLink()"'
+value="generiere Link"></td></tr>
+</table></form>
+
+<br />Link:
+<br /><div id="link">
+"""
+    if config.is_kraehe():
+        print ausgabe.link("/show/karte/256.280-289.303")
+    else:
+        print ausgabe.link("/show/karte/261.287-292.322")
+    print '</td><td class="karten">'
     print_area_link("", [1,2,3,4],      "komplett (Normalgroesse)", br=True)
     print_link("/clean",        "komplett (ohne Doerfer)", br=True)
     print_link("/small",        "komplett (kleine Felder)", br=True)
@@ -68,17 +176,6 @@ def list_maps():
     print_link("/tiny",         "komplett (winzige Felder)", br=True)
     print '<br />'
     print_link("/neu", "aktuelle Doerfer (6 Monate)", br=True)
-    print '</td><td class="karten">'
-    print_area_link("osten", [1,2,3,4], "Der Osten")
-    print_area_link("westen", [1,2,3],  "Der Westen", br=True)
-    print_area_link("sueden", [1,2,3],  "Der Sueden", br=True)
-    print '</td><td class="karten">'
-    print "(Piraten)"
-    print_area_link("drache", [1,2],    "Drachenhoehle", br=True)
-    print "<br />(Zentral)"
-    print_area_link("axt", [1,2,3],     "Axtwaechterquest", br=True)
-    print "<br />(K&uuml;ste)"
-    print_area_link("schuetzen", [1],   "Meisterschuetzenquest", br=True)
     print '</td></tr></table>'
     print '</div>'
 
@@ -233,13 +330,16 @@ if __name__ == '__main__':
         else:
             layer = []
 
+        if "neu" in layer:
+            layer.append("doerfer")
+
         allow_dorf = True # zur Zeit keine Ausnahmen
         if not allow_dorf or level != "N" or "doerfer" not in layer:
             show_dorf = False
         else:
             show_dorf = True
             dorf = Dorf()
-            if form["layer"].value == "neu":
+            if "neu" in layer:
                 dorf.set_add_cond("datediff(now(), aktdatum) < 180")
             dorf.fetch_data()
 
@@ -417,8 +517,7 @@ if __name__ == '__main__':
             print ' bottom:10px; right:20px;" class="navi">'
             # Armeeschalter
             if show_armeen:
-                print '<input type="checkbox" checked="checked"',
-                print 'id="armeeschalter"',
+                print '<input type="checkbox" checked id="armeeschalter"',
                 print 'onClick="javascript:toggleArmeen()" />',
                 print 'Armeen<br />'
             elif allow_armeen:
@@ -427,8 +526,7 @@ if __name__ == '__main__':
                 layer.remove("armeen")
             # Dorfschalter
             if show_dorf:
-                print '<input type="checkbox" checked="checked"',
-                print 'id="dorfschalter"',
+                print '<input type="checkbox" checked id="dorfschalter"',
                 print 'onClick="javascript:toggleDorf()" />',
                 print 'D&ouml;rfer<br />'
             elif allow_dorf:

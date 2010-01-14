@@ -73,7 +73,7 @@ def print_footer():
     """
     print '</body></html>'
 
-def link(url, text, color=None, br=False):
+def link(url, text=None, color=None, br=False):
     """Gibt ein gefuelltes HTML-A-Tag zurueck.
     
     Bei Bedarf mit nem C{BR} davor und dem Prefix wenn noetig.
@@ -94,6 +94,8 @@ def link(url, text, color=None, br=False):
     link += '<a href="' + prefix + url + '"'
     if color is not None:
         link += ' style="color:' + color + ';"'
+    if text is None:
+        text = prefix + url
     link += '>' + text + '</a>'
     return link
 

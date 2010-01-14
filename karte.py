@@ -191,9 +191,9 @@ if __name__ == '__main__':
     print '          "http://www.w3.org/TR/html4/loose.dtd">'
     print '<html><head>'
     print '<title>' + title + '</title>'
-    print '<meta name="robots" content="noindex, nofollow" />'
-    print'<meta http-equiv="content-type" content="text/html; charset=UTF-8" />'
-    print '<meta http-equiv="expires" content="0" />'
+    print '<meta name="robots" content="noindex, nofollow">'
+    print '<meta http-equiv="content-type" content="text/html; charset=UTF-8">'
+    print '<meta http-equiv="expires" content="0">'
     print '<link rel="stylesheet" type="text/css" href="',
     print ausgabe.prefix + '/show/stylesheet">'
     if config.is_kraehe() or (config.is_tw() and config.is_tester()):
@@ -266,12 +266,12 @@ if __name__ == '__main__':
             show_dorf = False
 
         print '<style type="text/css">'
-        print 'table.karte {'
+        print '#karte {'
         print '    table-layout:fixed;'
         print '    margin:0px;'
         print '    border-collapse:collapse;'
         print '}'
-        print 'table.karte tr td {'
+        print '#karte tr td {'
         print '    padding:0px;'
         print '    height: ' + str(size) + 'px;'
         print '    width: ' + str(size) + 'px;'
@@ -388,10 +388,23 @@ if __name__ == '__main__':
         print '</td></tr>'
         print '</table>\n'
 
-        # zurueck zum Datenbankindex
-        if int(form["x2"].value) < 999:
+        if int(form["x2"].value) < 999: # nicht fuer Vollkarte
             print '<div style="z-index:2; position:fixed;'
-            print ' bottom:10px; right:70px;" class="navi">'
+            print ' bottom:10px; right:20px;" class="navi">'
+            # Armeeschalter
+            if show_armeen:
+                print '<input type="checkbox" checked="checked"',
+                print 'id="armeeschalter"',
+                print 'onClick="javascript:toggle_armeen()" />',
+                print 'Armeen<br />'
+            # Dorfschalter
+            if show_dorf:
+                print '<input type="checkbox" checked="checked"',
+                print 'id="dorfschalter"',
+                print 'onClick="javascript:toggle_dorf()" />',
+                print 'D&ouml;rfer<br />'
+            print "<br />"
+            # zurueck zum Datenbankindex
             if config.is_kraehe():
                 print ausgabe.link("/show", "Index")
             else:
@@ -402,7 +415,7 @@ if __name__ == '__main__':
         # Die eigentliche Karte
         #
         width = size * (terrain.xmax - terrain.xmin + 1 + 2)
-        print '\n\n<table class="karte" style="width:' + str(width) + 'px;">'
+        print '\n\n<table id="karte" style="width:' + str(width) + 'px;">'
         print '<tr style="height:' + str(size) + 'px;"><td></td>'
         # X - Achse
         for x in range(terrain.xmin, terrain.xmax + 1):
@@ -412,10 +425,22 @@ if __name__ == '__main__':
             print '<tr style="height:' + str(size) + 'px;">'
             print '<td>' + str(y)  + '</td>'
             for x in range(terrain.xmin, terrain.xmax + 1):
-                if terrain.has(x,y):
+                if terrain.has(x,y): # Kartenbereich
+
+                    # Terrainhintergrund
                     terrain.get(x,y)
-                    row = '<td background="/img/terrain/' + str(size) + '/'
-                    row += terrain.entry["terrain"] + '.gif"'
+                    row = '<td style="background-image:url(/img/terrain/'
+                    row += str(size) + '/' + terrain.entry["terrain"]
+                    row += '.gif)'
+                    if show_dorf and not config.is_kraehe() and dorf.has(x,y):
+                        row += '; color:'
+                        row += dorf.get(x,y)['allyfarbe']
+                    row += ';"' # style attribut auf jeden Fall zumachen
+                    if show_dorf and not config.is_kraehe() and dorf.has(x,y):
+                        if util.brightness(dorf.get(x,y)['allyfarbe']) < 55:
+                            row += ' class="dark"'
+                        else:
+                            row += ' class="bright"'
 
                     # Detail-Mouse-Over
                     if config.is_kraehe() or (config.is_tw() and config.is_tester()):
@@ -460,13 +485,6 @@ if __name__ == '__main__':
                                 or (show_armeen and armee.has(x,y))):
                             row += list
                         row += '\')" onmouseout="delPos()"'
-                    if show_dorf and not config.is_kraehe() and dorf.has(x,y):
-                        row += ' style="color:'
-                        row += dorf.get(x,y)['allyfarbe'] +';"'
-                        if util.brightness(dorf.get(x,y)['allyfarbe']) < 55:
-                            row += ' class="dark"'
-                        else:
-                            row += ' class="bright"'
                     row += '>'
 
                     # Detail-Link
@@ -497,6 +515,7 @@ if __name__ == '__main__':
                     # Dorf
                     if show_dorf and dorf.has(x,y):
                         dorf.get(x,y)
+                        row += '<div class="dorf">'
                         if dorf.entry['rittername'] != ".":
                             row += dorf.entry['rittername'][0:3]
                         elif config.is_kraehe() and terrain.entry["typ"]:
@@ -505,6 +524,7 @@ if __name__ == '__main__':
                             row += "_"
                         else:
                             row += "."
+                        row += '</div>'
                     elif show_armeen:
                         # Platzhalter fuer Dorf
                         row += '<div>&nbsp;</div>'

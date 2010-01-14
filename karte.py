@@ -82,7 +82,7 @@ def list_maps():
     print '</td></tr></table>'
     print '</div>'
 
-def nav_link(direction, amount, text):
+def nav_link(text, direction=None, amount=0):
     """Gibt eine Navigationslink zurueck.
 
     @param direction: Ist C{"nord"}, C{"sued"}, C{"ost"} oder C{"west"}.
@@ -95,18 +95,25 @@ def nav_link(direction, amount, text):
 
     x1 = int(form["x1"].value); x2 = int(form["x2"].value)
     y1 = int(form["y1"].value); y2 = int(form["y2"].value)
-    if direction == "nord":
-        y1 -= amount; y2 = y1 + 21;
-    if direction == "sued":
-        y2 += amount; y1 = y2 - 21;
-    if direction == "ost":
-        x1 -= amount; x2 = x1 + 33;
-    if direction == "west":
-        x2 += amount; x1 = x2 - 33;
+    if direction is not None:
+        if direction == "nord":
+            y1 -= amount; y2 = y1 + 21;
+        elif direction == "sued":
+            y2 += amount; y1 = y2 - 21;
+        elif direction == "ost":
+            x1 -= amount; x2 = x1 + 33;
+        elif direction == "west":
+            x2 += amount; x1 = x2 - 33;
     link = '/show/karte/'
     link += str(x1) + '.' + str(y1) + '-' + str(x2) + '.' + str(y2)
     if level != 'N':
         link += '/' + level
+    if "armeen" in layer and "doerfer" not in layer:
+        link += '/armeen'
+    elif "armeen" not in layer and "doerfer" in layer:
+        link += '/doerfer'
+    elif "armeen" not in layer and "doerfer" not in layer:
+        link += '/clean'
     if "size" in form and form["size"].value != "normal":
         link += '/' + form["size"].value
     return ausgabe.link(link, text)
@@ -138,6 +145,12 @@ def level_link(direction):
             else:
                 new_level = 'u' + str(int(level[1])+1)
             link += '/' + new_level
+        if "armeen" in layer and "doerfer" not in layer:
+            link += '/armeen'
+        elif "armeen" not in layer and "doerfer" in layer:
+            link += '/doerfer'
+        elif "armeen" not in layer and "doerfer" not in layer:
+            link += '/clean'
         if "size" in form and form["size"].value != "normal":
             link += '/' + form["size"].value
         return ausgabe.link(link, new_level)
@@ -220,7 +233,8 @@ if __name__ == '__main__':
         else:
             layer = []
 
-        if level != "N" or "doerfer" not in layer:
+        allow_dorf = True # zur Zeit keine Ausnahmen
+        if not allow_dorf or level != "N" or "doerfer" not in layer:
             show_dorf = False
         else:
             show_dorf = True
@@ -229,11 +243,14 @@ if __name__ == '__main__':
                 dorf.set_add_cond("datediff(now(), aktdatum) < 180")
             dorf.fetch_data()
 
-        if config.is_kraehe() and "armeen" in layer:
-            show_armeen = True
-            armee = Armee()
-            armee.fetch_data(level)
-        elif config.is_tw() and config.is_tester() and "armeen" in layer:
+        if config.is_kraehe():
+            allow_armeen = True
+        elif config.is_tw() and config.is_tester():
+            allow_armeen = True
+        else:
+            allow_armeen = False
+
+        if allow_armeen and "armeen" in layer:
             show_armeen = True
             armee = Armee()
             armee.fetch_data(level)
@@ -265,8 +282,10 @@ if __name__ == '__main__':
                 fontsize = 0
         if fontsize <= 8:
             show_armeen = False
+            allow_armeen = False
         if fontsize == 0:
             show_dorf = False
+            allow_dorf = False
 
         print '<style type="text/css">'
         print '#karte {'
@@ -356,24 +375,24 @@ if __name__ == '__main__':
         if int(form["x2"].value) < 999:
             # Richtungen
             print '<tr><td></td><td></td>'
-            print '<td class="navi">' + nav_link('nord', 17, '&uArr;')
+            print '<td class="navi">' + nav_link('&uArr;', 'nord', 17)
             print '</td></tr><tr><td></td><td></td>'
-            print '<td class="navi">' + nav_link('nord', 3, '&uarr;')
+            print '<td class="navi">' + nav_link('&uarr;', 'nord', 3)
             print '</td></tr><tr>'
-            print '<td class="navi">' + nav_link('ost', 24, '&lArr;') + '</td>'
-            print '<td class="navi">' + nav_link('ost', 4, '&larr;') + '</td>'
+            print '<td class="navi">' + nav_link('&lArr;', 'ost', 24) + '</td>'
+            print '<td class="navi">' + nav_link('&larr;', 'ost', 4) + '</td>'
             print '<td>'
             if config.is_kraehe():
                 print ausgabe.link("/show/karte/kraehen", "&bull;")
             elif config.is_tw():
                 print ausgabe.link("/show/karte/osten", "&bull;")
             print '</td>',
-            print '<td class="navi">' + nav_link('west', 4, '&rarr;') + '</td>'
-            print '<td class="navi">' + nav_link('west', 24, '&rArr;') + '</td>'
+            print '<td class="navi">' + nav_link('&rarr;', 'west', 4) + '</td>'
+            print '<td class="navi">' + nav_link('&rArr;', 'west', 24) + '</td>'
             print '</tr><tr><td></td><td></td>'
-            print '<td class="navi">' + nav_link('sued', 3, '&darr;')
+            print '<td class="navi">' + nav_link('&darr;', 'sued', 3)
             print '</td></tr><tr><td></td><td></td>'
-            print '<td class="navi">' + nav_link('sued', 17, '&dArr;')
+            print '<td class="navi">' + nav_link('&dArr;', 'sued', 17)
         else:
             print '<tr><td class="navi" colspan="3">'
             if config.is_kraehe():
@@ -398,14 +417,28 @@ if __name__ == '__main__':
             if show_armeen:
                 print '<input type="checkbox" checked="checked"',
                 print 'id="armeeschalter"',
-                print 'onClick="javascript:toggle_armeen()" />',
+                print 'onClick="javascript:toggleArmeen()" />',
                 print 'Armeen<br />'
+            elif allow_armeen:
+                layer.append("armeen")
+                print nav_link("+ Armeen") + "<br />"
+                layer.remove("armeen")
             # Dorfschalter
             if show_dorf:
                 print '<input type="checkbox" checked="checked"',
                 print 'id="dorfschalter"',
-                print 'onClick="javascript:toggle_dorf()" />',
+                print 'onClick="javascript:toggleDorf()" />',
                 print 'D&ouml;rfer<br />'
+            elif allow_dorf:
+                layer.append("doerfer")
+                print nav_link("+ D&ouml;rfer") + "<br />"
+                layer.remove("doerfer")
+            # zeige wieder alles
+            if allow_dorf and allow_armeen and not (show_armeen or show_dorf):
+                layer += ["armeen", "doerfer"]
+                print nav_link("+ Beides") + "<br />"
+                layer.remove("doerfer")
+                layer.remove("armeen")
             print "<br />"
             # zurueck zum Datenbankindex
             if config.is_kraehe():

@@ -12,15 +12,39 @@ class Feld:
     """Eine abstrakte Klasse um Felddaten ein- und auszulesen.  
     """
 
-    def __init__(self):
+    def __init__(self, x=None, y=None, level="N"):
         """Stellt eine Verbindung zur Datenbank her und initialisiert
+
+        bzw. erstellt eine Feldinstanz..
+        @type x: C{IntType}
+        @type y: C{IntType}
+        @type level: C{StringType}
         """
-        self.entries = dict()
-        self.new_entries = []
-        self.add_cond = ""
-        self.conn = rbdb.connect()
-        self.cursor = self.conn.cursor()
-        self.crop_clause = ""
+
+        if x is None:
+            self.entries = dict()
+            self.new_entries = []
+            self.add_cond = ""
+            self.conn = rbdb.connect()
+            self.cursor = self.conn.cursor()
+            self.crop_clause = ""
+        else:
+            sql = "SELECT terrain, typ"
+            sql += " FROM felder"
+            sql += " WHERE level = %s AND x = %s AND y = %s"
+            row = util.get_sql_row(sql, (level, x, y))
+            if row is None:
+                raise KeyError(level, x, y)
+            else:
+                self.terrain = row[0]
+                """Art des Terrains
+                @type: C{IntType}
+                """
+                self.typ = row[1]
+                """Untertyp des Terrains
+                @type: C{IntType}
+                """
+
 
     def disconnect(self):
         """Beende die Verbindung zur Datenbank
@@ -192,6 +216,12 @@ if __name__ == '__main__':
     else:
         title = "Feld " + x + ", " + y
     ausgabe.print_header(title)
+
+    feld = Feld(int(x), int(y), level)
+    print '<img src="/img/terrain/32/' + str(feld.terrain) + '.gif"';
+    print 'style="vertical-align:middle; margin-left:20px;">'
+    if feld.typ > 1:
+        print ' Typ', 'I' * feld.typ
 
     if level == "N":
         print "<h2>Dorf</h2>"

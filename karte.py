@@ -41,13 +41,15 @@ def print_area_link(area, levels, name, br=False):
         new_name = "U" + str(level)
         print_link(link, new_name)
 
+
 def list_maps():
     """Gibt die verfuegbaren Kartenlinks in einer Tabelle aus."""
 
+    # Skripte und Styles
     print \
 """
 <style type="text/css">
-td.karten { width:34%; }
+    td.karten { width:34%; }
 </style>
 
 <script type="text/javascript">
@@ -88,11 +90,13 @@ td.karten { width:34%; }
         linkTD.replaceChild(linkTag, linkTD.childNodes[1]);
     }
 </script>
+"""
 
-<div class="box" style="clear:both; width:100%;">
+    # Direktlinks
+    print \
+"""
+<div class="box" style="clear:left;">
 <h2>Karten</h2>
-<table style="width:100%">
-<tr><td class="karten">
 """
     if config.is_kraehe():
         text = '<span style="font-weight:bold;">Kraehengebiet</span>'
@@ -105,16 +109,24 @@ td.karten { width:34%; }
     print_area_link("westen", [1,2,3],  "Der Westen", br=True)
     print_area_link("sueden", [1,2,3],  "Der Sueden", br=True)
     print '<br />\n<br />'
-    print "(Piraten)"
     print_area_link("drache", [1,2],    "Drachenhoehle", br=True)
-    print "<br />(Zentral)"
+    print "(Piraten)"
     print_area_link("axt", [1,2,3],     "Axtwaechterquest", br=True)
-    print "<br />(K&uuml;ste)"
+    print "(Zentral)"
     print_area_link("schuetzen", [1],   "Meisterschuetzenquest", br=True)
-    print '</td><td class="karten">'
+    print "(K&uuml;ste)"
+    print '<br />'
+    print_area_link("", [1,2,3,4],      "komplett", br=True)
+    print '</div>'
+
     # Formular fuer individuelle Karte
-    print '<form id="linkform" onclick="genLink()"><table>'
-    print '<tr><td>Gebiet:&nbsp;</td><td colspan="2">'
+    print \
+"""
+<div class="box">
+<h2>Individualkarten</h2>
+<form id="linkform" onclick="genLink()"><table>
+<tr><td>Gebiet:&nbsp;</td><td colspan="2">
+"""
     if config.is_kraehe():
       print \
 """
@@ -167,17 +179,9 @@ value="generiere Link"></td></tr>
         print ausgabe.link("/show/karte/256.280-289.303")
     else:
         print ausgabe.link("/show/karte/261.287-292.322")
-    print '</td><td class="karten">'
-    print_area_link("", [1,2,3,4],      "komplett (Normalgroesse)", br=True)
-    print_link("/clean",        "komplett (ohne Doerfer)", br=True)
-    print_link("/small",        "komplett (kleine Felder)", br=True)
-    print_link("/clean/small",  "komplett (klein ohne Doerfer)", br=True)
-    print_link("/verysmall",    "komplett (sehr kleine Felder)", br=True)
-    print_link("/tiny",         "komplett (winzige Felder)", br=True)
-    print '<br />'
-    print_link("/neu", "aktuelle Doerfer (6 Monate)", br=True)
-    print '</td></tr></table>'
     print '</div>'
+    print '</div>'
+
 
 def nav_link(text, direction=None, amount=0):
     """Gibt eine Navigationslink zurueck.
@@ -330,9 +334,6 @@ if __name__ == '__main__':
         else:
             layer = []
 
-        if "neu" in layer:
-            layer.append("doerfer")
-
         allow_dorf = True # zur Zeit keine Ausnahmen
         if not allow_dorf or level != "N" or "doerfer" not in layer:
             show_dorf = False
@@ -340,7 +341,7 @@ if __name__ == '__main__':
             show_dorf = True
             dorf = Dorf()
             if "neu" in layer:
-                dorf.set_add_cond("datediff(now(), aktdatum) < 180")
+                dorf.set_add_cond("datediff(now(), aktdatum) < 364")
             dorf.fetch_data()
 
         if config.is_kraehe():
@@ -353,13 +354,13 @@ if __name__ == '__main__':
         if allow_armeen and "armeen" in layer:
             show_armeen = True
             armee = Armee()
+            if "neu" in layer:
+                armee.set_add_cond("hour(timediff(now(), last_seen)) < 6")
             armee.fetch_data(level)
         else:
             show_armeen = False
 
         terrain = Terrain()
-        #if form["layer"].value == "neu":
-        #    terrain.set_add_cond("typ is not NULL")
         if "x1" in form:
             terrain.fetch_data(level, form["x1"].value,form["x2"].value,
                     form["y1"].value, form["y2"].value)
@@ -663,9 +664,6 @@ if __name__ == '__main__':
                         else:
                             row += "."
                         row += '</div>'
-                    #elif show_armeen:
-                    #    # Platzhalter fuer Dorf
-                    #    row += '<div>&nbsp;</div>'
 
                     # Armeen
                     if show_armeen:

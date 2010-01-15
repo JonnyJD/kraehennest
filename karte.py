@@ -101,23 +101,30 @@ def list_maps():
 """
     if config.is_kraehe():
         text = '<span style="font-weight:bold;">Kraehengebiet</span>'
-        print_area_link("kraehen", [], text)
+        print_link("/kraehen", text)
     elif config.is_tw():
         text = '<span style="font-weight:bold;">Der Osten</span>'
-        print_area_link("osten", [], text)
+        print_link("/osten", text)
     print '<br />'
     print_area_link("osten", [1,2,3,4], "Der Osten", br=True)
     print_area_link("westen", [1,2,3],  "Der Westen", br=True)
-    print_area_link("sueden", [1,2,3],  "Der Sueden", br=True)
-    print '<br />\n<br />'
-    print_area_link("drache", [1,2],    "Drachenhoehle", br=True)
+    print_area_link("sueden", [1,2,3],  "Der S&uuml;den", br=True)
+    print '<br />'
+    print_area_link("drache", [1,2],    "Drachenh&ouml;hle", br=True)
     print "(Piraten)"
-    print_area_link("axt", [1,2,3],     "Axtwaechterquest", br=True)
+    print_area_link("axt", [1,2,3],     "Axtw&auml;chterquest", br=True)
     print "(Zentral)"
-    print_area_link("schuetzen", [1],   "Meisterschuetzenquest", br=True)
+    print_area_link("schuetzen", [1],   "Meistersch&uuml;tzenquest", br=True)
     print "(K&uuml;ste)"
     print '<br />'
-    print_area_link("", [1,2,3,4],      "komplett", br=True)
+    print_link("/doerfer", "komplette Dorfkarte", br=True)
+    print_area_link("", [1,2,3,4], "komplett", br=True)
+    print "(cut)"
+    print_link("/armeen", "reine Armeekarte", br=True)
+    print "(cut)"
+    print_link("/clean", "Terrainkarte", br=True)
+    for i in [1,2,3,4]:
+        print_link("/u" + str(i) + "/clean", "U" + str(i))
     print '</div>'
 
     # Formular fuer individuelle Karte
@@ -387,8 +394,8 @@ if __name__ == '__main__':
         terrain = Terrain()
         if "x1" in form:
             if int(form["x2"].value) >= 999 and show_armeen:
-                terrain.fetch_data(level, armee.xmin, armee.xmax,
-                        armee.ymin, armee.ymax)
+                terrain.fetch_data(level, armee.xmin-15, armee.xmax+15,
+                        armee.ymin-10, armee.ymax+10)
             else:
                 terrain.fetch_data(level, form["x1"].value,form["x2"].value,
                         form["y1"].value, form["y2"].value)

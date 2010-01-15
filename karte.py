@@ -124,8 +124,8 @@ def list_maps():
     print '<br />'
     print_link("/doerfer", "komplette Dorfkarte", br=True)
     print_area_link("", [1,2,3,4], "komplett", br=True)
-    print "(cut)"
     if allow_armeen:
+        print "(cut)"
         print_link("/armeen", "reine Armeekarte", br=True)
         print "(cut)"
     print_link("/clean", "Terrainkarte", br=True)

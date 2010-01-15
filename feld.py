@@ -20,6 +20,7 @@ class Feld:
         self.add_cond = ""
         self.conn = rbdb.connect()
         self.cursor = self.conn.cursor()
+        self.crop_clause = ""
 
     def disconnect(self):
         """Beende die Verbindung zur Datenbank
@@ -106,7 +107,7 @@ class Feld:
     def crop(self, xmin, xmax, ymin, ymax):
         """Erstellt die SQL-Bedingung mit der der Bereich festgelegt wird."""
 
-        self.crop_clause = ""
+        #self.crop_clause = ""
         try:
             clauses = []
             if xmin != None:

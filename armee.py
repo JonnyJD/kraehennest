@@ -85,6 +85,9 @@ class Armee(Feld):
             self.__cols_gathered = False
             self.__int_columns = []
             self.__inactive_entries = []
+            self.crop_clause += " AND active = 1"
+            self.crop_clause += " AND last_seen >= DATE_SUB(now()"
+            self.crop_clause += ", interval 30 hour)"
         else:
             self.id = h_id
             """ID der Armee
@@ -521,8 +524,8 @@ class Armee(Feld):
         sql += " JOIN ritter ON r_id = ritternr"
         sql += " JOIN allis ON ritter.alli = allinr"
         sql += " WHERE level='" + self.level + "'"
-        sql += " AND active = 1"
-        sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
+        #sql += " AND active = 1"
+        #sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
         sql += self.crop_clause
         sql += self.add_cond
         sql += " ORDER BY allicolor"

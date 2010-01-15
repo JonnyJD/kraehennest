@@ -172,11 +172,14 @@ function my_unescape(str) {
 
 function showPos(liste) {
     var descRow;
+    var coordsOnly;
     if (liste.indexOf("|") == -1) {
+        coordsOnly = true;
         descRow = '<div style="float:left; width:7em;">' + liste + '</div>';
     } else {
+        coordsOnly = false;
         liste = liste.split("|");
-        for (i=0; i < liste.length; i++) {
+        for (var i=0; i < liste.length; i++) {
             liste[i] = my_unescape(liste[i])
         }
         descRow = '<div style="float:left; width:7em;">'  + liste[0] + '</div>';
@@ -197,14 +200,14 @@ function showPos(liste) {
         descRow += '<div style="float:left; width:10em;">'+ liste[6] + '</div>';
     }
     document.getElementById("dorfdetail").innerHTML = descRow;
-    if (liste.length > 7) {
+    if (!coordsOnly && liste.length > 7) {
         descRow = '<table class="detail">';
-        numFields = parseInt(liste[7],10);
-        mid = Math.ceil(numFields/2);
-        for (i=8; i < liste.length; i+=numFields) {
+        var numFields = parseInt(liste[7],10);
+        var mid = Math.ceil(numFields/2);
+        for (var i=8; i < liste.length; i+=numFields) {
             descRow += '<tr><td style="color:' + liste[i] + '">'
                     + liste[i+1] + '</td>';
-            for (j=i+2; j < (i + numFields); j++) {
+            for (var j=i+2; j < (i + numFields); j++) {
                 if (numFields > 5 && (j-8) % numFields == mid) {
                     descRow += '</tr><tr>'
                 }

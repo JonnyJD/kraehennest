@@ -1,8 +1,8 @@
 #!/usr/bin/python
 """Modul um die Karte anzuzeigen und eine Kartenuebersicht zu generieren"""
 
-#import cgitb
-#cgitb.enable()
+import cgitb
+cgitb.enable()
 
 import config
 import ausgabe
@@ -386,8 +386,12 @@ if __name__ == '__main__':
 
         terrain = Terrain()
         if "x1" in form:
-            terrain.fetch_data(level, form["x1"].value,form["x2"].value,
-                    form["y1"].value, form["y2"].value)
+            if int(form["x2"].value) >= 999 and show_armeen:
+                terrain.fetch_data(level, armee.xmin, armee.xmax,
+                        armee.ymin, armee.ymax)
+            else:
+                terrain.fetch_data(level, form["x1"].value,form["x2"].value,
+                        form["y1"].value, form["y2"].value)
         else:
             terrain.fetch_data(level)
 

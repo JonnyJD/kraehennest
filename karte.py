@@ -1,8 +1,8 @@
 #!/usr/bin/python
 """Modul um die Karte anzuzeigen und eine Kartenuebersicht zu generieren"""
 
-import cgitb
-cgitb.enable()
+#import cgitb
+#cgitb.enable()
 
 import config
 import ausgabe
@@ -530,17 +530,19 @@ if __name__ == '__main__':
             print "Zeige:<br />"
             if "neu" in layer:
                 layer.remove("neu")
-                print nav_link("  Alle"), "Neue<br />"
+                print nav_link('  Alle'),
+                print '<span style="color:green">Neue</span><br />'
                 layer.append("neu")
             else:
                 layer.append("neu")
-                print "Alle", nav_link("  Neue") + "<br />"
+                print '<span style="color:green">Alle</span>',
+                print nav_link("  Neue") + "<br />"
                 layer.remove("neu")
             # Armeeschalter
             if show_armeen:
                 print '<input type="checkbox" checked id="armeeschalter"',
-                print 'onClick="javascript:toggleArmeen()" />',
-                print 'Armeen<br />'
+                print 'onclick="toggleArmeen()" />',
+                print '<span style="color:green">Armeen</span><br />',
             elif allow_armeen:
                 layer.append("armeen")
                 print nav_link("+ Armeen") + "<br />"
@@ -548,8 +550,8 @@ if __name__ == '__main__':
             # Dorfschalter
             if show_dorf:
                 print '<input type="checkbox" checked id="dorfschalter"',
-                print 'onClick="javascript:toggleDorf()" />',
-                print 'D&ouml;rfer<br />'
+                print 'onclick="toggleDorf()" />',
+                print '<span style="color:green">D&ouml;rfer</span><br />',
             elif allow_dorf:
                 layer.append("doerfer")
                 print nav_link("+ D&ouml;rfer") + "<br />"

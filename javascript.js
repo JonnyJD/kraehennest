@@ -97,6 +97,8 @@ function changeLinks(layer) {
 
 function toggleArmeen() {
     var showArmies = document.getElementById("armeeschalter").checked;
+    var armeeSpan = document.getElementById("armeeschalter")
+        .nextSibling.nextSibling;
     var divs = document.getElementsByTagName("div");
     for (var i=0; i < divs.length; i++) {
         if (divs[i].className == "armeen") {
@@ -109,13 +111,17 @@ function toggleArmeen() {
     }
     if (showArmies) {
         changeLinks("+armeen");
+        armeeSpan.style.color = "green";
     } else {
         changeLinks("-armeen");
+        armeeSpan.style.color = "";
     }
 }
 
 function toggleDorf() {
     var showDorf = document.getElementById("dorfschalter").checked;
+    var dorfSpan = document.getElementById("dorfschalter")
+        .nextSibling.nextSibling;
     var divs = document.getElementsByTagName("div");
     for (var i=0; i < divs.length; i++) {
         if (divs[i].className == "dorf") {
@@ -128,8 +134,10 @@ function toggleDorf() {
     }
     if (showDorf) {
         changeLinks("+doerfer");
+        dorfSpan.style.color = "green";
     } else {
         changeLinks("-doerfer");
+        dorfSpan.style.color = "";
     }
 
     // kleinere Stilaenderungen

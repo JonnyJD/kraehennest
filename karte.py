@@ -336,6 +336,9 @@ if __name__ == '__main__':
                     layer.remove(item)
             if len(layer) > 1 and "clean" in layer:
                 layer.remove("clean")
+            if len(layer) == 1 and "neu" in layer:
+                layer.append("armeen")
+                layer.append("doerfer")
         else:
             layer = []
 

@@ -1,8 +1,8 @@
 #!/usr/bin/python
 """Modul um die Karte anzuzeigen und eine Kartenuebersicht zu generieren"""
 
-#import cgitb
-#cgitb.enable()
+import cgitb
+cgitb.enable()
 
 import config
 import ausgabe
@@ -209,12 +209,8 @@ def nav_link(text, direction=None, amount=0):
     link += str(x1) + '.' + str(y1) + '-' + str(x2) + '.' + str(y2)
     if level != 'N':
         link += '/' + level
-    if "armeen" in layer and "doerfer" not in layer:
-        link += '/armeen'
-    elif "armeen" not in layer and "doerfer" in layer:
-        link += '/doerfer'
-    elif "armeen" not in layer and "doerfer" not in layer:
-        link += '/clean'
+    if not (len(layer) == 2 and "armeen" in layer and "doerfer" in layer):
+        link += '/' + "+".join(layer)
     if "size" in form and form["size"].value != "normal":
         link += '/' + form["size"].value
     return ausgabe.link(link, text)
@@ -246,12 +242,8 @@ def level_link(direction):
             else:
                 new_level = 'u' + str(int(level[1])+1)
             link += '/' + new_level
-        if "armeen" in layer and "doerfer" not in layer:
-            link += '/armeen'
-        elif "armeen" not in layer and "doerfer" in layer:
-            link += '/doerfer'
-        elif "armeen" not in layer and "doerfer" not in layer:
-            link += '/clean'
+        if not (len(layer) == 2 and "armeen" in layer and "doerfer" in layer):
+            link += '/' + "+".join(layer)
         if "size" in form and form["size"].value != "normal":
             link += '/' + form["size"].value
         return ausgabe.link(link, new_level)
@@ -323,7 +315,7 @@ if __name__ == '__main__':
         # Zeige eine Karte
 
 
-        # Bereite Layer und Bereiche vor
+        # Bereite gewuenschte Layer und Bereiche vor
         if "level" in form:
             level = form["level"].value
         else:
@@ -331,11 +323,49 @@ if __name__ == '__main__':
 
         if "layer" in form:
             layer = form["layer"].value.split()
+            for item in layer:
+                while layer.count(item) > 1:
+                    layer.remove(item)
+            if len(layer) > 1 and "clean" in layer:
+                layer.remove("clean")
         else:
             layer = []
 
+        # bestimme was grundsaetzlich erlaubt ist
         allow_dorf = True # zur Zeit keine Ausnahmen
-        if not allow_dorf or level != "N" or "doerfer" not in layer:
+        if config.is_kraehe():
+            allow_armeen = True
+        elif config.is_tw() and config.is_tester():
+            allow_armeen = True
+        else:
+            allow_armeen = False
+
+        # Bereite Formatierungen vor
+        size = 32 
+        fontsize = 9
+        if "size" in form:
+            if form["size"].value == "small":
+                size = 16
+                fontsize = 5
+            elif form["size"].value == "verysmall":
+                size = 8
+                fontsize = 0
+            elif form["size"].value == "tiny":
+                size = 5
+                fontsize = 0
+
+        # entferne unpassende Layer
+        if fontsize <= 8:
+            allow_armeen = False
+            if "armeen" in layer:
+                layer.remove("armeen")
+        if fontsize == 0 or level != "N":
+            allow_dorf = False
+            if "doerfer" in layer:
+                layer.remove("doerfer")
+
+        # bestimme was wirklich gezeigt wird
+        if not allow_dorf or "doerfer" not in layer:
             show_dorf = False
         else:
             show_dorf = True
@@ -343,13 +373,6 @@ if __name__ == '__main__':
             if "neu" in layer:
                 dorf.set_add_cond("datediff(now(), aktdatum) < 364")
             dorf.fetch_data()
-
-        if config.is_kraehe():
-            allow_armeen = True
-        elif config.is_tw() and config.is_tester():
-            allow_armeen = True
-        else:
-            allow_armeen = False
 
         if allow_armeen and "armeen" in layer:
             show_armeen = True
@@ -368,26 +391,7 @@ if __name__ == '__main__':
             terrain.fetch_data(level)
 
 
-        # Bereite Formatierungen vor
-        size = 32 
-        fontsize = 9
-        if "size" in form:
-            if form["size"].value == "small":
-                size = 16
-                fontsize = 5
-            elif form["size"].value == "verysmall":
-                size = 8
-                fontsize = 0
-            elif form["size"].value == "tiny":
-                size = 5
-                fontsize = 0
-        if fontsize <= 8:
-            show_armeen = False
-            allow_armeen = False
-        if fontsize == 0:
-            show_dorf = False
-            allow_dorf = False
-
+        # Formatierungen
         print '<style type="text/css">'
         print '#karte {'
         print '    table-layout:fixed;'
@@ -485,10 +489,16 @@ if __name__ == '__main__':
             print '<td class="navi">' + nav_link('&lArr;', 'ost', 24) + '</td>'
             print '<td class="navi">' + nav_link('&larr;', 'ost', 4) + '</td>'
             print '<td>'
-            if config.is_kraehe():
-                print ausgabe.link("/show/karte/kraehen", "&bull;")
-            elif config.is_tw():
-                print ausgabe.link("/show/karte/osten", "&bull;")
+            if config.is_kraehe() or config.is_tw():
+                # "Home" link
+                if config.is_kraehe():
+                    link = "/show/karte/kraehen"
+                elif config.is_tw():
+                    link = "/show/karte/osten"
+                if (not (len(layer) == 2
+                    and "armeen" in layer and "doerfer" in layer)):
+                    link += '/' + "+".join(layer)
+                print ausgabe.link(link, "&bull;")
             print '</td>',
             print '<td class="navi">' + nav_link('&rarr;', 'west', 4) + '</td>'
             print '<td class="navi">' + nav_link('&rArr;', 'west', 24) + '</td>'

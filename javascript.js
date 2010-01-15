@@ -1,53 +1,78 @@
+function inArray(text, arr) {
+    if (arr === null) {
+        return false;
+    } else {
+        for (var i=0; i < arr.length; i++) {
+            if (arr[i] == text) {
+                return true;
+            }
+        }
+    }
+}
+
+function removeFrom(text, arr) {
+    if (arr !== null) {
+        for (var i=0; i < arr.length; i++) {
+            if (arr[i] == text) {
+                arr.splice(i, 1);
+            }
+        }
+    }
+    return arr
+}
+
 function changeLinks(layer) {
     // passe Links an
     var warn = false;
     var tables = document.getElementsByTagName("table");
     for (var i=0; i < tables.length; i++) {
         if (tables[i].className="navi") {
-            var as = tables[i].getElementsByTagName("a");
+            as = tables[i].getElementsByTagName("a");
             for (var j=0; j < as.length; j++) {
-                // alten Layer finden
-                var match = as[j].href.match(/(armeen|doerfer|clean)/);
+                // alte Layer finden
+                exp1 = "((armeen|doerfer|clean|neu)"
+                exp2 = "(\\+(armeen|doerfer|clean|neu))*)";
+                exp = new RegExp(exp1 + exp2);
+                match = as[j].href.match(exp);
                 if (match) {
-                    var oldLayer = match[0];
+                    oldLayer = match[1].split("+");
                 } else {
-                    var oldLayer = null; // also beides
+                    oldLayer = ["armeen", "doerfer"];
                 }
-                // neuen Layer finden
+                // neue Layer erstellen
                 if (layer[0] == "+") {
-                    if (oldLayer == "clean") {
-                        newLayer = layer.substr(1);
-                    } else {
-                        newLayer = null;
+                    newLayer = oldLayer;
+                    if (!inArray(layer.substr(1), newLayer)) {
+                        newLayer.push(layer.substr(1));
+                        newLayer = removeFrom("clean", newLayer);
                     }
                 } else { // -
-                    if (oldLayer == null) {
-                        if (layer == "-armeen") {
-                            newLayer = "doerfer";
-                        } else {
-                            newLayer = "armeen";
-                        }
-                    } else {
-                        newLayer = "clean";
+                    newLayer = removeFrom(layer.substr(1), oldLayer);
+                    if (newLayer.length == 0) {
+                        newLayer = ["clean"];
                     }
+                }
+                // Standardwerte
+                if (newLayer && newLayer.sort().join("+") == "armeen+doerfer") {
+                    newLayer = null;
                 }
                 // neuen Layer setzen
                 if (match) {
                     if (newLayer === null) {
-                        exp = /\/(armeen|doerfer|clean)/
+                        exp = new RegExp("\\/" + exp.source);
                         as[j].href = as[j].href.replace(exp, "");
                     } else {
-                        exp = /(armeen|doerfer|clean)/
-                        as[j].href = as[j].href.replace(exp, newLayer);
+                        as[j].href = as[j].href.replace(exp,newLayer.join("+"));
                     }
                 } else if (newLayer !== null) {
-                    match = as[j].href.match(/(normal|small)/);
+                    exp = /(normal|small)/;
+                    match = as[j].href.match(exp);
                     if (match) {
-                        exp = /(normal|small)/
-                        newEnd = newLayer + '/' + match[0];
+                        exp = new RegExp("\\/" + exp.source);
+                        newEnd = newLayer.join("+") + '/' + match[0];
                         as[j].href = as[j].href.replace(exp, newEnd);
                     } else {
-                        as[j].href = as[j].href + '/' + newLayer;
+                        as[j].href = as[j].href + '/' + newLayer.join("+");
                     }
                 }
             }

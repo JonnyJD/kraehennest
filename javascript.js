@@ -21,64 +21,79 @@ function removeFrom(text, arr) {
     return arr
 }
 
+function changeLink(layer, a) {
+    // alte Layer finden
+    var exp1 = "((armeen|doerfer|clean|neu)"
+    var exp2 = "(\\+(armeen|doerfer|clean|neu))*)";
+    var exp = new RegExp(exp1 + exp2);
+    var match = a.href.match(exp);
+    if (match) {
+        var oldLayer = match[1].split("+");
+    } else {
+        var oldLayer = ["armeen", "doerfer"];
+    }
+    // neue Layer erstellen
+    if (layer[0] == "+") {
+        var newLayer = oldLayer;
+        if (!inArray(layer.substr(1), newLayer)) {
+            newLayer.push(layer.substr(1));
+            newLayer = removeFrom("clean", newLayer);
+        }
+    } else { // -
+        var newLayer = removeFrom(layer.substr(1), oldLayer);
+        if (newLayer.length == 0) {
+            newLayer = ["clean"];
+        }
+    }
+    // Standardwerte
+    if (newLayer && newLayer.sort().join("+") == "armeen+doerfer") {
+        newLayer = null;
+    }
+    // neuen Layer setzen
+    if (match) {
+        if (newLayer === null) {
+            exp = new RegExp("\\/" + exp.source);
+            a.href = a.href.replace(exp, "");
+        } else {
+            a.href = a.href.replace(exp, newLayer.join("+"));
+        }
+    } else if (newLayer !== null) {
+        exp = /(normal|small)/;
+        match = a.href.match(exp);
+        if (match) {
+            exp = new RegExp("\\/" + exp.source);
+            newEnd = newLayer.join("+") + '/' + match[0];
+            a.href = a.href.replace(exp, newEnd);
+        } else {
+            a.href = a.href + '/' + newLayer.join("+");
+        }
+    }
+}
+
 function changeLinks(layer) {
     // passe Links an
-    var warn = false;
     var tables = document.getElementsByTagName("table");
     for (var i=0; i < tables.length; i++) {
-        if (tables[i].className="navi") {
-            as = tables[i].getElementsByTagName("a");
+        if (tables[i].className == "navi") {
+            var as = tables[i].getElementsByTagName("a");
             for (var j=0; j < as.length; j++) {
-                // alte Layer finden
-                exp1 = "((armeen|doerfer|clean|neu)"
-                exp2 = "(\\+(armeen|doerfer|clean|neu))*)";
-                exp = new RegExp(exp1 + exp2);
-                match = as[j].href.match(exp);
-                if (match) {
-                    oldLayer = match[1].split("+");
-                } else {
-                    oldLayer = ["armeen", "doerfer"];
-                }
-                // neue Layer erstellen
-                if (layer[0] == "+") {
-                    newLayer = oldLayer;
-                    if (!inArray(layer.substr(1), newLayer)) {
-                        newLayer.push(layer.substr(1));
-                        newLayer = removeFrom("clean", newLayer);
-                    }
-                } else { // -
-                    newLayer = removeFrom(layer.substr(1), oldLayer);
-                    if (newLayer.length == 0) {
-                        newLayer = ["clean"];
-                    }
-                }
-                // Standardwerte
-                if (newLayer && newLayer.sort().join("+") == "armeen+doerfer") {
-                    newLayer = null;
-                }
-                // neuen Layer setzen
-                if (match) {
-                    if (newLayer === null) {
-                        exp = new RegExp("\\/" + exp.source);
-                        as[j].href = as[j].href.replace(exp, "");
-                    } else {
-                        as[j].href = as[j].href.replace(exp,newLayer.join("+"));
-                    }
-                } else if (newLayer !== null) {
-                    exp = /(normal|small)/;
-                    match = as[j].href.match(exp);
-                    if (match) {
-                        exp = new RegExp("\\/" + exp.source);
-                        newEnd = newLayer.join("+") + '/' + match[0];
-                        as[j].href = as[j].href.replace(exp, newEnd);
-                    } else {
-                        as[j].href = as[j].href + '/' + newLayer.join("+");
-                    }
+                changeLink(layer, as[j]);
+            }
+        }
+    }
+    var divs = document.getElementsByTagName("div");
+    for (var i=0; i < divs.length; i++) {
+        if (divs[i].className == "navi") {
+            var as = divs[i].getElementsByTagName("a");
+            for (var j=0; j < as.length; j++) {
+                if (as[j].firstChild.data != "Index") {
+                    changeLink(layer, as[j]);
                 }
             }
         }
     }
 }
+
 
 function toggleArmeen() {
     var showArmies = document.getElementById("armeeschalter").checked;

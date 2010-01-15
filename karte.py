@@ -526,6 +526,16 @@ if __name__ == '__main__':
         if int(form["x2"].value) < 999: # nicht fuer Vollkarte
             print '<div style="z-index:2; position:fixed;'
             print ' bottom:10px; right:20px;" class="navi">'
+            # Neu-Schalter
+            print "Zeige:<br />"
+            if "neu" in layer:
+                layer.remove("neu")
+                print nav_link("  Alle"), "Neue<br />"
+                layer.append("neu")
+            else:
+                layer.append("neu")
+                print "Alle", nav_link("  Neue") + "<br />"
+                layer.remove("neu")
             # Armeeschalter
             if show_armeen:
                 print '<input type="checkbox" checked id="armeeschalter"',

@@ -107,7 +107,6 @@ class Feld:
     def crop(self, xmin, xmax, ymin, ymax):
         """Erstellt die SQL-Bedingung mit der der Bereich festgelegt wird."""
 
-        #self.crop_clause = ""
         try:
             clauses = []
             if xmin != None:

@@ -1,8 +1,8 @@
 #!/usr/bin/python
 """Modul um die Karte anzuzeigen und eine Kartenuebersicht zu generieren"""
 
-import cgitb
-cgitb.enable()
+#import cgitb
+#cgitb.enable()
 
 import config
 import ausgabe

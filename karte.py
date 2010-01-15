@@ -321,9 +321,8 @@ if __name__ == '__main__':
     print '<meta http-equiv="expires" content="0">'
     print '<link rel="stylesheet" type="text/css" href="',
     print ausgabe.prefix + '/show/stylesheet">'
-    if config.is_kraehe() or (config.is_tw() and config.is_tester()):
-        print '<script src="' + ausgabe.prefix + '/show/javascript"',
-        print 'type="text/javascript"></script>'
+    print '<script src="' + ausgabe.prefix + '/show/javascript"',
+    print 'type="text/javascript"></script>'
     print '</head>\n'
     print '<body>\n'
 

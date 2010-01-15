@@ -548,52 +548,52 @@ if __name__ == '__main__':
         print '</td></tr>'
         print '</table>\n'
 
-        if int(form["x2"].value) < 999: # nicht fuer Vollkarte
-            print '<div style="z-index:2; position:fixed;'
-            print ' bottom:10px; right:20px;" class="navi">'
-            # Neu-Schalter
-            print "Zeige:<br />"
-            if "neu" in layer:
-                layer.remove("neu")
-                print nav_link('  Alle'),
-                print '<span style="color:green">Neue</span><br />'
-                layer.append("neu")
-            else:
-                layer.append("neu")
-                print '<span style="color:green">Alle</span>',
-                print nav_link("  Neue") + "<br />"
-                layer.remove("neu")
-            # Armeeschalter
-            if show_armeen:
-                print '<input type="checkbox" checked id="armeeschalter"',
-                print 'onclick="toggleArmeen()" />',
-                print '<span style="color:green">Armeen</span><br />',
-            elif allow_armeen:
-                layer.append("armeen")
-                print nav_link("+ Armeen") + "<br />"
-                layer.remove("armeen")
-            # Dorfschalter
-            if show_dorf:
-                print '<input type="checkbox" checked id="dorfschalter"',
-                print 'onclick="toggleDorf()" />',
-                print '<span style="color:green">D&ouml;rfer</span><br />',
-            elif allow_dorf:
-                layer.append("doerfer")
-                print nav_link("+ D&ouml;rfer") + "<br />"
-                layer.remove("doerfer")
-            # zeige wieder alles
-            if allow_dorf and allow_armeen and not (show_armeen or show_dorf):
-                layer += ["armeen", "doerfer"]
-                print nav_link("+ Beides") + "<br />"
-                layer.remove("doerfer")
-                layer.remove("armeen")
-            print "<br />"
-            # zurueck zum Datenbankindex
-            if config.is_kraehe():
-                print ausgabe.link("/show", "Index")
-            else:
-                print ausgabe.link("/show/karten", "Index")
-            print '</div>'
+        # Schalter
+        print '<div style="z-index:2; position:fixed;'
+        print ' bottom:10px; right:20px;" class="navi">'
+        # Neu-Schalter
+        print "Zeige:<br />"
+        if "neu" in layer:
+            layer.remove("neu")
+            print nav_link('  Alle'),
+            print '<span style="color:green">Neue</span><br />'
+            layer.append("neu")
+        else:
+            layer.append("neu")
+            print '<span style="color:green">Alle</span>',
+            print nav_link("  Neue") + "<br />"
+            layer.remove("neu")
+        # Armeeschalter
+        if show_armeen:
+            print '<input type="checkbox" checked id="armeeschalter"',
+            print 'onclick="toggleArmeen()" />',
+            print '<span style="color:green">Armeen</span><br />',
+        elif allow_armeen:
+            layer.append("armeen")
+            print nav_link("+ Armeen") + "<br />"
+            layer.remove("armeen")
+        # Dorfschalter
+        if show_dorf:
+            print '<input type="checkbox" checked id="dorfschalter"',
+            print 'onclick="toggleDorf()" />',
+            print '<span style="color:green">D&ouml;rfer</span><br />',
+        elif allow_dorf:
+            layer.append("doerfer")
+            print nav_link("+ D&ouml;rfer") + "<br />"
+            layer.remove("doerfer")
+        # zeige wieder alles
+        if allow_dorf and allow_armeen and not (show_armeen or show_dorf):
+            layer += ["armeen", "doerfer"]
+            print nav_link("+ Beides") + "<br />"
+            layer.remove("doerfer")
+            layer.remove("armeen")
+        print "<br />"
+        # zurueck zum Datenbankindex
+        if config.is_kraehe():
+            print ausgabe.link("/show", "Index")
+        else:
+            print ausgabe.link("/show/karten", "Index")
+        print '</div>'
 
         #
         # Die eigentliche Karte

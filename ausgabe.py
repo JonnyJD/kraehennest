@@ -3,7 +3,7 @@
 import re
 import os
 from datetime import date, datetime, time
-from types import IntType, LongType
+from types import IntType, LongType, StringType
 
 
 ######################################################################
@@ -96,6 +96,8 @@ def link(url, text=None, color=None, br=False):
         link += ' style="color:' + color + ';"'
     if text is None:
         text = prefix + url
+    elif type(text) != StringType:
+        text = str(text)
     link += '>' + text + '</a>'
     return link
 

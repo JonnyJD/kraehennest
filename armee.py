@@ -583,6 +583,16 @@ class Armee(Feld):
                         line.append("Ja")
                     else:
                         line.append('<div style="color:red">Nein</div>')
+                elif cols[i] == "x":
+                    link = "/show/feld/" + str(armee[i]) + "." + str(armee[i+1])
+                    if armee[i-1] != "N":
+                        link += "/" + armee[i-1]
+                    line.append(ausgabe.link(link, armee[i]))
+                elif cols[i] == "y":
+                    link = "/show/feld/" + str(armee[i-1]) + "." + str(armee[i])
+                    if armee[i-2] != "N":
+                        link += "/" + armee[i-2]
+                    line.append(ausgabe.link(link, armee[i]))
                 elif cols[i] == "img":
                     line.append('<img src="/img/armee/' + armee[i] + '.gif" />')
                 elif cols[i] == "ritternr":

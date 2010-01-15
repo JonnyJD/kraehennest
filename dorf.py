@@ -89,8 +89,11 @@ class Dorf(Feld):
             line = []
             for i in range(0, len(dorf)):
                 if cols[i] == "koords":
-                    line.append(dorf[i][0:3])
-                    line.append(dorf[i][4:7])
+                    x = dorf[i][0:3]
+                    y = dorf[i][4:7]
+                    link = "/show/feld/" + x + "." + y
+                    line.append(ausgabe.link(link, x))
+                    line.append(ausgabe.link(link, y))
                 elif cols[i] == "ritternr":
                     # nachfolgenden Ritternamen verlinken
                     url = "/show/reich/" + str(dorf[i])

@@ -56,8 +56,9 @@ def list_maps():
     function genLink() {
         var form = document.getElementById("linkform");
         var x1 = form.x1.value;
-        if (document.URL.search(/tw/)) {
+        if (document.URL.indexOf("tw/show") != -1) {
             var link = "/tw/show/karte/";
+            alert(document.URL);
         } else {
             var link = "/show/karte/";
         }

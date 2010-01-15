@@ -99,6 +99,12 @@ def list_maps():
 <h2>Karten</h2>
 """
     if config.is_kraehe():
+        allow_armeen = True
+    elif config.is_tw() and config.is_tester():
+        allow_armeen = True
+    else:
+        allow_armeen = False
+    if config.is_kraehe():
         text = '<span style="font-weight:bold;">Kraehengebiet</span>'
         print_link("/kraehen", text)
     elif config.is_tw():
@@ -119,8 +125,9 @@ def list_maps():
     print_link("/doerfer", "komplette Dorfkarte", br=True)
     print_area_link("", [1,2,3,4], "komplett", br=True)
     print "(cut)"
-    print_link("/armeen", "reine Armeekarte", br=True)
-    print "(cut)"
+    if allow_armeen:
+        print_link("/armeen", "reine Armeekarte", br=True)
+        print "(cut)"
     print_link("/clean", "Terrainkarte", br=True)
     for i in [1,2,3,4]:
         print_link("/u" + str(i) + "/clean", "U" + str(i))
@@ -162,7 +169,12 @@ def list_maps():
 <input name="level" type="radio" value="u4">U4
 </td></tr>
 <tr><td>Layer:&nbsp;</td><td>
-<input name="layer" value="armeen" type="checkbox" checked> Armeen
+"""
+    if allow_armeen:
+        print '<input name="layer" value="armeen" type="checkbox" checked>',
+        print 'Armeen'
+    print \
+"""
 </td><td>
 <input name="layer" value="doerfer" type="checkbox" checked> D&ouml;rfer
 <input name="layer" value="neu" type="checkbox"> neu

@@ -1,5 +1,5 @@
 /* allgemeine Elemente */
-body {
+body,input {
 	color: #FFFFCC;
 	background-color: #000000;
 }
@@ -14,6 +14,10 @@ a:hover {
 th,h1,h2,h3 {
 	color: #996600;
 }
+input {
+	border: 1px solid #FFCC00;
+}
+
 
 /* spezielle Elemente */
 div.box {

@@ -58,7 +58,6 @@ def list_maps():
         var x1 = form.x1.value;
         if (document.URL.indexOf("tw/show") != -1) {
             var link = "/tw/show/karte/";
-            alert(document.URL);
         } else {
             var link = "/show/karte/";
         }

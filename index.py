@@ -66,6 +66,7 @@ if __name__ == "__main__":
             print ausgabe.link("/delete", "L&ouml;schliste", br=True)
         else:
             print ausgabe.link("/show/versionen", "Versionsliste")
+        print '<br /><a href="/create_md5.html">Account erstellen</a>'
         print '</div>'
     karte.list_maps()
 

@@ -60,9 +60,12 @@ if __name__ == "__main__":
     if config.is_admin():
         print '<div class="box">'
         print '<h2>Administration</h2>'
-        print '<a href="/karte/datenpflege.php">Datenpflege</a>'
-        print ausgabe.link("/show/versionen", "Versionsliste", br=True)
-        print ausgabe.link("/delete", "L&ouml;schliste", br=True)
+        if config.is_kraehe():
+            print '<a href="/karte/datenpflege.php">Datenpflege</a>'
+            print ausgabe.link("/show/versionen", "Versionsliste", br=True)
+            print ausgabe.link("/delete", "L&ouml;schliste", br=True)
+        else:
+            print ausgabe.link("/show/versionen", "Versionsliste")
         print '</div>'
     karte.list_maps()
 

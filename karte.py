@@ -98,9 +98,7 @@ def list_maps():
 <div class="box" style="clear:left;">
 <h2>Karten</h2>
 """
-    if config.is_kraehe():
-        allow_armeen = True
-    elif config.is_tw() and config.is_tester():
+    if config.is_kraehe() or config.is_tw():
         allow_armeen = True
     else:
         allow_armeen = False
@@ -629,9 +627,7 @@ if __name__ == '__main__':
 
         # bestimme was grundsaetzlich erlaubt ist
         allow_dorf = True # zur Zeit keine Ausnahmen
-        if config.is_kraehe():
-            allow_armeen = True
-        elif config.is_tw() and config.is_tester():
+        if config.is_kraehe() or config.is_tw():
             allow_armeen = True
         else:
             allow_armeen = False
@@ -701,7 +697,7 @@ if __name__ == '__main__':
         print '</style>\n'
 
         # Detailboxen
-        if config.is_kraehe() or (config.is_tw() and config.is_tester()):
+        if config.is_kraehe() or config.is_tw():
             # Dorfdetail / Koordinateninfo (deshalb immer)
             print '<div id="dorfdetail" style="z-index:2; position:fixed;',
             print 'top:5px; left:38px; width:85em;',
@@ -798,7 +794,7 @@ if __name__ == '__main__':
                             row += ' class="bright"'
 
                     # Detail-Mouse-Over
-                    if config.is_kraehe() or (config.is_tw() and config.is_tester()):
+                    if config.is_kraehe() or config.is_tw():
                         row += ' onmouseover="showPos(\''
                         row += str(x) + "," + str(y)
                         if config.is_kraehe() and terrain.entry["typ"]:

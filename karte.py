@@ -755,10 +755,7 @@ if __name__ == '__main__':
             layer.remove("armeen")
         print "<br />"
         # zurueck zum Datenbankindex
-        if config.is_kraehe():
-            print ausgabe.link("/show", "Index")
-        else:
-            print ausgabe.link("/show/karten", "Index")
+        print ausgabe.link("/show", "Index")
         print '</div>'
 
         #

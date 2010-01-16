@@ -227,8 +227,13 @@ if __name__ == '__main__':
     feld = Feld(int(x), int(y), level)
     print '<img src="/img/terrain/32/' + str(feld.terrain) + '.gif"';
     print 'style="vertical-align:middle; margin-left:20px;">'
+    print '<span style="display:inline-block; width:100px;">'
     if feld.typ > 1:
         print ' Typ', 'I' * feld.typ
+    print '</span>'
+    print '<span style="margin-left:200px;">'
+    print karte.center_link(int(x), int(y), level)
+    print '</span>'
 
     if level == "N":
         print "<h2>Dorf</h2>"

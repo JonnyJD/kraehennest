@@ -202,7 +202,51 @@ value="generiere Link"></td></tr>
     print '</div>'
 
 
-def nav_link(text, direction=None, amount=0):
+def nav_link(x1, y1, x2, y2, level, text, direction=None, amount=0,
+        layer=["armeen", "doerfer"], size="normal"):
+    """Gibt eine Navigationslink zurueck.
+
+    @param direction: Ist C{"nord"}, C{"sued"}, C{"ost"} oder C{"west"}.
+    @param amount: Die Schrittweite
+    @type amount: C{IntType}
+    @param text: Der Linktext
+    @return: Der HTML-Link
+    @rtype: C{StringType}
+    """
+
+    if size == "tiny":
+        x_width = 300; y_width = 200;
+    elif size == "verysmall":
+        x_width = 200; y_width = 90;
+    elif size == "small":
+        x_width = 66; y_width = 42;
+    else:
+        x_width = 31; y_width = 21;
+
+    if direction is not None:
+        if direction == "nord":
+            y1 -= amount; y2 = y1 + y_width;
+        elif direction == "sued":
+            y2 += amount; y1 = y2 - y_width;
+        elif direction == "ost":
+            x1 -= amount; x2 = x1 + x_width;
+        elif direction == "west":
+            x2 += amount; x1 = x2 - x_width;
+        elif direction == "center":
+            x1 -= x_width//2; y1 -= y_width//2;
+            x2 += x_width//2 + 1; y2 += y_width//2 + 1;
+
+    link = '/show/karte/'
+    link += str(x1) + '.' + str(y1) + '-' + str(x2) + '.' + str(y2)
+    if level != 'N':
+        link += '/' + level
+    if not (len(layer) == 2 and "armeen" in layer and "doerfer" in layer):
+        link += '/' + "+".join(layer)
+    if size != "normal":
+        link += '/' + size
+    return ausgabe.link(link, text)
+
+def __nav_link(text, direction=None, amount=0):
     """Gibt eine Navigationslink zurueck.
 
     @param direction: Ist C{"nord"}, C{"sued"}, C{"ost"} oder C{"west"}.
@@ -215,24 +259,21 @@ def nav_link(text, direction=None, amount=0):
 
     x1 = int(form["x1"].value); x2 = int(form["x2"].value)
     y1 = int(form["y1"].value); y2 = int(form["y2"].value)
-    if direction is not None:
-        if direction == "nord":
-            y1 -= amount; y2 = y1 + 21;
-        elif direction == "sued":
-            y2 += amount; y1 = y2 - 21;
-        elif direction == "ost":
-            x1 -= amount; x2 = x1 + 33;
-        elif direction == "west":
-            x2 += amount; x1 = x2 - 33;
-    link = '/show/karte/'
-    link += str(x1) + '.' + str(y1) + '-' + str(x2) + '.' + str(y2)
-    if level != 'N':
-        link += '/' + level
-    if not (len(layer) == 2 and "armeen" in layer and "doerfer" in layer):
-        link += '/' + "+".join(layer)
-    if "size" in form and form["size"].value != "normal":
-        link += '/' + form["size"].value
-    return ausgabe.link(link, text)
+    if "size" in form:
+        size = form["size"].value
+        return nav_link(x1, y1, x2, y2, level, text, direction, amount,
+                layer, size)
+    else:
+        return nav_link(x1, y1, x2, y2, level, text, direction, amount, layer)
+
+def center_link(x, y, level="N", text="zur Karte"):
+    """Erstellt einen Kartenlink fuer eine Koordinate
+
+    @return: HTML-Link
+    @rtype: C{StringType}
+    """
+    layer = ["armeen", "doerfer"] # + center spaeter
+    return nav_link(x, y, x, y, level, text, "center", 0, layer)
 
 def level_link(direction):
     """Gibt eine Level-link zurueck.
@@ -281,12 +322,12 @@ def __print_navi(cross=False):
     if cross:
         # Richtungen
         print '<tr><td></td><td></td>'
-        print '<td class="navi">' + nav_link('&uArr;', 'nord', 17)
+        print '<td class="navi">' + __nav_link('&uArr;', 'nord', 17)
         print '</td></tr><tr><td></td><td></td>'
-        print '<td class="navi">' + nav_link('&uarr;', 'nord', 3)
+        print '<td class="navi">' + __nav_link('&uarr;', 'nord', 3)
         print '</td></tr><tr>'
-        print '<td class="navi">' + nav_link('&lArr;', 'ost', 24) + '</td>'
-        print '<td class="navi">' + nav_link('&larr;', 'ost', 4) + '</td>'
+        print '<td class="navi">' + __nav_link('&lArr;', 'ost', 24) + '</td>'
+        print '<td class="navi">' + __nav_link('&larr;', 'ost', 4) + '</td>'
         print '<td>'
         if config.is_kraehe() or config.is_tw():
             # "Home" link
@@ -299,12 +340,12 @@ def __print_navi(cross=False):
                 link += '/' + "+".join(layer)
             print ausgabe.link(link, "&bull;")
         print '</td>',
-        print '<td class="navi">' + nav_link('&rarr;', 'west', 4) + '</td>'
-        print '<td class="navi">' + nav_link('&rArr;', 'west', 24) + '</td>'
+        print '<td class="navi">' + __nav_link('&rarr;', 'west', 4) + '</td>'
+        print '<td class="navi">' + __nav_link('&rArr;', 'west', 24) + '</td>'
         print '</tr><tr><td></td><td></td>'
-        print '<td class="navi">' + nav_link('&darr;', 'sued', 3)
+        print '<td class="navi">' + __nav_link('&darr;', 'sued', 3)
         print '</td></tr><tr><td></td><td></td>'
-        print '<td class="navi">' + nav_link('&dArr;', 'sued', 17)
+        print '<td class="navi">' + __nav_link('&dArr;', 'sued', 17)
     else:
         print '<tr><td class="navi" colspan="3">'
         if config.is_kraehe():
@@ -618,6 +659,9 @@ if __name__ == '__main__':
             allow_dorf = False
             if "doerfer" in layer:
                 layer.remove("doerfer")
+        if len(layer) == 0:
+            # dummy layer der fuer "nichts" steht
+            layer.append("clean")
 
         # bestimme was wirklich gezeigt wird
         if not allow_dorf or "doerfer" not in layer:
@@ -681,13 +725,13 @@ if __name__ == '__main__':
         print "Zeige:<br />"
         if "neu" in layer:
             layer.remove("neu")
-            print nav_link('  Alle'),
+            print __nav_link('  Alle'),
             print '<span style="color:green">Neue</span><br />'
             layer.append("neu")
         else:
             layer.append("neu")
             print '<span style="color:green">Alle</span>',
-            print nav_link("  Neue") + "<br />"
+            print __nav_link("  Neue") + "<br />"
             layer.remove("neu")
         # Armeeschalter
         if show_armeen:
@@ -696,7 +740,7 @@ if __name__ == '__main__':
             print '<span style="color:green">Armeen</span><br />',
         elif allow_armeen:
             layer.append("armeen")
-            print nav_link("+ Armeen") + "<br />"
+            print __nav_link("+ Armeen") + "<br />"
             layer.remove("armeen")
         # Dorfschalter
         if show_dorf:
@@ -705,12 +749,12 @@ if __name__ == '__main__':
             print '<span style="color:green">D&ouml;rfer</span><br />',
         elif allow_dorf:
             layer.append("doerfer")
-            print nav_link("+ D&ouml;rfer") + "<br />"
+            print __nav_link("+ D&ouml;rfer") + "<br />"
             layer.remove("doerfer")
         # zeige wieder alles
         if allow_dorf and allow_armeen and not (show_armeen or show_dorf):
             layer += ["armeen", "doerfer"]
-            print nav_link("+ Beides") + "<br />"
+            print __nav_link("+ Beides") + "<br />"
             layer.remove("doerfer")
             layer.remove("armeen")
         print "<br />"

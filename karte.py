@@ -269,6 +269,59 @@ def level_link(direction):
     else:
         return '&nbsp;'
 
+def __print_navi(cross=False):
+    """Gibt die Kartennavigation aus
+
+    @param cross: Ob das Richtungskreuz gezeigt werden soll
+    @type cross: C{BooleanType}
+    """
+
+    print '\n<table class="navi"',
+    print ' style="z-index:2; position:fixed; top:35px; right:60px;">'
+    if cross:
+        # Richtungen
+        print '<tr><td></td><td></td>'
+        print '<td class="navi">' + nav_link('&uArr;', 'nord', 17)
+        print '</td></tr><tr><td></td><td></td>'
+        print '<td class="navi">' + nav_link('&uarr;', 'nord', 3)
+        print '</td></tr><tr>'
+        print '<td class="navi">' + nav_link('&lArr;', 'ost', 24) + '</td>'
+        print '<td class="navi">' + nav_link('&larr;', 'ost', 4) + '</td>'
+        print '<td>'
+        if config.is_kraehe() or config.is_tw():
+            # "Home" link
+            if config.is_kraehe():
+                link = "/show/karte/kraehen"
+            elif config.is_tw():
+                link = "/show/karte/osten"
+            if (not (len(layer) == 2
+                and "armeen" in layer and "doerfer" in layer)):
+                link += '/' + "+".join(layer)
+            print ausgabe.link(link, "&bull;")
+        print '</td>',
+        print '<td class="navi">' + nav_link('&rarr;', 'west', 4) + '</td>'
+        print '<td class="navi">' + nav_link('&rArr;', 'west', 24) + '</td>'
+        print '</tr><tr><td></td><td></td>'
+        print '<td class="navi">' + nav_link('&darr;', 'sued', 3)
+        print '</td></tr><tr><td></td><td></td>'
+        print '<td class="navi">' + nav_link('&dArr;', 'sued', 17)
+    else:
+        print '<tr><td class="navi" colspan="3">'
+        if config.is_kraehe():
+            print ausgabe.link("/show/karte/kraehen", "HOME")
+        elif config.is_tw():
+            print ausgabe.link("/show/karte/osten", "HOME")
+    print '</td></tr></table>'
+    # Level
+    print '<table class="navi"',
+    print 'style="z-index:2; position:fixed; top:60px; right:5px;">'
+    print '<tr><td></td><td></td><td class="navi">' + level_link("hoch")
+    print '</td></tr>'
+    print '<tr><td></td><td></td><td class="navi">' + level + '</td></tr>'
+    print '<tr><td></td><td></td><td class="navi">' + level_link("runter")
+    print '</td></tr>'
+    print '</table>\n'
+
 def __escape(var):
     """Escape eine Variable fuer die javascript Detailansicht
 
@@ -296,6 +349,176 @@ def __format(var):
         return "?"
     else:
         return __escape(str(var))
+
+def __detail_link(x, y, level="N", color=None):
+    """Startet den Detaillink.
+
+    Nicht vergessen den Link wieder zu schliessen!
+
+    @return: Start-Tag eines HTML-links
+    @rtype: C{StringType}
+    """
+    text = '<a href="' + ausgabe.prefix + '/show/feld/'
+    text += str(x) + '.' + str(y)
+    if level != "N":
+        text += '/' + level
+    text += '"'
+    if color is not None:
+        text += ' style="color:' + color
+        if util.brightness(color) < 55:
+            text += ';" class="dark"'
+        else:
+            text += ';" class="bright"'
+    text += ' target="_blank">'
+    return text
+
+def __dorf(dorf, x, y, terrain=None):
+    """Kartenanzeige eines Dorfes
+    
+    @return: Dorf-DIV (HTML)
+    @rtype: C{StringType}
+    """
+
+    dorf.get(x,y)
+    text = '<div class="dorf">'
+    if dorf.entry['rittername'] != ".":
+        text += dorf.entry['rittername'][0:3]
+    elif terrain is not None and config.is_kraehe() and terrain.entry["typ"]:
+        text += "." * terrain.entry["typ"]
+    elif config.is_kraehe():
+        text += "_"
+    else:
+        text += "."
+    text += '</div>'
+    return text
+
+def __armeen(armee, x, y):
+    """Kartenanzeige von Armeen auf einem Feld
+
+    @return: Armee-DIV (HTML)
+    @rtype: C{StringType}
+    """
+
+    text = '<div class="armeen">'
+    if armee.has(x,y):
+        for entry in armee.get(x,y):
+            if util.brightness(entry["allyfarbe"]) < 55:
+                text += '<span class="armee_dark"'
+            else:
+                text += '<span class="armee_bright"'
+            text += ' style="background-color:'
+            text += entry["allyfarbe"] + ';"></span>'
+    text += '</div>'
+    return text
+
+def create_styles(size, fontsize,
+        show_armeen=True, show_dorf=True, background=False):
+    """erstellt ein passendes Stylesheet
+    """
+
+    text = '#karte tr td {'
+    text += '    padding:0px;'
+    text += '    height: ' + str(size) + 'px;'
+    text += '    width: ' + str(size) + 'px;'
+    text += '    background-repeat:no-repeat;'
+    text += '    font-size: ' + str(fontsize) + 'pt;'
+    text += '    text-align:center;'
+    text += '}'
+    text += 'div.armeen {'
+    text += '    margin-left: ' + str(fontsize-5) + 'px;'
+    if show_armeen and not show_dorf:
+        text += '    margin-top:5px;'
+    text += '    text-align:left;'
+    text += '    max-height: ' + str(fontsize-5) + 'px;'
+    text += '}'
+    text += 'span.armee_dark {'
+    text += '    display: inline-block;'
+    if fontsize > 8:
+        text += '    height: ' + str(fontsize-5) + 'px;'
+        text += '    width: ' + str(fontsize-5) + 'px;'
+        text += '    border: 1px solid white;'
+    else:
+        text += '    height: 0px;'
+        text += '    width: 0px;'
+    text += '}'
+    text += 'span.armee_bright {'
+    text += '    display: inline-block;'
+    if fontsize > 8:
+        text += '    height: ' + str(fontsize-5) + 'px;'
+        text += '    width: ' + str(fontsize-5) + 'px;'
+        text += '    border: 1px solid black;'
+    else:
+        text += '    height: 0px;'
+        text += '    width: 0px;'
+    text += '}'
+    text += 'td.navi, div.navi{'
+    if background:
+        text += '    background-color:#333333;'
+    text += '    font-weight:bold;'
+    text += '    font-size:12pt;'
+    text += '}'
+    return text
+
+def small_map(x, y, sicht, level="N"):
+    """Eine kleine integrierbare Karte
+
+    vorher sollte L{create_styles<karte.create_styles>} abgesetzt werden
+
+    @param x: Mittelpunkt X
+    @type x: C{IntType}
+    @param y: Mittelpunkt Y
+    @type y: C{IntType}
+    @param sicht: Sichtweite vom Mittelpunkt
+    @type sicht: C{IntType}
+    """
+
+    size = 32 
+    fontsize = 9
+    #layer = ["armeen", "doerfer"]
+    dorf = Dorf()
+    dorf.fetch_data()
+    armee = Armee()
+    armee.fetch_data(level)
+
+    terrain = Terrain()
+    terrain.fetch_data(level, x - sicht, x + sicht, y - sicht, y + sicht)
+
+    width = size * (terrain.xmax - terrain.xmin + 1 + 2)
+    karte = '\n\n<table id="karte" style="width:' + str(width) + 'px;">'
+    karte += '<tr style="height:' + str(size) + 'px;"><td></td>'
+    # X - Achse
+    for x in range(terrain.xmin, terrain.xmax + 1):
+        karte += '<td>' + str(x) + '</td>'
+    for y in range(terrain.ymin, terrain.ymax + 1):
+        karte += '<tr style="height:' + str(size) + 'px;">'
+        karte += '<td>' + str(y)  + '</td>' # Y - Achse
+        for x in range(terrain.xmin, terrain.xmax + 1):
+            if terrain.has(x,y): # Kartenbereich
+                terrain.get(x,y)
+                row = '<td style="background-image:url(/img/terrain/'
+                row += str(size) + '/' + terrain.entry["terrain"]
+                row += '.gif);">'
+
+                if dorf.has(x,y):
+                    color = dorf.entry(x,y)['allyfarbe']
+                else:
+                    color = None
+                row += __detail_link(x, y, level, color)
+                row += __dorf(dorf, x, y, terrain)
+                row += __armeen(armee, x, y)
+
+                row += '</a></td>'
+                karte += row
+            else:
+                karte += '<td></td>'
+            # y - Achse
+            karte += '<td>' + str(y) + '</tr>'
+        # X - Achse
+        karte += '<tr style="height:' + str(size) + 'px;"><td></td>'
+        for x in range(terrain.xmin, terrain.xmax + 1):
+            karte += '<td>' + str(x) + '</td>'
+        karte += '</table>'
+    return karte
 
 
 # Aufruf direkt: Karten anzeigen
@@ -417,74 +640,9 @@ if __name__ == '__main__':
 
 
         # Formatierungen
+        background = int(form["x2"].value) >= 999
         print '<style type="text/css">'
-        print '#karte {'
-        print '    table-layout:fixed;'
-        print '    margin:0px;'
-        print '    border-collapse:collapse;'
-        print '}'
-        print '#karte tr td {'
-        print '    padding:0px;'
-        print '    height: ' + str(size) + 'px;'
-        print '    width: ' + str(size) + 'px;'
-        print '    background-repeat:no-repeat;'
-        print '    font-size: ' + str(fontsize) + 'pt;'
-        print '    text-align:center;'
-        print '}'
-        print 'div.armeen {'
-        print '    margin-left: ' + str(fontsize-5) + 'px;'
-        if show_armeen and not show_dorf:
-            print '    margin-top:5px;'
-        print '    text-align:left;'
-        print '    max-height: ' + str(fontsize-5) + 'px;'
-        print '}'
-        print 'span.armee_dark {'
-        print '    display: inline-block;'
-        if fontsize > 8:
-            print '    height: ' + str(fontsize-5) + 'px;'
-            print '    width: ' + str(fontsize-5) + 'px;'
-            print '    border: 1px solid white;'
-        else:
-            print '    height: 0px;'
-            print '    width: 0px;'
-        print '}'
-        print 'span.armee_bright {'
-        print '    display: inline-block;'
-        if fontsize > 8:
-            print '    height: ' + str(fontsize-5) + 'px;'
-            print '    width: ' + str(fontsize-5) + 'px;'
-            print '    border: 1px solid black;'
-        else:
-            print '    height: 0px;'
-            print '    width: 0px;'
-        print '}'
-        print 'span.dark {'
-        print '    border: 1px solid white;'
-        print '}'
-        print 'span.bright {'
-        print '    border: 1px solid black;'
-        print '}'
-        print 'a.dark, td.dark {'
-        print '    text-shadow: white 1px 1px 1px,  white -1px -1px 1px,',
-        print ' white -1px 1px 1px, white 1px -1px 1px;'
-        print '}'
-        print 'a.bright, td.bright {'
-        print '    text-shadow: black 1px 1px 1px,  black -1px -1px 1px,',
-        print ' black -1px 1px 1px, black 1px -1px 1px;'
-        print '}'
-        print 'table.detail tr td, #dorfdetail, #armeedetail {'
-        print '    font-size:9pt;'
-        print '    background-color:#333333;'
-        print '}'
-        print 'table.navi tr td {'
-        print '    text-align:center;'
-        print '}'
-        print 'td.navi, div.navi{'
-        if int(form["x2"].value) >= 999:
-            print '    background-color:#333333;'
-        print '    font-weight:bold;'
-        print '    font-size:12pt;'
-        print '}'
+        print create_styles(size, fontsize, show_armeen, show_dorf, background)
         print '</style>\n'
 
         # Detailboxen
@@ -502,51 +660,8 @@ if __name__ == '__main__':
                 print 'padding:5px;"><div>&nbsp;</div></div>'
 
         # Kartennavigation
-        print '\n<table class="navi"',
-        print ' style="z-index:2; position:fixed; top:35px; right:60px;">'
-        if int(form["x2"].value) < 999:
-            # Richtungen
-            print '<tr><td></td><td></td>'
-            print '<td class="navi">' + nav_link('&uArr;', 'nord', 17)
-            print '</td></tr><tr><td></td><td></td>'
-            print '<td class="navi">' + nav_link('&uarr;', 'nord', 3)
-            print '</td></tr><tr>'
-            print '<td class="navi">' + nav_link('&lArr;', 'ost', 24) + '</td>'
-            print '<td class="navi">' + nav_link('&larr;', 'ost', 4) + '</td>'
-            print '<td>'
-            if config.is_kraehe() or config.is_tw():
-                # "Home" link
-                if config.is_kraehe():
-                    link = "/show/karte/kraehen"
-                elif config.is_tw():
-                    link = "/show/karte/osten"
-                if (not (len(layer) == 2
-                    and "armeen" in layer and "doerfer" in layer)):
-                    link += '/' + "+".join(layer)
-                print ausgabe.link(link, "&bull;")
-            print '</td>',
-            print '<td class="navi">' + nav_link('&rarr;', 'west', 4) + '</td>'
-            print '<td class="navi">' + nav_link('&rArr;', 'west', 24) + '</td>'
-            print '</tr><tr><td></td><td></td>'
-            print '<td class="navi">' + nav_link('&darr;', 'sued', 3)
-            print '</td></tr><tr><td></td><td></td>'
-            print '<td class="navi">' + nav_link('&dArr;', 'sued', 17)
-        else:
-            print '<tr><td class="navi" colspan="3">'
-            if config.is_kraehe():
-                print ausgabe.link("/show/karte/kraehen", "HOME")
-            elif config.is_tw():
-                print ausgabe.link("/show/karte/osten", "HOME")
-        print '</td></tr></table>'
-        # Level
-        print '<table class="navi"',
-        print 'style="z-index:2; position:fixed; top:60px; right:5px;">'
-        print '<tr><td></td><td></td><td class="navi">' + level_link("hoch")
-        print '</td></tr>'
-        print '<tr><td></td><td></td><td class="navi">' + level + '</td></tr>'
-        print '<tr><td></td><td></td><td class="navi">' + level_link("runter")
-        print '</td></tr>'
-        print '</table>\n'
+        cross = int(form["x2"].value) < 999
+        __print_navi(cross)
 
         # Schalter
         print '<div style="z-index:2; position:fixed;'
@@ -605,9 +720,8 @@ if __name__ == '__main__':
         for x in range(terrain.xmin, terrain.xmax + 1):
             print '<td>' + str(x) + '</td>'
         for y in range(terrain.ymin, terrain.ymax + 1):
-            # Y - Achse
             print '<tr style="height:' + str(size) + 'px;">'
-            print '<td>' + str(y)  + '</td>'
+            print '<td>' + str(y)  + '</td>' # Y - Achse
             for x in range(terrain.xmin, terrain.xmax + 1):
                 if terrain.has(x,y): # Kartenbereich
 
@@ -684,46 +798,19 @@ if __name__ == '__main__':
                     else:
                         show_detail_link = False
                     if show_detail_link:
-                        row += '<a href="' + ausgabe.prefix + '/show/feld/'
-                        row += str(x) + '.' + str(y)
-                        if level != "N":
-                            row += '/' + level
-                        row += '"'
                         if show_dorf and dorf.has(x,y):
-                            dorf.get(x,y)
-                            row += ' style="color:' + dorf.entry['allyfarbe']
-                            if util.brightness(dorf.entry['allyfarbe']) < 55:
-                                row += ';" class="dark"'
-                            else:
-                                row += ';" class="bright"'
-                        row += ' target="_blank">'
+                            color = dorf.get(x,y)['allyfarbe']
+                        else:
+                            color = None
+                        row += __detail_link(x, y, level, color)
 
                     # Dorf
                     if show_dorf and dorf.has(x,y):
-                        dorf.get(x,y)
-                        row += '<div class="dorf">'
-                        if dorf.entry['rittername'] != ".":
-                            row += dorf.entry['rittername'][0:3]
-                        elif config.is_kraehe() and terrain.entry["typ"]:
-                            row += "." * terrain.entry["typ"]
-                        elif config.is_kraehe():
-                            row += "_"
-                        else:
-                            row += "."
-                        row += '</div>'
+                        row += __dorf(dorf, x, y, terrain)
 
                     # Armeen
                     if show_armeen:
-                        row += '<div class="armeen">'
-                        if armee.has(x,y):
-                            for entry in armee.get(x,y):
-                                if util.brightness(entry["allyfarbe"]) < 55:
-                                    row += '<span class="armee_dark"'
-                                else:
-                                    row += '<span class="armee_bright"'
-                                row += ' style="background-color:'
-                                row += entry["allyfarbe"] + ';"></span>'
-                        row += '</div>'
+                        row += __armeen(armee, x, y)
                     if show_detail_link:
                         row += '</a>'
                     row += '</td>'
@@ -731,7 +818,7 @@ if __name__ == '__main__':
                 else: # not terrain.has(x,y):
                     print '<td></td>'
             # y - Achse
-            print '<td>' + str(y) + '</tr>'
+            print '<td>' + str(y) + '</td></tr>'
         # X - Achse
         print '<tr style="height:' + str(size) + 'px;"><td></td>'
         for x in range(terrain.xmin, terrain.xmax + 1):

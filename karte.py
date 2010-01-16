@@ -350,7 +350,7 @@ def __format(var):
     else:
         return __escape(str(var))
 
-def __detail_link(x, y, level="N", color=None):
+def __detail_link(x, y, level="N", color=None, new_window=True):
     """Startet den Detaillink.
 
     Nicht vergessen den Link wieder zu schliessen!
@@ -369,7 +369,10 @@ def __detail_link(x, y, level="N", color=None):
             text += ';" class="dark"'
         else:
             text += ';" class="bright"'
-    text += ' target="_blank">'
+    if new_window:
+        text += ' target="_blank">'
+    else:
+        text += '>'
     return text
 
 def __dorf(dorf, x, y, terrain=None):
@@ -459,7 +462,7 @@ def create_styles(size, fontsize,
     text += '}'
     return text
 
-def small_map(x, y, sicht, level="N"):
+def small_map(x, y, level="N", sicht=2):
     """Eine kleine integrierbare Karte
 
     vorher sollte L{create_styles<karte.create_styles>} abgesetzt werden
@@ -472,26 +475,30 @@ def small_map(x, y, sicht, level="N"):
     @type sicht: C{IntType}
     """
 
+    from dorf import Dorf
+    from armee import Armee
+    from terrain import Terrain
+
     size = 32 
     fontsize = 9
-    #layer = ["armeen", "doerfer"]
-    dorf = Dorf()
-    dorf.fetch_data()
+
+    if level == "N":
+        dorf = Dorf()
+        dorf.fetch_data()
     armee = Armee()
     armee.fetch_data(level)
-
     terrain = Terrain()
     terrain.fetch_data(level, x - sicht, x + sicht, y - sicht, y + sicht)
 
     width = size * (terrain.xmax - terrain.xmin + 1 + 2)
-    karte = '\n\n<table id="karte" style="width:' + str(width) + 'px;">'
-    karte += '<tr style="height:' + str(size) + 'px;"><td></td>'
+    karte = '\n\n<table id="karte" style="width:' + str(width) + 'px;">\n'
+    karte += '<tr style="height:' + str(size) + 'px;"><td></td>\n'
     # X - Achse
     for x in range(terrain.xmin, terrain.xmax + 1):
-        karte += '<td>' + str(x) + '</td>'
+        karte += '<td>' + str(x) + '</td>\n'
     for y in range(terrain.ymin, terrain.ymax + 1):
-        karte += '<tr style="height:' + str(size) + 'px;">'
-        karte += '<td>' + str(y)  + '</td>' # Y - Achse
+        karte += '<tr style="height:' + str(size) + 'px;">\n'
+        karte += '<td>' + str(y)  + '</td>\n' # Y - Achse
         for x in range(terrain.xmin, terrain.xmax + 1):
             if terrain.has(x,y): # Kartenbereich
                 terrain.get(x,y)
@@ -499,25 +506,29 @@ def small_map(x, y, sicht, level="N"):
                 row += str(size) + '/' + terrain.entry["terrain"]
                 row += '.gif);">'
 
-                if dorf.has(x,y):
-                    color = dorf.entry(x,y)['allyfarbe']
-                else:
+                if (level == "N" and dorf.has(x,y)
+                        and dorf.get(x,y)["rittername"] != "."):
+                    color = dorf.get(x,y)['allyfarbe']
+                    row += __detail_link(x, y, level, color, new_window=False)
+                elif armee.has(x,y):
                     color = None
-                row += __detail_link(x, y, level, color)
-                row += __dorf(dorf, x, y, terrain)
+                    row += __detail_link(x, y, level, color, new_window=False)
+
+                if level == "N" and dorf.has(x,y):
+                    row += __dorf(dorf, x, y, terrain)
                 row += __armeen(armee, x, y)
 
-                row += '</a></td>'
+                row += '</a></td>\n'
                 karte += row
             else:
-                karte += '<td></td>'
-            # y - Achse
-            karte += '<td>' + str(y) + '</tr>'
-        # X - Achse
-        karte += '<tr style="height:' + str(size) + 'px;"><td></td>'
-        for x in range(terrain.xmin, terrain.xmax + 1):
-            karte += '<td>' + str(x) + '</td>'
-        karte += '</table>'
+                karte += '<td></td>\n'
+        # y - Achse
+        karte += '<td>' + str(y) + '</td></tr>\n'
+    # X - Achse
+    karte += '<tr style="height:' + str(size) + 'px;"><td></td>\n'
+    for x in range(terrain.xmin, terrain.xmax + 1):
+        karte += '<td>' + str(x) + '</td>\n'
+    karte += '</table>\n'
     return karte
 
 

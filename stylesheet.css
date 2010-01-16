@@ -24,6 +24,11 @@ div.box {
 	float:left;
 	margin:25px;
 }
+div.right_map {
+	float:right;
+	margin:10px;
+	margin-top:-30px;
+}
 /* "richtige" Tabellenzellen
  * (in der Karte "unrichtige" Zellen benutzt)
  */

@@ -201,6 +201,7 @@ if __name__ == '__main__':
     from armee import Armee
     from dorf import Dorf
     import ausgabe
+    import karte
 
     form = cgi.FieldStorage()
 
@@ -215,7 +216,13 @@ if __name__ == '__main__':
         title = "Feld " + level + ": " + x + ", " + y
     else:
         title = "Feld " + x + ", " + y
-    ausgabe.print_header(title)
+
+    styles = karte.create_styles(32, 9)
+    ausgabe.print_header(title, styles)
+
+    print '<div class="right_map">'
+    print karte.small_map(int(x), int(y), level)
+    print '</div>'
 
     feld = Feld(int(x), int(y), level)
     print '<img src="/img/terrain/32/' + str(feld.terrain) + '.gif"';
@@ -231,7 +238,7 @@ if __name__ == '__main__':
             print "Mehrere D&ouml;rfer?? <br /><br />"
         dorftabelle.show()
 
-    print "<h2>Armeen</h2>"
+    print '<h2 style="clear:right">Armeen</h2>'
     armee = Armee()
     armeetabelle = armee.list_by_feld(level, x, y)
     if armeetabelle.length() > 0:

@@ -42,10 +42,12 @@ def list_versions():
             if config.is_kraehe():
                 line.append(row[4])
             line.append(row[0])
-            if row[1] is None:
+            if config.is_kraehe() and row[1] is None:
                 zelle = '<a href="reich/' + str(row[0]) + '">?</a>'
-            else:
+            elif config.is_kraehe():
                 zelle = '<a href="reich/' + str(row[0]) + '">' + row[1] + '</a>'
+            else:
+                zelle = row[1]
             line.append(zelle)
             line.append(row[2])
             string = ausgabe.datetime_delta_string(row[3])

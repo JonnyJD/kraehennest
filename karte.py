@@ -681,7 +681,7 @@ if __name__ == '__main__':
             show_armeen = True
             armee = Armee()
             if "alt" in layer:
-                armee.replace_cond("level = 'N'")
+                armee.replace_cond("TRUE") # keine Bedingung
             elif "neu" in layer:
                 armee.set_add_cond("hour(timediff(now(), last_seen)) < 6")
             armee.fetch_data(level)

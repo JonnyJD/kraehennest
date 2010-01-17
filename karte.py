@@ -424,7 +424,7 @@ def __dorf(dorf, x, y, terrain=None):
     dorf.get(x,y)
     text = '<div class="dorf">'
     if dorf.entry['rittername'] != ".":
-        text += dorf.entry['rittername'][0:3]
+        text += dorf.entry['rittername'].translate(None, '<>')[0:3]
     elif terrain is not None and config.is_kraehe() and terrain.entry["typ"]:
         text += "." * terrain.entry["typ"]
     elif config.is_kraehe():

@@ -5,6 +5,7 @@
 #cgitb.enable()
 
 from datetime import datetime, timedelta
+import cgi
 import config
 from user import User
 import karte
@@ -52,7 +53,8 @@ if __name__ == "__main__":
         print ausgabe.link("/show/allianz/60", "Kr&auml;hen")
         if user and user.r_id:
             url = "/show/reich/" + str(user.r_id)
-            print ausgabe.link(url, user.rittername, br=True)
+            rittername = cgi.escape(user.rittername)
+            print ausgabe.link(url, rittername, br=True)
         print ausgabe.link("/show/reich/174", "Keiner", br=True)
         print ausgabe.link("/show/reich/113", "Plunkett", br=True)
         print '</div>'

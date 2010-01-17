@@ -2,6 +2,7 @@
 
 import re
 import os
+import cgi
 from datetime import date, datetime, time
 from types import IntType, LongType, StringType
 
@@ -105,6 +106,21 @@ def print_important(message):
     """Gibt eine wichtige Nachricht gross und farbig in HTML aus
     """
     print '<h2 style="color:red">' + message + '</h2>'
+
+def escape_row(row):
+    """Maskiert <, > und & in allen Elementen fuer die HTML-Ausgabe
+
+    @type row: C{List}
+    @rtype: C{List}
+    """
+
+    new_row = []
+    for i in range(0, len(row)):
+        if type(row[i]) == StringType:
+            new_row.append(cgi.escape(row[i]))
+        else:
+            new_row.append(row[i])
+    return new_row
 
 
 class Tabelle:

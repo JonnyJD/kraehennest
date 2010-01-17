@@ -102,6 +102,7 @@ def list_by_allianz(a_id):
             cursor.execute(sql)
         row = cursor.fetchone()
         while row != None:
+            row = ausgabe.escape_row(row)
             line = [row[0]]
             line.append(row[1])
             line.append(ausgabe.link("/show/reich/" + str(row[0]), row[2]))
@@ -233,11 +234,13 @@ if __name__ == '__main__':
         r_id = form["id"].value
         try:
             reich = Reich(r_id)
-            ausgabe.print_header('Reich: ' + reich.name)
+            reichsname = cgi.escape(reich.name)
+            ausgabe.print_header('Reich: ' + reichsname)
 
             print '<table>'
             print '<tr><td>Allianz</td><td>',
-            print allianz.link(reich.ally, reich.ally_name, reich.ally_color),
+            allianzname = cgi.escape(reich.ally_name)
+            print allianz.link(reich.ally, allianzname, reich.ally_color),
             print '</td></tr>'
             dorf = Dorf()
             dorftabelle = dorf.list_by_reich(r_id)

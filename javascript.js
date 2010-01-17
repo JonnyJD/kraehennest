@@ -164,6 +164,9 @@ function toggleDorf() {
 }
 
 function my_unescape(str) {
+    // serverseitig escapen bringt hier nichts !
+    str = str.replace(/</g, "&lt;")
+    str = str.replace(/>/g, "&gt;")
     /* Das ist keine Standard HTML-Entity
      * damit es wirklich nicht als "|" interpretiert wird
      */

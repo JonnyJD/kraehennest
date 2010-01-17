@@ -37,6 +37,7 @@ def list_versions():
         row = cursor.fetchone()
         while row != None:
             line = []
+            row = ausgabe.escape_row(row)
             line.append(row[4])
             line.append(row[0])
             if config.is_kraehe() and row[1] is None:
@@ -88,6 +89,7 @@ def list_too_many_armies():
         cursor.execute(sql)
         row = cursor.fetchone()
         while row != None:
+            row = ausgabe.escape_row(row)
             line = [ausgabe.link("/show/reich/" + str(row[0]), row[1])]
             line.append(row[2])
             tabelle.addLine(line)
@@ -116,6 +118,7 @@ def list_dangling_armies():
         cursor.execute(sql)
         row = cursor.fetchone()
         while row != None:
+            row = ausgabe.escape_row(row)
             line = [row[1]]
             line.append(row[2])
             if row[3] is None: # kein Soeldner

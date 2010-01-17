@@ -578,6 +578,7 @@ class Armee(Feld):
                 tabelle.addColumn(translate(cols[i]))
         for armee in armeen:
             line = []
+            armee = ausgabe.escape_row(armee)
             for i in range(0, len(armee)):
                 if cols[i] == "active":
                     if armee[i] == 1:
@@ -851,6 +852,7 @@ if __name__ == '__main__':
                 confirmation = True
             else:
                 confirmation = False
+
             if config.is_admin() and form["action"].value == "free":
                 h_id = form["id"].value
                 armee = Armee(h_id)

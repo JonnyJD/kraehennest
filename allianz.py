@@ -60,6 +60,7 @@ def list():
         row = cursor.fetchone()
         while row != None:
             line = []
+            row = ausgabe.escape_row(row)
             if row[4] > 0: # positive Mitgliederzahl
                 line.append(row[0])
                 zelle = '<a href="allianz/' + str(row[0]) + '">'
@@ -134,8 +135,9 @@ if __name__ == '__main__':
         a_id = form["id"].value
         try:
             allianz = Allianz(a_id)
+            allianzname = allianz.name
 
-            ausgabe.print_header("Allianz: " + allianz.name)
+            ausgabe.print_header("Allianz: " + allianzname)
 
             print '<table>'
             reichtabelle = reich.list_by_allianz(a_id)

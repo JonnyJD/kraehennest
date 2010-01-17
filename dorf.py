@@ -87,6 +87,7 @@ class Dorf(Feld):
                 tabelle.addColumn(translate(col))
         for dorf in doerfer:
             line = []
+            dorf = ausgabe.escape_row(dorf)
             for i in range(0, len(dorf)):
                 if cols[i] == "koords":
                     x = dorf[i][0:3]

@@ -166,15 +166,20 @@ def list_maps():
 <input name="level" type="radio" value="u3">U3
 <input name="level" type="radio" value="u4">U4
 </td></tr>
-<tr><td>Layer:&nbsp;</td><td>
+<tr><td style="vertical-align:top;">Layer:&nbsp;</td><td>
 """
     if allow_armeen:
         print '<input name="layer" value="armeen" type="checkbox" checked>',
         print 'Armeen'
     print \
 """
+<br /><input name="layer" value="doerfer" type="checkbox" checked> D&ouml;rfer
 </td><td>
-<input name="layer" value="doerfer" type="checkbox" checked> D&ouml;rfer
+"""
+    if allow_armeen:
+        print '<input name="layer" value="alt" type="checkbox"> alt<br />'
+    print \
+"""
 <input name="layer" value="neu" type="checkbox"> neu
 </td></tr>
 <tr><td style="vertical-align:top;">Gr&ouml;&szlig;e:&nbsp;</td><td>
@@ -623,6 +628,8 @@ if __name__ == '__main__':
             if len(layer) == 1 and "neu" in layer:
                 layer.append("armeen")
                 layer.append("doerfer")
+            if len(layer) == 1 and "alt" in layer:
+                layer.append("armeen")
         else:
             layer = []
 
@@ -673,7 +680,9 @@ if __name__ == '__main__':
         if allow_armeen and "armeen" in layer:
             show_armeen = True
             armee = Armee()
-            if "neu" in layer:
+            if "alt" in layer:
+                armee.replace_cond("level = 'N'")
+            elif "neu" in layer:
                 armee.set_add_cond("hour(timediff(now(), last_seen)) < 6")
             armee.fetch_data(level)
         else:

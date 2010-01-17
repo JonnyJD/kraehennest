@@ -28,6 +28,7 @@ class Feld:
             self.conn = rbdb.connect()
             self.cursor = self.conn.cursor()
             self.crop_clause = ""
+            self.cond_clause = ""
         else:
             sql = "SELECT terrain, typ"
             sql += " FROM felder"
@@ -117,6 +118,13 @@ class Feld:
             self.add_cond = ""
 
 
+    def replace_cond(self, sql):
+        """Ersetzt die Bedingung fuer die Felder."""
+
+        if sql != None:
+            self.cond_clause = " AND " + sql
+
+
     def fetch_data(self, level='N',
             xmin=None, xmax=None, ymin=None, ymax=None):
         """Liest die Terraindaten von der Datenbank aus."""
@@ -157,6 +165,7 @@ class Feld:
         sql += self.table_name
         sql += " WHERE level='" + self.level + "'"
         sql += self.crop_clause
+        sql += self.cond_clause
         sql += self.add_cond
         try:
             self.cursor.execute(sql)

@@ -167,6 +167,8 @@ function my_unescape(str) {
     // serverseitig escapen bringt hier nichts !
     str = str.replace(/</g, "&lt;")
     str = str.replace(/>/g, "&gt;")
+    // damit ich doch nen BR setze kann, auch keine standard entitiy
+    str = str.replace(/&br;/g, "<br />")
     /* Das ist keine Standard HTML-Entity
      * damit es wirklich nicht als "|" interpretiert wird
      */

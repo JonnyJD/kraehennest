@@ -822,11 +822,19 @@ if __name__ == '__main__':
                                     list += '|' + __escape(entry["name"])
                                 else:
                                     list += '|' + __escape(entry["rittername"])
+                                if (entry["schiffstyp"] is not None
+                                        and len(armee.entry) >= viel_armeen):
+                                    list += '<br />['
+                                    list += __escape(entry["schiffstyp"]) + ']'
                                 list += '|' + __format(entry["size"])
                                 list += '|' + __format(entry["strength"])
                                 # mehr Infos bei wenigen Armeen
                                 if len(armee.entry) < viel_armeen:
                                     list += '|(' + __escape(entry["name"]) + ')'
+                                    if entry["schiffstyp"] is not None:
+                                        list += '<br />['
+                                        list += __escape(entry["schiffstyp"])
+                                        list += ']'
                                     list += '|' + __format(entry["ap"])
                                     list += '|' + __format(entry["bp"])
                         if ((show_dorf and dorf.has(x,y))

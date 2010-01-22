@@ -1,5 +1,5 @@
 /* allgemeine Elemente */
-body,input {
+body,input,textarea {
 	color: #FFFFCC;
 	background-color: #000000;
 }
@@ -14,7 +14,7 @@ a:hover {
 th,h1,h2,h3 {
 	color: #996600;
 }
-input {
+input,textarea {
 	border: 1px solid #FFCC00;
 }
 

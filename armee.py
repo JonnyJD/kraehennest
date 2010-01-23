@@ -46,7 +46,7 @@ def translate(column):
         return column.capitalize()
 
 def schiffstyp(img):
-    """Uebersetzt ein Schiffsbild in einen Schiffstyp
+    """Uebersetzt ein Schiffsbild in einen Schiffstyp (in UTF)
 
     (Beim der eigenen Armeen sieht man nur das Bild, nicht die Typbezeichnung.)
     
@@ -55,7 +55,8 @@ def schiffstyp(img):
     @return: Schiffstyp aus dem Spiel
     @rtype: C{StringType}
     """
-    dictionary = {'s8_1k': "Flo&szlig;", 's8_2k': "Fischerboot",
+    # UTF statt html entities, da es direkt in die DB gehen soll
+    dictionary = {'s8_1k': "Flo\xC3\x9F", 's8_2k': "Fischerboot",
             's8_3k': "Pinasse", 's8_4k': "Kutter", 's8_5k': "Ketch",
             's8_6k': "Kogge", 's8_7k': "Karavelle", 's8_8k': "Karacke",
             's8_9k': "Galeone", 's8_10k': "Brigg", 's8_11k': "Korvette",

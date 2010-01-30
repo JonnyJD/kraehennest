@@ -46,7 +46,7 @@ class Ware(Feld):
         for ware in waren:
             line = []
             ware = ausgabe.escape_row(ware)
-            for i in range(0, len(preis)):
+            for i in range(0, len(ware)):
                 #if cols[i] == "koords":
                 #    x = dorf[i][0:3]
                 #    y = dorf[i][4:7]

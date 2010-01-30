@@ -199,7 +199,7 @@ class Tabelle:
                     elif not self.__padding[i]:
                         cell = '<td style="padding:0px;">'
                     else:
-                        cell = '<td>' + str(type(line[i]))
+                        cell = '<td>'
                     print cell + str(line[i]) + '</td>'
                 print '</tr>'
             print '</table>'

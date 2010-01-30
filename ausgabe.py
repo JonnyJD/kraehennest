@@ -5,6 +5,7 @@ import os
 import cgi
 from datetime import date, datetime, time
 from types import IntType, LongType, StringType
+from decimal import Decimal
 
 
 ######################################################################
@@ -193,10 +194,12 @@ class Tabelle:
                         line[i] = ""
                     if type(line[i]) in [IntType, LongType]:
                         cell = '<td style="text-align:right;">'
+                    elif isinstance(line[i], Decimal):
+                        cell = '<td style="text-align:right;">'
                     elif not self.__padding[i]:
                         cell = '<td style="padding:0px;">'
                     else:
-                        cell = '<td>'
+                        cell = '<td>' + str(type(line[i]))
                     print cell + str(line[i]) + '</td>'
                 print '</tr>'
             print '</table>'

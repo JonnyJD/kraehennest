@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """Eine Modul und Skript um Reichsdaten ein- und auszulesen.
 
 Aufgerufen als Skript kann es als Query-String ein XML-Dokument bekommen

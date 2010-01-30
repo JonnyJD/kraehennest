@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """Modul zur Verarbeitung von Benutzerdaten"""
 
 import util

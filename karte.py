@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """Modul um die Karte anzuzeigen und eine Kartenuebersicht zu generieren"""
 
 #import cgitb

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """Reicht einkommende XML-Dokumente auf passende Module auf"""
 
 #import cgitb

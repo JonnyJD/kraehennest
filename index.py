@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """Das ist die Indexseite mit Links zu Uebersichten."""
 
 #import cgitb

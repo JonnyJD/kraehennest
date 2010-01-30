@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """Ein Modul um Allianzdaten auszugeben und zu listen."""
 
 #import cgitb

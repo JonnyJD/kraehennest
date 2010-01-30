@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """Die Grundstruktur von Klassen die Daten zu einem bestimmten Feld bearbeiten.
 """
 

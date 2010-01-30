@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """Armeedaten einlesen und ausgeben"""
 
 #import cgitb

@@ -45,6 +45,7 @@ if __name__ == "__main__":
         print ausgabe.link("/show/reiche", "Reiche", br=True)
         print ausgabe.link("/show/doerfer", "D&ouml;rfer", br=True)
         print ausgabe.link("/show/armeen", "Armeen", br=True)
+        print ausgabe.link("/show/wirtschaft", "Wirtschaft", br=True)
         print '</div>'
     # Direktlinks
     if config.is_kraehe():

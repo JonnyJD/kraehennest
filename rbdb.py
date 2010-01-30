@@ -20,6 +20,7 @@ def connect():
                                 passwd = config.db_passwd,
                                 db     = config.db)
         conn.set_character_set("utf8")
+        conn.autocommit(True)
     except MySQLdb.Error, e:
         print "Fehler %d: %s" % (e.args[0], e.args[1])
         sys.exit(1)

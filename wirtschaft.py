@@ -29,23 +29,37 @@ def translate(column):
 
 def update_from_preisdatei():
     file = open(config.preisdatei, 'r')
+    conn = rbdb.connect()
+    cursor = conn.cursor()
+    # Schalter fuer die Debug-Ausgabe in dieser Funktion
+    debug = False
 
+    line = file.readline() # Zeitstempel ueberspringen
     line = file.readline()
     while line:
-        #m = re.search('([^\t]*)\t+([^\t]*) *\t+ *([^\t]*)\n', line)
+        m = re.search('([^\t]*) *\t+ *([^\t]*)\n', line)
         #id = m.group(1)
-        #name = m.group(2)
-        #preis = m.group(3)
+        name = m.group(1)
+        preis = m.group(2)
 
-        print line,
-        sql = 'REPLACE INTO ware (ware_id, name, preis)'
-        sql += ' VALUES (%s, %s, %s)'
-        #try:
-        #    cursor.execute(sql, (id, name, preis))
-        #    print "   Okay"
-        #except rbdb.Error:
-        #    print "   FEHLER!"
+        if debug: print preis + "\t" + name
+        if float(preis) == 0:
+            if debug: print "   Preis ist nicht gesetzt!"
+        else:
+            sql = 'UPDATE ware SET preis = %s WHERE name = %s'
+            try:
+                cursor.execute(sql, (preis, name))
+                rowcount = cursor.rowcount
+                if rowcount == 1:
+                    if debug: print "   geaendert"
+                elif rowcount != 0:
+                    if debug: print "   Fehler:", rowcount, "Aenderungen!"
+            except rbdb.Error:
+                if debug: print "   FEHLER!"
         line = file.readline()
+
+    cursor.close()
+    conn.close()
 
 
 class Ware(Feld):

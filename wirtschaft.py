@@ -38,11 +38,19 @@ def update_from_preisdatei():
     line = file.readline()
     while line:
         m = re.search('([^\t]*) *\t+ *([^\t]*)\n', line)
-        #id = m.group(1)
         name = m.group(1)
         preis = m.group(2)
 
-        if debug: print preis + "\t" + name
+        # testen ob die Ware ueberhaupt in der DB ist
+        sql = 'select ware_id FROM ware WHERE name = %s'
+        cursor.execute(sql, (name))
+        row = cursor.fetchone()
+        if not row:
+            print " - - - Ware '" + name + "' nicht in der Datenbank ! - - - "
+        elif debug:
+            print str(row[0]) + "\t" + preis + "\t" + name
+
+        # Preis aktualisieren
         if float(preis) == 0:
             if debug: print "   Preis ist nicht gesetzt!"
         else:

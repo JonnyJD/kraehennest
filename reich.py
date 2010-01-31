@@ -9,8 +9,11 @@ Bekommt es ein Feld C{list}, dann werden alle Reiche aufgelistet.
 Bekommt es ein Feld C{id}, dann zeigt es die Details eines bestimmten Reiches.
 """
 
-#import cgitb
-#cgitb.enable()
+import config
+
+if config.debug:
+    import cgitb
+    cgitb.enable()
 
 import cgi
 import libxml2

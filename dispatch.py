@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 """Reicht einkommende XML-Dokumente auf passende Module auf"""
 
-#import cgitb
-#cgitb.enable()
+import config
+
+if config.debug:
+    import cgitb
+    cgitb.enable()
 
 import cgi
 import util

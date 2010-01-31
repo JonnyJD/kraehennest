@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 """Modul zum Einlesen und Ausgeben von Waren"""
 
-import cgitb
-cgitb.enable()
+import config
+
+if config.debug:
+    import cgitb
+    cgitb.enable()
 
 import rbdb
 import util
@@ -10,7 +13,6 @@ import re
 from datetime import date, datetime, timedelta
 from feld import Feld
 import ausgabe
-import config
 
 
 def translate(column):

@@ -3,6 +3,10 @@
 import re
 import os
 
+
+# DEBUG-Ausgaben
+debug = True
+
 # Datenbank
 db_host = "localhost"   #: Hostname der Datenbank
 db_user = ""            #: Benutzer der Datenbank
@@ -10,6 +14,7 @@ db_passwd = ""          #: Passwort der Datenbank
 db = ""                 #: Name der Datenbank
 
 preisdatei = '../preise'
+
 
 def get_username():
     """Gebe den Namen des aktuell eingeloggten Benutzes zurueck.

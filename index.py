@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 """Das ist die Indexseite mit Links zu Uebersichten."""
 
-#import cgitb
-#cgitb.enable()
+import config
+
+if config.debug:
+    import cgitb
+    cgitb.enable()
 
 from datetime import datetime, timedelta
 import cgi
-import config
 from user import User
 import karte
 import ausgabe

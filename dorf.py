@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 """Modul zum einlesen und ausgeben von Dorfdaten"""
 
-#import cgitb
-#cgitb.enable()
+import config
+
+if config.debug:
+    import cgitb
+    cgitb.enable()
 
 import rbdb
 import util

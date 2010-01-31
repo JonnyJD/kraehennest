@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 """Modul um Terraindaten einzulesen und auszugeben"""
 
-#import cgitb
-#cgitb.enable()
+import config
+
+if config.debug:
+    import cgitb
+    cgitb.enable()
 
 import cgi
 import rbdb

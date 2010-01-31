@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 """Modul um die Karte anzuzeigen und eine Kartenuebersicht zu generieren"""
 
-#import cgitb
-#cgitb.enable()
-
 import config
+
+if config.debug:
+    import cgitb
+    cgitb.enable()
+
 import ausgabe
 import util
 from types import StringType

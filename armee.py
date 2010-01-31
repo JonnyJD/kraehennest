@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 """Armeedaten einlesen und ausgeben"""
 
-#import cgitb
-#cgitb.enable()
+import config
+
+if config.debug:
+    import cgitb
+    cgitb.enable()
 
 import rbdb
 import util
@@ -12,7 +15,7 @@ from datetime import datetime, timedelta
 from feld import Feld
 from reich import get_ritter_id_form
 import ausgabe
-import config
+
 
 # Armeestati
 S_SOLD = 'S'    #: Taverne

@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 """Ein Modul um Allianzdaten auszugeben und zu listen."""
 
-#import cgitb
-#cgitb.enable()
+import config
+
+if config.debug:
+    import cgitb
+    cgitb.enable()
 
 import rbdb
 import util

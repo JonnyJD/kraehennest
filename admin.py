@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 """Administrative Aufgaben"""
 
-#import cgitb
-#cgitb.enable()
+import config
+
+if config.debug:
+    import cgitb
+    cgitb.enable()
 
 import cgi
 import rbdb
 import util
 from datetime import datetime, timedelta
 
-import config
 import ausgabe
 
 def list_versions():

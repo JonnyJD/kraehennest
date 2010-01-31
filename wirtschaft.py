@@ -10,6 +10,7 @@ import re
 from datetime import date, datetime, timedelta
 from feld import Feld
 import ausgabe
+import config
 
 
 def translate(column):
@@ -24,6 +25,27 @@ def translate(column):
         return dictionary[column]
     else:
         return column.capitalize()
+
+
+def update_from_preisdatei():
+    file = open(config.preisdatei, 'r')
+
+    line = file.readline()
+    while line:
+        #m = re.search('([^\t]*)\t+([^\t]*) *\t+ *([^\t]*)\n', line)
+        #id = m.group(1)
+        #name = m.group(2)
+        #preis = m.group(3)
+
+        print line,
+        sql = 'REPLACE INTO ware (ware_id, name, preis)'
+        sql += ' VALUES (%s, %s, %s)'
+        #try:
+        #    cursor.execute(sql, (id, name, preis))
+        #    print "   Okay"
+        #except rbdb.Error:
+        #    print "   FEHLER!"
+        line = file.readline()
 
 
 class Ware(Feld):

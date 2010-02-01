@@ -180,9 +180,14 @@ class Armee(Feld):
         if key not in entry or entry[key] == None:
             ret = mandatory == False
         elif is_int:
-            ret = re.match('-?[0-9]+$',entry[key]) and len(entry[key]) <= length
-            # after the length check we can make it integer
-            entry[key] = int(entry[key])
+            try:
+                if entry[key][0] == "-":
+                    ret = len(entry[key]) <= length + 1
+                else:
+                    ret = len(entry[key]) <= length
+                entry[key] = int(entry[key])
+            except ValueError, e:
+                ret = False
         else:
             # wie lange waere der String in der Datenbank (latin1)
             try:

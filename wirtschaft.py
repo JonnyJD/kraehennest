@@ -30,6 +30,8 @@ def translate(column):
 
 
 def update_from_preisdatei():
+    """Aktualisiert die Preise in der DB mit der Preisdatei vom Server"""
+
     file = open(config.preisdatei, 'r')
     conn = rbdb.connect()
     cursor = conn.cursor()

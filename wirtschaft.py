@@ -243,18 +243,20 @@ if __name__ == '__main__':
     form = cgi.FieldStorage()
 
     if "list" in form:
-        ausgabe.print_header("Preisliste")
-        ware = Ware()
-        warentabelle = ware.list_all()
-        print "Anzahl Waren:", warentabelle.length()
-        warentabelle.show()
-
-        ausgabe.print_header("Rezeptliste")
-        rezept = Rezept()
-        rezepttabelle = rezept.list_all()
-        print "Anzahl Rezepte:", rezepttabelle.length()
-        rezepttabelle.show()
+        if form["list"].value == "preise":
+            ausgabe.print_header("Preisliste")
+            ware = Ware()
+            warentabelle = ware.list_all()
+            print "Anzahl Waren:", warentabelle.length()
+            warentabelle.show()
+        elif form["list"].value == "rezepte":
+            ausgabe.print_header("Rezeptliste")
+            rezept = Rezept()
+            rezepttabelle = rezept.list_all()
+            print "Anzahl Rezepte:", rezepttabelle.length()
+            rezepttabelle.show()
     else:
+        ausgabe.print_header("Wirtschaft")
         print "leer"
 
     ausgabe.print_footer()

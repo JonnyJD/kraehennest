@@ -61,6 +61,13 @@ if __name__ == "__main__":
         print ausgabe.link("/show/reich/174", "Keiner", br=True)
         print ausgabe.link("/show/reich/113", "Plunkett", br=True)
         print '</div>'
+    # Wirtschaft
+    if config.is_kraehe():
+        print '<div class="box">'
+        print '<h2>Wirtschaft</h2>'
+        print ausgabe.link("/show/preise", "Preise")
+        print ausgabe.link("/show/rezepte", "Rezepte", br=True)
+        print '</div>'
     # Adminbereich
     if config.is_admin():
         print '<div class="box">'

@@ -194,6 +194,48 @@ class Ware(Feld):
             util.print_html_error(e)
             return None
 
+class Rezept(Feld):
+    """Eine Klasse um Rezeptdaten ein- und auszulesen.  
+    """
+
+    def __list(self, cols, waren):
+        """Erstellt eine Tabelle der Rezepte
+        
+        @rtype: L{Tabelle<ausgabe.Tabelle>}
+        """
+
+        tabelle = ausgabe.Tabelle()
+        for col in cols:
+            tabelle.addColumn(translate(col))
+        for ware in waren:
+            line = []
+            ware = ausgabe.escape_row(ware)
+            for i in range(0, len(ware)):
+                line.append(ware[i])
+            tabelle.addLine(line)
+        return tabelle
+
+    def list_all(self):
+        """Gibt eine Tabelle aller Rezepte aus
+        
+        @return: L{Tabelle<ausgabe.Tabelle>}
+        """
+
+        cols = ["rezept.name", "ware.name", "produktion.menge"]
+        sql = "SELECT " + ", ".join(cols)
+        sql += " FROM rezept JOIN produktion ON"
+        sql += " rezept.rezept_id = produktion.rezept JOIN ware ON"
+        sql += " produktion.ware = ware.ware_id"
+        sql += " ORDER BY rezept.name ASC, produktion.menge ASC"
+
+        try:
+            self.cursor.execute(sql)
+            waren = self.cursor.fetchall()
+            return self.__list(cols, waren)
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return None
+
 
 # Aufruf als Skript
 if __name__ == '__main__':
@@ -202,11 +244,16 @@ if __name__ == '__main__':
 
     if "list" in form:
         ausgabe.print_header("Preisliste")
-
         ware = Ware()
         warentabelle = ware.list_all()
         print "Anzahl Waren:", warentabelle.length()
         warentabelle.show()
+
+        ausgabe.print_header("Rezeptliste")
+        rezept = Rezept()
+        rezepttabelle = rezept.list_all()
+        print "Anzahl Rezepte:", rezepttabelle.length()
+        rezepttabelle.show()
     else:
         print "leer"
 

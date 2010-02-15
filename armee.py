@@ -147,6 +147,7 @@ class Armee(Feld):
         if config.is_admin():
             sql = "UPDATE armeen"
             sql += " SET active = 0, status = '" + S_SOLD + "', r_id = NULL"
+            sql += ", size = NULL, strength = NULL, ap = NULL, bp = NULL"
             sql += " WHERE h_id = %s"
             if util.sql_execute(sql, self.id) > 0:
                 ausgabe.print_important("wurde freigegeben")
@@ -294,7 +295,10 @@ class Armee(Feld):
     def __deactivate(self):
         """Deaktiviert alle Armeen in der inactive Liste.
         
-        Gibt die Anzahl der deaktivierten Armeen zurueck
+        Gibt die Anzahl der deaktivierten Armeen zurueck.
+        Die Werte werden NICHT alle zurueckgesetzt.
+        Dies ermoeglicht es zuletzt gesehene Werte noch einzusehen.
+
         @rtype: C{IntType}
         """
 
@@ -309,6 +313,7 @@ class Armee(Feld):
             sql += "(" + " OR ".join(sqllist) + ") AND "
             # versteckte Armeen nicht deaktivieren
             sql += "(status is null OR status <> '" + S_HIDDEN + "')"
+
             # die hier anwesenden Armeen garnicht erst deaktivieren
             sqllist = []
             for entry in self.new_entries:
@@ -397,6 +402,8 @@ class Armee(Feld):
                 sqllist.append(key + "=%s")
                 args += entry[key],
         sqllist.append("last_seen=NOW()")
+
+        # Aktivitaet und Status korrekt setzen
         if "pos" in entry and entry["pos"] == "taverne":
             entry["update_self"] = True #: hier auch versteckte freigeben
             sqllist.append("active=0")
@@ -407,6 +414,18 @@ class Armee(Feld):
         else:
             sqllist.append("active=1")
             sqllist.append("status=NULL")
+
+        # Sonderbehandlung von Monstern mit veraendertem Standort
+        if entry["r_id"] == 174:
+            sql2 = "SELECT level, x, y FROM armeen"
+            sql2 += " WHERE h_id = %s"
+            row = util.get_sql_row(sql2, (entry["h_id"]))
+            if (row[0] != entry["level"] or
+                    row[1] != entry["x"] or row[2] != entry["y"]):
+                # Monster ist an neuem Ort respawned: Werte resetten
+                for key in ["size", "Strength"]:
+                    sqllist.append(key + "=NULL")
+
         sql += ", ".join(sqllist)
         sql += " WHERE h_id = %s"
         args += entry["h_id"],
@@ -779,6 +798,10 @@ class Armee(Feld):
                     entry["pos"] = positions[0].getContent()
                     if entry["pos"] == "taverne":
                         entry["r_id"] = None
+                        entry["size"] = None
+                        entry["strength"] = None
+                        entry["ap"] = None
+                        entry["bp"] = None
             entry["img"] = armee.xpathEval('bild')[0].getContent()
             entry["name"] = armee.xpathEval('held')[0].getContent()
             ritter_elems = armee.xpathEval('ritter')

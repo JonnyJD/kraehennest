@@ -150,6 +150,7 @@ class Armee(Feld):
         if config.is_admin():
             sql = "UPDATE armeen"
             sql += " SET active = 0, status = '" + S_SOLD + "', r_id = NULL"
+            sql += ", size = NULL, strength = NULL, ap = NULL, bp = NULL"
             sql += " WHERE h_id = %s"
             if util.sql_execute(sql, self.id) > 0:
                 ausgabe.print_important("wurde freigegeben")
@@ -782,6 +783,10 @@ class Armee(Feld):
                     entry["pos"] = positions[0].getContent()
                     if entry["pos"] == "taverne":
                         entry["r_id"] = None
+                        entry["size"] = None
+                        entry["strength"] = None
+                        entry["ap"] = None
+                        entry["bp"] = None
             entry["img"] = armee.xpathEval('bild')[0].getContent()
             entry["name"] = armee.xpathEval('held')[0].getContent()
             ritter_elems = armee.xpathEval('ritter')

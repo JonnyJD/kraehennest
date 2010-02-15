@@ -416,7 +416,7 @@ class Armee(Feld):
             sqllist.append("status=NULL")
 
         # Sonderbehandlung von Monstern mit veraendertem Standort
-        if entry["r_id"] == 174:
+        if entry["r_id"] == 174 and "strength" not in entry:
             sql2 = "SELECT level, x, y FROM armeen"
             sql2 += " WHERE h_id = %s"
             row = util.get_sql_row(sql2, (entry["h_id"]))

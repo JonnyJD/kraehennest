@@ -1,5 +1,6 @@
 <!ELEMENT data          (auge,rb)>
 
+<!-- Metadaten -->
 <!ELEMENT auge          (sender,client,sicht)>
 <!ELEMENT sender        EMPTY>
 <!ATTLIST sender
@@ -15,8 +16,22 @@
         typ    (keine|armee|turm)      #REQUIRED
 >
 
-<!ELEMENT rb            (felder?,armeen)>
+<!-- gemeinsame Grundelemente -->
+<!ELEMENT ritter        (#PCDATA)>
+<!ATTLIST ritter
+        r_id    NMTOKEN #IMPLIED
+>
+<!ELEMENT allianz       (ritter)*>
+<!ATTLIST allianz
+        a_id    NMTOKEN #IMPLIED
+        tag     CDATA   #IMPLIED
+        name    CDATA   #IMPLIED
+>
 
+<!-- RB-Daten -->
+<!ELEMENT rb            (felder?,armeen?,reiche?)>
+
+<!-- Felder -->
 <!ELEMENT felder        (feld)*>
 <!ELEMENT feld          (terrain,feldname?)>
 <!ATTLIST feld
@@ -27,8 +42,9 @@
 <!ELEMENT terrain       (#PCDATA)>
 <!ELEMENT feldname      (#PCDATA)>
 
+<!-- Armeen -->
 <!ELEMENT armeen        (armee)*>
-<!ELEMENT armee         (position?,bild,held,ritter?,
+<!ELEMENT armee         (position?,bild,held,ritter?,allianz?,
                         size?,strength?,bp?,ap?,schiff?,dauer?)>
 <!ATTLIST armee
         h_id    NMTOKEN #IMPLIED
@@ -42,10 +58,6 @@
 <!ELEMENT no_position    EMPTY>
 <!ELEMENT bild          (#PCDATA)>
 <!ELEMENT held          (#PCDATA)>
-<!ELEMENT ritter        (#PCDATA)>
-<!ATTLIST ritter
-        r_id    CDATA   #IMPLIED
->
 <!ELEMENT size          EMPTY>
 <!ATTLIST size
         now     CDATA   #IMPLIED
@@ -74,6 +86,17 @@
 <!ATTLIST dauer
         now     CDATA   #IMPLIED
         max     CDATA   #IMPLIED
+>
+
+<!-- Reiche -->
+<!ELEMENT reiche        (reich)*>
+<!ELEMENT reich         (ritter,allianz)>
+<!ATTLIST reich
+        name    CDATA   #IMPLIED
+        level   CDATA   #IMPLIED
+        top10   CDATA   #IMPLIED
+        active  CDATA   #IMPLIED
+        last_turn CDATA #IMPLIED
 >
 
 <!-- vim:set expandtab smarttab: //-->

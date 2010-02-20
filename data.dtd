@@ -90,7 +90,7 @@
 
 <!-- Reiche -->
 <!ELEMENT reiche        (reich)*>
-<!ELEMENT reich         (ritter,allianz)>
+<!ELEMENT reich         (ritter,allianz?)>
 <!ATTLIST reich
         name    CDATA   #IMPLIED
         level   CDATA   #IMPLIED

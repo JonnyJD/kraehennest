@@ -194,7 +194,7 @@ def process_xml(node):
 
         # Ritter
         if not ritter.hasProp("r_id"):
-            sql = "SELECT r_id FROM ritter WHERE rittername = %s"
+            sql = "SELECT ritternr FROM ritter WHERE rittername = %s"
             if util.try_execute_safe(cursor, sql, (rittername)) == 1:
                 r_id = cursor.fetchone()[0]
             else:

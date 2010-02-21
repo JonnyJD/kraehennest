@@ -43,9 +43,28 @@ def parse_date(rb_date):
     """
 
     datum = rb_date.split(",")[1].strip().split(".")
-    year = int(datum[2]) + 1653
-    month = int(datum[1])
     day = int(datum[0])
+    if len(datum) == 3:
+        month = int(datum[1])
+        year = int(datum[2])
+    else:
+        name = datum[1].split()[0]
+        if name == "Eor":       month = 1
+        elif name == "Lunat":   month = 2
+        elif name == "Karim":   month = 3
+        elif name == "Raziel":  month = 4
+        elif name == "Silva":   month = 5
+        elif name == "Atius":   month = 6
+        elif name == "Rea":     month = 7
+        elif name == "Malkar":  month = 8
+        elif name == "Lokia":   month = 9
+        elif name == "Azarath": month = 10
+        elif name == "Eloria":  month = 11
+        elif name == "Lymena":  month = 12
+        else:
+            print "Monat '" + name + "' ist unbekannt!<br />"
+        year = int(datum[1].split()[1])
+    year += 1653
 
     return datetime.date(year, month, day)
 

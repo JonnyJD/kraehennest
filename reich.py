@@ -204,6 +204,13 @@ def process_xml(node):
             r_id = ritter.prop("r_id")
 
         if r_id is not None:
+            # stelle Sicher, dass der Ritter in der DB ist
+            sql = "SELECT ritternr FROM ritter WHERE ritternr = %s"
+            if util.get_sql_row(sql, (r_id)) is None:
+                print rittername, "nicht drin<br />"
+                sql = "INSERT INTO ritter (ritternr,rittername) VALUES (%s,%s)"
+                util.try_execute_safe(cursor, sql, (r_id,rittername))
+
             sql = "UPDATE ritter SET "
 
             # Allianz
@@ -250,7 +257,6 @@ def process_xml(node):
             sql += " WHERE ritternr = %s"
             args += r_id,
             updated += util.try_execute_safe(cursor, sql, args)
-            # TODO: insert neue Ritter
 
     if len(reiche) > 0:
         conn.close()

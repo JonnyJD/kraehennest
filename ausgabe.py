@@ -15,7 +15,7 @@ from decimal import Decimal
 # Prefix
 prefix = '' #: Der Prefix der URL, verschiedene Authorisationsbereiche
 if 'SCRIPT_URL' in os.environ:
-    match = re.match("(.*)/(show|send)", os.environ['SCRIPT_URL'])
+    match = re.match("(.*)/(show|send)", os.environ['SCRIPT_URL']) #: internal
     if match:
         prefix = match.group(1)
 

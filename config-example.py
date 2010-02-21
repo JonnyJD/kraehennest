@@ -4,8 +4,7 @@ import re
 import os
 
 
-# DEBUG-Ausgaben
-debug = True
+debug = True            #: DEBUG-Ausgaben
 
 # Datenbank
 db_host = "localhost"   #: Hostname der Datenbank
@@ -13,7 +12,7 @@ db_user = ""            #: Benutzer der Datenbank
 db_passwd = ""          #: Passwort der Datenbank
 db = ""                 #: Name der Datenbank
 
-preisdatei = '../preise'
+preisdatei = '../preise'#: Ort der staendig aktualisierten Preisdatei
 
 
 def get_username():

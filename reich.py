@@ -198,7 +198,7 @@ def process_xml(node):
             if util.try_execute_safe(cursor, sql, (rittername)) == 1:
                 r_id = cursor.fetchone()[0]
             else:
-                log += "Kann Ritter '" + rittername + "' nicht zuordnen!\n"
+                log += "Kann Ritter '" + rittername + "' nicht zuordnen!<br/>\n"
                 r_id = None
         else:
             r_id = ritter.prop("r_id")
@@ -207,7 +207,7 @@ def process_xml(node):
             # stelle Sicher, dass der Ritter in der DB ist
             sql = "SELECT ritternr FROM ritter WHERE ritternr = %s"
             if util.get_sql_row(sql, (r_id)) is None:
-                print rittername, "nicht drin<br />"
+                log += "Ritter '" + rittername + "' wurde eingefuegt!<br />\n"
                 sql = "INSERT INTO ritter (ritternr,rittername) VALUES (%s,%s)"
                 util.try_execute_safe(cursor, sql, (r_id,rittername))
 
@@ -224,7 +224,8 @@ def process_xml(node):
                     if util.try_execute_safe(cursor, sql2, (a_tag)) == 1:
                         a_id = cursor.fetchone()[0]
                     else:
-                        log += "Kann Allianz '" + a_tag + "' nicht zuordnen!\n"
+                        log += "Kann Allianz '" + a_tag + "' nicht zuordnen!"
+                        log += "<br />\n"
                         a_id = None
                 if a_id is not None:
                     sqllist.append("alli=%s")

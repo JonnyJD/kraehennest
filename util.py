@@ -1,7 +1,9 @@
 """Einige kleine Hilfsfunktionen"""
 
+import datetime
 import rbdb
 from MySQLdb import escape_string
+
 
 def print_error(e):
     """Gibt Code und Meldung eines Fehlers aus
@@ -13,6 +15,44 @@ def print_html_error(e):
     """
     print_error(e)
     print "<br />"
+
+def print_xml(xml_node):
+    """Gibt einen XML-Knoten aus
+
+    @rtype: C{StringType}
+    """
+    print xml_node.serialize().replace("<","&lt;").replace(">","&gt;"), "<br />"
+
+
+def get_view_type(node):
+    """Gibt die Art der Sichtung aus einem XML-Dokumente aus
+
+    @rtype: C{StringType}
+    """
+    sicht_elems = node.xpathEval('/data/auge/sicht')
+    if len(sicht_elems) > 0:
+        return sicht_elems[0].prop("typ")
+    else:
+        return "keine"
+
+
+def parse_date(rb_date):
+    """Parst das "Realdatum" aus einem RB-Datumsstring
+
+    @rtype: C{datetime.date}
+    """
+
+    datum = rb_date.split(",")[1].strip().split(".")
+    year = int(datum[2]) + 1653
+    month = int(datum[1])
+    day = int(datum[0])
+
+    return datetime.date(year, month, day)
+
+
+######################################################################
+#{ SQL
+######################################################################
 
 def try_execute_safe(cursor, sql, args):
     """Fuehrt eine Datenbankquery aus
@@ -67,14 +107,10 @@ def sql_execute(sql, args):
     conn.close()
     return count
 
-def print_xml(xml_node):
-    """Gibt einen XML-Knoten aus
 
-    @rtype: C{StringType}
-    """
-    print xml_node.serialize().replace("<","&lt;").replace(">","&gt;"), "<br />"
-
-
+######################################################################
+#{ Augennutzung
+######################################################################
 
 def update_usage(r_id, version):
     """Aktualisiert die Benutzertabelle
@@ -124,16 +160,10 @@ def track_client(node):
             version = client_elems[0].prop("version")
             update_usage(r_id, name + " " + version)
 
-def get_view_type(node):
-    """Gibt die Art der Sichtung aus einem XML-Dokumente aus
 
-    @rtype: C{StringType}
-    """
-    sicht_elems = node.xpathEval('/data/auge/sicht')
-    if len(sicht_elems) > 0:
-        return sicht_elems[0].prop("typ")
-    else:
-        return "keine"
+######################################################################
+#{ HTML-Farben
+######################################################################
 
 def invert(color):
     """Invertiert eine Hex-Farbe

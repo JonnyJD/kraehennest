@@ -95,8 +95,7 @@
         name    CDATA   #IMPLIED
         level   CDATA   #IMPLIED
         top10   CDATA   #IMPLIED
-        active  CDATA   #IMPLIED
-        schutz  CDATA   #IMPLIED
+        status  CDATA   #IMPLIED
         last_turn CDATA #IMPLIED
 >
 

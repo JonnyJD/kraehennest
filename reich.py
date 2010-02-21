@@ -22,6 +22,11 @@ import util
 import ausgabe
 from types import StringType
 
+
+# Reichsstati
+S_INAKTIV = 'I' #: Inaktivitaetsliste
+S_SCHUTZ = 'S'  #: Schutzliste
+
 def get_ritter_id_form(rittername):
     """
     Gibt das HTML-Formular mit dem Ritternamen nachgeschlagen werden
@@ -121,7 +126,7 @@ def list_by_allianz(a_id):
         return False
 
 
-def process_xml(node):
+def process_response_xml(node):
     """Liest die Reichsnummern aus einem XML Dokument in die Datenbank ein.
 
     @param node: Der Wurzelknoten des zu lesenden Dokuments.
@@ -166,6 +171,90 @@ def process_xml(node):
                         else:
                             log += message + " NICHT aktualisiert!\n"
         conn.close()
+        print log
+
+def process_xml(node):
+    """Liest die vom Auge gelieferten Reichsdaten ein.
+
+    @param node: Der Wurzelknoten des zu lesenden Dokuments.
+    """
+
+    reiche = node.xpathEval('reich')
+    if len(reiche) > 0:
+        conn = rbdb.connect()
+        cursor = conn.cursor()
+        updated = 0
+        log = ""
+
+    for reich in reiche:
+        sqllist = []
+        args = ()
+        ritter = reich.xpathEval('ritter')[0]
+        rittername = ritter.getContent()
+
+        # Ritter
+        if not ritter.hasProp("r_id"):
+            sql = "SELECT r_id FROM ritter WHERE rittername = %s"
+            if util.try_execute_safe(cursor, sql, (rittername)) == 1:
+                r_id = cursor.fetchone()[0]
+            else:
+                log += "Kann Ritter '" + rittername + "' nicht zuordnen!\n"
+                r_id = None
+        else:
+            r_id = ritter.prop("r_id")
+
+        if r_id is not None:
+            sql = "UPDATE ritter SET "
+
+            # Allianz
+            allianzen = reich.xpathEval('allianz')
+            if len(allianzen) > 0:
+                if allianzen[0].hasProp("a_id"):
+                    a_id = allianzen[0].prop("a_id")
+                else:
+                    a_tag = allianzen[0].prop("tag")
+                    sql2 = "SELECT allinr FROM allis WHERE alli = %s"
+                    if util.try_execute_safe(cursor, sql2, (a_tag)) == 1:
+                        a_id = cursor.fetchone()[0]
+                    else:
+                        log += "Kann Allianz '" + a_tag + "' nicht zuordnen!\n"
+                        a_id = None
+                if a_id is not None:
+                    sqllist.append("alli=%s")
+                    args += a_id,
+            # Attribute
+            sqllist.append("rittername=%s")
+            args += rittername,
+            if reich.hasProp("name"):
+                sqllist.append("reichsname=%s")
+                args += reich.prop("name"),
+            if reich.hasProp("level"):
+                sqllist.append("reichslevel=%s")
+                args += reich.prop("level"),
+            if reich.hasProp("top10"):
+                sqllist.append("top10=%s")
+                args += reich.prop("top10"),
+            if reich.hasProp("status"):
+                status = reich.prop("status")
+                if status == "Inaktiv":
+                    sqllist.append("inaktiv='" + S_INAKTIV + "'")
+                elif status == "Schutzliste":
+                    sqllist.append("inaktiv='" + S_SCHUTZ + "'")
+                elif status == "":
+                    sqllist.append("inaktiv=NULL")
+            if reich.hasProp("last_turn"):
+                sqllist.append("letzterzug=%s")
+                args += util.parse_date(reich.prop("last_turn")),
+
+            sql += ", ".join(sqllist)
+            sql += " WHERE ritternr = %s"
+            args += r_id,
+            updated += util.try_execute_safe(cursor, sql, args)
+            # TODO: insert neue Ritter
+
+    if len(reiche) > 0:
+        conn.close()
+        log += "Es wurden " + str(updated) + " Reiche aktualisiert."
         print log
 
 
@@ -218,7 +307,7 @@ if __name__ == '__main__':
         # Reichsdaten vom RB Server einlesen
         try:
             root = libxml2.parseDoc(form.value)
-            process_xml(root)
+            process_response_xml(root)
         except libxml2.parserError:
             print "Es wurden keine gueltigen Daten gesendet. <br />"
     elif "list" in form:

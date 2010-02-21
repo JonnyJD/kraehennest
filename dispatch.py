@@ -12,6 +12,7 @@ import util
 import libxml2
 from terrain import Terrain
 from armee import Armee
+import reich
 
 def process(doc):
     """Reicht bestimmte Knoten zu Modulen weiter
@@ -35,6 +36,11 @@ def process(doc):
         terrain = Terrain()
         terrain.process_xml(nodes[0])
 
+    nodes = data.xpathEval('rb/reiche')
+    if len(nodes) > 0:
+        reich.process_xml(nodes[0])
+
+
 if __name__ == '__main__':
     form = cgi.FieldStorage()
     valid = False
@@ -50,11 +56,13 @@ if __name__ == '__main__':
             print "Es wurden keine gueltigen Daten gesendet. <br />"
     except libxml2.parserError:
         print "Es wurden keine sinnvollen Daten gesendet. <br />"
-    except TypeError:
+    except TypeError as e:
         print '<div style="background-color:red;">'
         print "Es gab ein Problem, bitte wende dich an Jonerian. <br />"
         print "Sende ihm bitte auch die RB-Seite in HTML in der"
-        print "das Problem auftrat.</div>"
+        print "das Problem auftrat:"
+        print "<br />", e
+        print "</div>"
 
 
 # vim:set shiftwidth=4 expandtab smarttab:

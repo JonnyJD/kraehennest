@@ -56,7 +56,7 @@ if __name__ == '__main__':
             print "Es wurden keine gueltigen Daten gesendet. <br />"
     except libxml2.parserError:
         print "Es wurden keine sinnvollen Daten gesendet. <br />"
-    except TypeError as e:
+    except TypeError, e:
         print '<div style="background-color:red;">'
         print "Es gab ein Problem, bitte wende dich an Jonerian. <br />"
         print "Sende ihm bitte auch die RB-Seite in HTML in der"

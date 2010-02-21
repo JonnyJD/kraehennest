@@ -73,7 +73,7 @@ def parse_date(rb_date):
 #{ SQL
 ######################################################################
 
-def try_execute_safe(cursor, sql, args):
+def try_execute_safe(cursor, sql, args=()):
     """Fuehrt eine Datenbankquery aus
 
     @return: Anzahl der Aenderungen

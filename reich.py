@@ -185,6 +185,12 @@ def process_xml(node):
         cursor = conn.cursor()
         updated = 0
         log = ""
+        if util.get_view_type(node) == "top10":
+            # resette top10
+            # wer nach der Aktualisierung noch den Wert 0 hat
+            # ist nicht in den Top10
+            sql = "UPDATE ritter SET top10=0"
+            util.try_execute_safe(cursor, sql);
 
     for reich in reiche:
         sqllist = []

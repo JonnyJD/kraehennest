@@ -13,7 +13,7 @@
 >
 <!ELEMENT sicht         EMPTY>
 <!ATTLIST sicht
-        typ    (keine|armee|turm)      #REQUIRED
+        typ    (keine|armee|turm|top10)      #REQUIRED
 >
 
 <!-- gemeinsame Grundelemente -->

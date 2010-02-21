@@ -1,7 +1,9 @@
 """Einige kleine Hilfsfunktionen"""
 
+import datetime
 import rbdb
 from MySQLdb import escape_string
+
 
 def print_error(e):
     """Gibt Code und Meldung eines Fehlers aus
@@ -14,7 +16,64 @@ def print_html_error(e):
     print_error(e)
     print "<br />"
 
-def try_execute_safe(cursor, sql, args):
+def print_xml(xml_node):
+    """Gibt einen XML-Knoten aus
+
+    @rtype: C{StringType}
+    """
+    print xml_node.serialize().replace("<","&lt;").replace(">","&gt;"), "<br />"
+
+
+def get_view_type(node):
+    """Gibt die Art der Sichtung aus einem XML-Dokumente aus
+
+    @rtype: C{StringType}
+    """
+    sicht_elems = node.xpathEval('/data/auge/sicht')
+    if len(sicht_elems) > 0:
+        return sicht_elems[0].prop("typ")
+    else:
+        return "keine"
+
+
+def parse_date(rb_date):
+    """Parst das "Realdatum" aus einem RB-Datumsstring
+
+    @rtype: C{datetime.date}
+    """
+
+    datum = rb_date.split(",")[1].strip().split(".")
+    day = int(datum[0])
+    if len(datum) == 3:
+        month = int(datum[1])
+        year = int(datum[2])
+    else:
+        name = datum[1].split()[0]
+        if name == "Eor":       month = 1
+        elif name == "Lunat":   month = 2
+        elif name == "Karim":   month = 3
+        elif name == "Raziel":  month = 4
+        elif name == "Silva":   month = 5
+        elif name == "Atius":   month = 6
+        elif name == "Rea":     month = 7
+        elif name == "Malkar":  month = 8
+        elif name == "Lokia":   month = 9
+        elif name == "Azarath": month = 10
+        elif name == "Eloria":  month = 11
+        elif name == "Lymena":  month = 12
+        else:
+            print "Monat '" + name + "' ist unbekannt!<br />"
+        year = int(datum[1].split()[1])
+    year += 1653
+
+    return datetime.date(year, month, day)
+
+
+######################################################################
+#{ SQL
+######################################################################
+
+def try_execute_safe(cursor, sql, args=()):
     """Fuehrt eine Datenbankquery aus
 
     @return: Anzahl der Aenderungen
@@ -67,14 +126,10 @@ def sql_execute(sql, args):
     conn.close()
     return count
 
-def print_xml(xml_node):
-    """Gibt einen XML-Knoten aus
 
-    @rtype: C{StringType}
-    """
-    print xml_node.serialize().replace("<","&lt;").replace(">","&gt;"), "<br />"
-
-
+######################################################################
+#{ Augennutzung
+######################################################################
 
 def update_usage(r_id, version):
     """Aktualisiert die Benutzertabelle
@@ -124,16 +179,10 @@ def track_client(node):
             version = client_elems[0].prop("version")
             update_usage(r_id, name + " " + version)
 
-def get_view_type(node):
-    """Gibt die Art der Sichtung aus einem XML-Dokumente aus
 
-    @rtype: C{StringType}
-    """
-    sicht_elems = node.xpathEval('/data/auge/sicht')
-    if len(sicht_elems) > 0:
-        return sicht_elems[0].prop("typ")
-    else:
-        return "keine"
+######################################################################
+#{ HTML-Farben
+######################################################################
 
 def invert(color):
     """Invertiert eine Hex-Farbe

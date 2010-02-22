@@ -18,11 +18,22 @@ import rbdb
 import util
 import ausgabe
 from types import StringType
+from datetime import timedelta
 
 
 # Reichsstati
 S_INAKTIV = 'I' #: Inaktivitaetsliste
 S_SCHUTZ = 'S'  #: Schutzliste
+
+def status_string(status):
+    """Gibt einen String fuer einen Reichsstatus zurueck
+    
+    @param status: Status Character aus der Datenbank
+    @type status: C{StringType}
+    @rtype: C{StringType}
+    """
+    return {S_INAKTIV: "Inaktiv", S_SCHUTZ: "Schutzliste"
+            ,'': None, None: None}[status]
 
 def get_ritter_id_form(rittername):
     """
@@ -56,6 +67,10 @@ def translate(column):
     else:
         return column.capitalize()
 
+def last_turn_color(last_turn):
+    return ausgabe.date_delta_color_string(last_turn,
+            timedelta(days=6), timedelta(days=10))
+
 
 def list():
     """Gibt eine Tabelle aller Reiche und ihrer Herrscher.
@@ -81,10 +96,13 @@ def list_by_allianz(a_id):
         tabelle.addColumn("Allianz")
     tabelle.addColumn("D&ouml;rfer")
     tabelle.addColumn("Armeen")
+    tabelle.addColumn("Letzter Zug")
+    tabelle.addColumn("Status")
     sql = "SELECT ritter.ritternr, top10, rittername"
     sql += ", allinr, allicolor, alliname"
     sql += ", count(distinct dorf.koords)"
     sql += ", count(distinct h_id)"
+    sql += ", letzterzug, inaktiv"
     sql += " FROM ritter"
     sql += " JOIN allis ON ritter.alli = allis.allinr"
     sql += " LEFT JOIN dorf ON ritter.ritternr = dorf.ritternr"
@@ -115,6 +133,8 @@ def list_by_allianz(a_id):
                 line.append(allianz.link(row[3], row[5], row[4]))
             line.append(row[6])
             line.append(row[7])
+            line.append(last_turn_color(row[8]))
+            line.append(status_string(row[9]))
             tabelle.addLine(line)
             row = cursor.fetchone()
         return tabelle
@@ -284,14 +304,15 @@ class Reich:
             @type: C{IntType}
             """
             sql = "SELECT rittername, allinr, alliname, allicolor"
+            sql += ", reichsname, reichslevel, top10, letzterzug, inaktiv"
             sql += " FROM ritter JOIN allis ON ritter.alli = allinr"
             sql += " WHERE ritternr = %s"
             row = util.get_sql_row(sql, r_id)
             if row is None:
                 raise KeyError(r_id)
             else:
-                self.name = row[0]
-                """Name des Reiches
+                self.rittername = row[0]
+                """Rittername des Reiches
                 @type: C{StringType}
                 """
                 self.ally = row[1]
@@ -304,6 +325,28 @@ class Reich:
                 """
                 self.ally_color = row[3]
                 """Farbe der Allianz in der das Reich ist
+                @type: C{StringType}
+                """
+                self.name = row[4]
+                """Name des Reiches
+                @type: C{StringType}
+                """
+                self.level = row[5]
+                """Level des Reiches
+                @type: C{StringType}
+                """
+                self.top10 = row[6]
+                """Platzierung des Reiches
+                @type: C{StringType}
+                """
+
+                self.last_turn = ausgabe.date_delta_color_string(row[7],
+                        timedelta(days=6), timedelta(days=10))
+                """Letzter Zug des Reiches
+                @type: C{StringType}
+                """
+                self.status = status_string(row[8])
+                """Status des Reiches
                 @type: C{StringType}
                 """
 
@@ -336,22 +379,40 @@ if __name__ == '__main__':
         r_id = form["id"].value
         try:
             reich = Reich(r_id)
-            reichsname = cgi.escape(reich.name)
-            ausgabe.print_header('Reich: ' + reichsname)
+            rittername = cgi.escape(reich.rittername)
+            ausgabe.print_header("Reich von: " + rittername)
 
             print '<table>'
-            print '<tr><td>Allianz</td><td>',
-            allianzname = cgi.escape(reich.ally_name)
+            print '<tr><td>Name: </td>'
+            print '<td colspan="4" style="font-weight:bold;">&nbsp;',
+            print ausgabe.escape(reich.name) + '</td></tr>'
+            print '<tr><td>Allianz: </td><td colspan="4">&nbsp;',
+            allianzname = ausgabe.escape(reich.ally_name)
             print allianz.link(reich.ally, allianzname, reich.ally_color),
             print '</td></tr>'
             dorf = Dorf()
             dorftabelle = dorf.list_by_reich(r_id)
-            print '<tr><td><a href="#doerfer">D&ouml;rfer</a></td>'
-            print '<td>' + str(dorftabelle.length()) + '</td></tr>'
+            print '<tr><td><a href="#doerfer">D&ouml;rfer:</a> </td>'
+            print '<td>&nbsp;&nbsp;' + str(dorftabelle.length()) + '</td>'
             armee = Armee()
             armeetabelle = armee.list_by_reich(r_id)
-            print '<tr><td><a href="#armeen">Armeen</a></td>'
-            print '<td>' + str(armeetabelle.length()) + '</td></tr>'
+            print '<td>&nbsp;&nbsp;</td>'
+            print '<td><a href="#armeen">Armeen:</a> </td>'
+            print '<td>&nbsp;&nbsp;' + str(armeetabelle.length()) + '</td>'
+            print '</tr><tr>'
+            print '<td>Reichslevel: </td>'
+            print '<td>&nbsp;&nbsp;' + str(reich.level) + '</td>'
+            print '<td>&nbsp;&nbsp;</td>'
+            print '<td>Platzierung: </td>'
+            print '<td>&nbsp;&nbsp;' + str(reich.top10) + '</td>'
+            print '</tr><tr>'
+            print '<td>Letzter Zug: </td>'
+            print '<td colspan="3">&nbsp;&nbsp;'+ reich.last_turn + '</td>'
+            if reich.status is not None:
+                print '</tr><tr>'
+                print '<td>Status: </td>'
+                print '<td colspan="3">&nbsp;&nbsp;' + reich.status + '</td>'
+            print '</tr>'
             print '</table>'
 
             print '<h2 id="doerfer">D&ouml;rfer</h2>'

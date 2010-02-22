@@ -14,6 +14,7 @@ from datetime import datetime, timedelta
 
 from feld import Feld
 from reich import get_ritter_id_form
+import reich
 import ausgabe
 
 
@@ -547,7 +548,7 @@ class Armee(Feld):
         @rtype: C{BooleanType}"""
 
         sql = "SELECT x, y, ritternr, allicolor, rittername, size, strength"
-        sql += ", name, ap, bp, schiffstyp"
+        sql += ", name, ap, bp, schiffstyp, inaktiv"
         sql += " FROM armeen"
         sql += " JOIN ritter ON r_id = ritternr"
         sql += " JOIN allis ON ritter.alli = allinr"
@@ -563,6 +564,10 @@ class Armee(Feld):
                 entry = dict()
                 if row[2] == 174:
                     entry["allyfarbe"] = '#00A000'
+                elif row[11] == reich.S_INAKTIV and config.is_kraehe():
+                    entry["allyfarbe"] = "#00A000"
+                elif row[11] == reich.S_SCHUTZ and config.is_kraehe():
+                    entry["allyfarbe"] = "white"
                 else: 
                     entry["allyfarbe"] = row[3]
                 entry["rittername"] = row[4]
@@ -632,8 +637,6 @@ class Armee(Feld):
                     if cols[i+1] == "allicolor":
                         if armee[i] is None:
                             link = "(nicht existent)"
-                        elif armee[i] == 174: # Keiner
-                            link = ausgabe.link(url, armee[i+2], "green")
                         else:
                             link = ausgabe.link(url, armee[i+2], armee[i+1])
                     else:

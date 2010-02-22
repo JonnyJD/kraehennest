@@ -12,6 +12,7 @@ import util
 import re
 from datetime import date, datetime, timedelta
 from feld import Feld
+import reich
 import ausgabe
 
 
@@ -48,7 +49,7 @@ class Dorf(Feld):
         @rtype: C{BooleanType}"""
 
         sql = """SELECT koords, dorfname, dorflevel, aktdatum, mauer,
-                        rittername, allis.alli, alliname, allicolor
+                        rittername, allis.alli, alliname, allicolor, inaktiv
                 FROM dorf INNER JOIN ritter ON dorf.ritternr= ritter.ritternr
                     LEFT OUTER JOIN allis ON ritter.alli=allis.allinr"""
         # so dass die andere clauses angehangen werden koennen:
@@ -68,6 +69,12 @@ class Dorf(Feld):
                             'dorflevel': row[2], 'aktdatum': row[3],
                             'mauer': row[4], 'rittername': row[5],
                             'alliname': row[7], 'allyfarbe': row[8]}
+                    if row[5] == "Keiner":
+                        self.entries[x,y]["allyfarbe"] = "#00A000"
+                    elif row[9] == reich.S_INAKTIV and config.is_kraehe():
+                        self.entries[x,y]["allyfarbe"] = "#00A000"
+                    elif row[9] == reich.S_SCHUTZ and config.is_kraehe():
+                        self.entries[x,y]["allyfarbe"] = "#FFFFFF"
                 row = self.cursor.fetchone()
             return True
         except rbdb.Error, e:
@@ -104,8 +111,6 @@ class Dorf(Feld):
                     if cols[i+1] == "allicolor":
                         if dorf[i] is None:
                             link = "(nicht existent)"
-                        elif dorf[i] == 174: # Keiner
-                            link = ausgabe.link(url, dorf[i+2], "green")
                         else:
                             link = ausgabe.link(url, dorf[i+2], dorf[i+1])
                     else:

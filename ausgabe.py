@@ -3,7 +3,7 @@
 import re
 import os
 import cgi
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from types import IntType, LongType, StringType
 from decimal import Decimal
 
@@ -107,6 +107,16 @@ def print_important(message):
     """Gibt eine wichtige Nachricht gross und farbig in HTML aus
     """
     print '<h2 style="color:red">' + message + '</h2>'
+
+def escape(string):
+    """Maskiert <, > und &. Gibt (unbekannt) bei None.
+
+    @rtype: C{StringType}
+    """
+    if string is None:
+        return "(unbekannt)"
+    else:
+        return cgi.escape(string)
 
 def escape_row(row):
     """Maskiert <, > und & in allen Elementen fuer die HTML-Ausgabe
@@ -225,6 +235,47 @@ def confirmation(message, url):
 #{ Datumsformatierung
 ######################################################################
 
+def __delta_color_string(string, delta, limit1, limit2):
+    """Faerbt den String wenn der Unterschied zu jetzt
+    bestimmte Grenzen erreicht.
+
+    @param string: Zeitstring
+    @param delta: Unterschied zwischen der Zeit und jetzt
+    @type delta: C{timedelta}
+    @param limit1: minimaler Unterschied fuer Warnfarbe
+    @type limit1: C{timedelta}
+    @param limit2: minimaler Unterschied fuer Alarmfarbe
+    @type limit2: C{timedelta}
+    @return: gefaerbter String
+    @rtype: C{StringType}
+    """
+    if delta > limit2:
+        return '<span style="color:red">' + string + '</span>'
+    elif delta > limit1:
+        return '<span style="color:orange">' + string + '</span>'
+    else:
+        return string
+
+
+def date_delta_color_string(my_date, limit1, limit2):
+    """Gibt die seit einem Datum vergangene Zeitspanne farbig aus
+    
+    @param my_date: betrachtes Datum
+    @type my_date: C{date}
+    @param limit1: minimaler Unterschied fuer Warnfarbe
+    @type limit1: C{timedelta}
+    @param limit2: minimaler Unterschied fuer Alarmfarbe
+    @type limit2: C{timedelta}
+    @return: gefaerbter String
+    @rtype: C{StringType}
+    """
+    string = date_delta_string(my_date)
+    if my_date:
+        delta = date.today() - my_date
+    else:
+        delta = timedelta(weeks=9999)
+    return __delta_color_string(string, delta, limit1, limit2)
+
 def date_delta_string(my_date):
     """Gibt die seit einem Datum vergangene Zeitspanne aus
     
@@ -254,6 +305,26 @@ def date_delta_string(my_date):
             return "heute"
     else:
         return "(unbekannt)"
+
+
+def datetime_delta_color_string(my_datetime, limit1, limit2):
+    """Gibt die seit einem Datum vergangene Zeitspanne farbig aus
+    
+    @param my_datetime: betrachter Zeitpunkt
+    @type my_datetime: C{datetime}
+    @param limit1: minimaler Unterschied fuer Warnfarbe
+    @type limit1: C{timedelta}
+    @param limit2: minimaler Unterschied fuer Alarmfarbe
+    @type limit2: C{timedelta}
+    @return: gefaerbter String
+    @rtype: C{StringType}
+    """
+    string = datetime_delta_string(my_datetime)
+    if my_datetime:
+        delta = datetime.today() - my_datetime
+    else:
+        delta = timedelta(weeks=9999)
+    return __delta_color_string(string, delta, limit1, limit2)
 
 def datetime_delta_string(my_datetime):
     """Gibt die seit Einer Zeit vergangene Zeitspanne aus

@@ -236,10 +236,10 @@ def color_diff(color1, color2):
     @type color1: C{StringType}
     @type color2: C{StringType}
     @rtype: C{IntType}
-    @raise ValueError: keine Hex-Farbe
+    @raise ValueError: keine Hex-Farben
     """
     
-    if color[0] == '#':
+    if color1[0] == '#' and color2[0] == '#':
         red1   = int(color1[1:3], 16)
         green1 = int(color1[3:5], 16)
         blue1  = int(color1[5:7], 16)
@@ -250,6 +250,43 @@ def color_diff(color1, color2):
         green_diff = ( max(green1, green2) - min(green1, green2) )
         blue_diff  = ( max(blue1, blue2) - min(blue1, blue2) )
         return red_diff + green_diff + blue_diff
+    else:
+        raise ValueError(color)
+
+def hex_byte(int):
+    """Gibt einen 2 hex char String fuer einen Integer.
+    @type int: C{IntType}
+    @rtype: C{StringType}
+    """
+    if int < 16:
+        return '0' + hex(int)[2:]
+    else:
+        return hex(int)[2:]
+
+def color_shade(color1, color2, shade):
+    """Schattiere eine Farbe mit einer zweiten.
+    
+    @param color1: Hauptfarbe
+    @type color1: C{StringType}
+    @param color2: Schattierungsfarbe
+    @type color2: C{StringType}
+    @param shade: 0 -> Farbe1 voll; 1 -> Farbe2 voll;
+    @type shade: C{FloatType}
+    @rtype: C{IntType}
+    @raise ValueError: keine Hex-Farben
+    """
+    
+    if color1[0] == '#' and color2[0] == '#':
+        red1   = int(color1[1:3], 16)
+        green1 = int(color1[3:5], 16)
+        blue1  = int(color1[5:7], 16)
+        red2   = int(color2[1:3], 16)
+        green2 = int(color2[3:5], 16)
+        blue2  = int(color2[5:7], 16)
+        red = int(red1 + shade * (red2 - red1))
+        green = int(green1 + shade * (green2 - green1))
+        blue = int(blue1 + shade * (blue2 - blue1))
+        return '#' + hex_byte(red) + hex_byte(green) + hex_byte(blue)
     else:
         raise ValueError(color)
 

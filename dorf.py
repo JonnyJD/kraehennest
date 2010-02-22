@@ -72,9 +72,11 @@ class Dorf(Feld):
                     if row[5] == "Keiner":
                         self.entries[x,y]["allyfarbe"] = "#00A000"
                     elif row[9] == reich.S_INAKTIV and config.is_kraehe():
-                        self.entries[x,y]["allyfarbe"] = "#00A000"
+                        farbe = util.color_shade('#00A000', row[8], 0.3)
+                        self.entries[x,y]["allyfarbe"] = farbe
                     elif row[9] == reich.S_SCHUTZ and config.is_kraehe():
-                        self.entries[x,y]["allyfarbe"] = "#FFFFFF"
+                        farbe = util.color_shade('#FFFFFF', row[8], 0.3)
+                        self.entries[x,y]["allyfarbe"] = farbe
                 row = self.cursor.fetchone()
             return True
         except rbdb.Error, e:

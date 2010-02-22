@@ -11,6 +11,7 @@ from datetime import date, datetime, timedelta
 from feld import Feld
 import reich
 import ausgabe
+import config
 
 
 def translate(column):

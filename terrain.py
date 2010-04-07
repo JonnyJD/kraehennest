@@ -261,10 +261,12 @@ class Terrain(Feld):
                 entry = dict()
                 entry["terrain"] = row[2]
                 entry["typ"] = row[3]
-                if row[4] and row[4].find("{{{abgang}}}"):
+                if row[4] and row[4].find("{{{abgang}}}") >= 0:
                     entry["abgang"] = True
-                if row[4] and row[4].find("{{{aufgang}}}"):
+                if row[4] and row[4].find("{{{aufgang}}}") >= 0:
                     entry["aufgang"] = True
+                if row[4] and row[4].find("{{{quest}}}") >= 0:
+                    entry["quest"] = True
                 self.entries[row[0],row[1]] = entry
                 row = self.cursor.fetchone()
             return True

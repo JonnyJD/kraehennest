@@ -795,6 +795,10 @@ if __name__ == '__main__':
                     if show_dorf and not config.is_kraehe() and dorf.has(x,y):
                         row += '; color:'
                         row += dorf.get(x,y)['allyfarbe']
+                    if "abgang" in terrain.entry:
+                        row += '; border: 1px solid red'
+                    if "aufgang" in terrain.entry:
+                        row += '; border: 1px solid green'
                     row += ';"' # style attribut auf jeden Fall zumachen
                     if show_dorf and not config.is_kraehe() and dorf.has(x,y):
                         if util.brightness(dorf.get(x,y)['allyfarbe']) < 55:

@@ -253,7 +253,7 @@ class Terrain(Feld):
         @rtype: C{BooleanType}
         """
 
-        sql = "SELECT x, y, terrain, typ FROM felder"
+        sql = "SELECT x, y, terrain, typ, info FROM felder"
         sql += " WHERE level='" + self.level + "'"
         sql += self.crop_clause
         sql += self.add_cond
@@ -264,6 +264,10 @@ class Terrain(Feld):
                 entry = dict()
                 entry["terrain"] = row[2]
                 entry["typ"] = row[3]
+                if row[4] and row[4].find("{{{abgang}}}"):
+                    entry["abgang"] = True
+                if row[4] and row[4].find("{{{aufgang}}}"):
+                    entry["aufgang"] = True
                 self.entries[row[0],row[1]] = entry
                 row = self.cursor.fetchone()
             return True

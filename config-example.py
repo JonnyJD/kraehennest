@@ -14,6 +14,9 @@ db = ""                 #: Name der Datenbank
 
 preisdatei = '../preise'#: Ort der staendig aktualisierten Preisdatei
 
+stunden_deaktivierung_1 = 48
+tage_deaktivierung_2 = 7
+
 
 def get_username():
     """Gebe den Namen des aktuell eingeloggten Benutzes zurueck.

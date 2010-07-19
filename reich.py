@@ -233,6 +233,7 @@ def process_xml(node):
                 if rittername == "Keiner" and reich.hasProp("name"):
                     if reich.prop("name") == "Keiner":
                         r_id = 2
+                        rittername = "Keiner (alt)"
                     else:
                         r_id = 174
                 elif rittername == "Niemand":

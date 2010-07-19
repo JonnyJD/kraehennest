@@ -227,6 +227,17 @@ def process_xml(node):
             r_id = ritter.prop("r_id")
 
         if r_id is not None:
+            # HACK fuer Koenig, Keiner und Niemand
+            # alle Nachrichten der oben genannten gehen an r_id 1 (koenig)!
+            if r_id == "1":
+                if rittername == "Keiner" and reich.hasProp("name"):
+                    if reich.prop("name") == "Keiner":
+                        r_id = 2
+                    else:
+                        r_id = 174
+                elif rittername == "Niemand":
+                    r_id = 172
+
             # stelle Sicher, dass der Ritter in der DB ist
             sql = "SELECT ritternr FROM ritter WHERE ritternr = %s"
             if util.get_sql_row(sql, (r_id)) is None:

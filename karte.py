@@ -100,10 +100,7 @@ def list_maps():
 <div class="box" style="clear:left;">
 <h2>Karten</h2>
 """
-    if config.is_kraehe() or config.is_tw():
-        allow_armeen = True
-    else:
-        allow_armeen = False
+    allow_armeen = config.allow_armeen()
     if config.is_kraehe():
         text = '<span style="font-weight:bold;">Kraehengebiet</span>'
         print_link("/kraehen", text)
@@ -529,11 +526,20 @@ def small_map(x, y, level="N", sicht=2):
     size = 32 
     fontsize = 9
 
-    if level == "N":
+    if level == "N" and config.allow_doerfer():
         dorf = Dorf()
         dorf.fetch_data()
-    armee = Armee()
-    armee.fetch_data(level)
+        show_doerfer = True
+    else:
+        show_doerfer = False
+
+    if config.allow_armeen():
+        armee = Armee()
+        armee.fetch_data(level)
+        show_armeen = True
+    else:
+        show_armeen = False
+
     terrain = Terrain()
     terrain.fetch_data(level, x - sicht, x + sicht, y - sicht, y + sicht)
 
@@ -553,17 +559,18 @@ def small_map(x, y, level="N", sicht=2):
                 row += str(size) + '/' + terrain.entry["terrain"]
                 row += '.gif);">'
 
-                if (level == "N" and dorf.has(x,y)
+                if (show_doerfer and dorf.has(x,y)
                         and dorf.get(x,y)["rittername"] != "."):
                     color = dorf.get(x,y)['allyfarbe']
                     row += __detail_link(x, y, level, color, new_window=False)
-                elif armee.has(x,y):
+                elif show_armeen and armee.has(x,y):
                     color = None
                     row += __detail_link(x, y, level, color, new_window=False)
 
-                if level == "N" and dorf.has(x,y):
+                if show_doerfer and dorf.has(x,y):
                     row += __dorf(dorf, x, y, terrain)
-                row += __armeen(armee, x, y)
+                if show_armeen:
+                    row += __armeen(armee, x, y)
 
                 row += '</a></td>\n'
                 karte += row
@@ -636,11 +643,8 @@ if __name__ == '__main__':
             layer = []
 
         # bestimme was grundsaetzlich erlaubt ist
-        allow_dorf = True # zur Zeit keine Ausnahmen
-        if config.is_kraehe() or config.is_tw():
-            allow_armeen = True
-        else:
-            allow_armeen = False
+        allow_dorf = config.allow_doerfer(floating_message=True)
+        allow_armeen = config.allow_armeen(floating_message=True)
 
         # Bereite Formatierungen vor
         size = 32 

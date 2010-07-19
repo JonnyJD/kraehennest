@@ -68,6 +68,23 @@ def parse_date(rb_date):
 
     return datetime.date(year, month, day)
 
+def print_error_message(message, floating=False):
+    """Gibt eine hervorstechende HTML-Fehlermeldung aus
+    
+    @param message: Auszugebende Nachricht
+    @type message: C{StringType}
+    @param floating: Ob die Nachricht in eine mitlaufende Box soll
+    @type floating: C{BooleanType}
+    """
+
+    print '<div style="'
+    if floating:
+        print 'position:relative; z-index:99;'
+        print ' left:70px; top:25px; padding:3px;'
+    print ' color:red; background-color:black;">'
+    print message
+    print '</div>'
+
 
 ######################################################################
 #{ SQL
@@ -178,6 +195,36 @@ def track_client(node):
             name = client_elems[0].prop("name")
             version = client_elems[0].prop("version")
             update_usage(r_id, name + " " + version)
+
+def last_sent(account=None):
+    """Gibt die Zeit wann das zugehoerige Reich zuletzt Daten gesendet hat
+    
+    @param account: der Kraehenserveraccount
+    @type account: C{StringType}
+    @return: Datum der letzten empfangenen Aktualisierung
+    @rtype: C{datetime.date}
+    """
+
+    sql = "SELECT max(last_seen) FROM versionen"
+    if account == None:
+        sql += " WHERE 0"
+        args = ()
+    else:
+        sql += " WHERE username = %s"
+        args = (account)
+    try:
+        conn = rbdb.connect()
+        cursor = conn.cursor()
+        cursor.execute(sql, args)
+        row = cursor.fetchone()
+        if row == None:
+            # garnicht in der Tabelle -> garkein Zugriffsrecht
+            return None
+        else:
+            return row[0]
+    except rbdb.Error, e:
+        util.print_html_error(e)
+        return None
 
 
 ######################################################################

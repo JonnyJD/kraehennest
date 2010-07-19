@@ -59,4 +59,11 @@ def is_tw(username=None):
     else:
         return False
 
+def allow_armeen(username=None, floating_message=False):
+    return True
+
+def allow_doerfer(username=None, floating_message=False):
+    return True
+
+
 # vim:set shiftwidth=4 expandtab smarttab:

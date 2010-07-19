@@ -52,11 +52,11 @@ def list_versions():
             line.append(row[2])
             string = ausgabe.datetime_delta_string(row[3])
             delta = datetime.today() - row[3]
-            if delta > timedelta(hours=30):
+            if delta > timedelta(days=config.tage_deaktivierung_2):
                     zelle = '<div style="color:red">'
                     zelle += string + '</div>'
                     line.append(zelle)
-            elif delta > timedelta(hours=6):
+            elif delta > timedelta(hours=config.stunden_deaktivierung_1):
                     zelle = '<div style="color:orange">'
                     zelle += string + '</div>'
                     line.append(zelle)

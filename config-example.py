@@ -14,6 +14,9 @@ db = ""                 #: Name der Datenbank
 
 preisdatei = '../preise'#: Ort der staendig aktualisierten Preisdatei
 
+stunden_deaktivierung_1 = 48
+tage_deaktivierung_2 = 7
+
 
 def get_username():
     """Gebe den Namen des aktuell eingeloggten Benutzes zurueck.
@@ -58,5 +61,12 @@ def is_tw(username=None):
         return re.match("/tw", os.environ['SCRIPT_URL'])
     else:
         return False
+
+def allow_armeen(username=None, floating_message=False):
+    return True
+
+def allow_doerfer(username=None, floating_message=False):
+    return True
+
 
 # vim:set shiftwidth=4 expandtab smarttab:

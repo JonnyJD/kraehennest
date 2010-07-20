@@ -21,8 +21,9 @@ def list_versions():
     tabelle.addColumn("Rittername")
     tabelle.addColumn("Version")
     tabelle.addColumn("zuletzt gesehen")
+    tabelle.addColumn("letzter Zug")
     sql = "SELECT r_id, rittername, version, last_seen"
-    sql += ", username"
+    sql += ", username, letzterzug"
     sql += " FROM versionen"
     sql += " left JOIN ritter ON r_id = ritternr"
     if config.is_tw():
@@ -38,8 +39,9 @@ def list_versions():
         while row != None:
             line = []
             row = ausgabe.escape_row(row)
-            line.append(row[4])
-            line.append(row[0])
+            line.append(row[4]) # username
+            line.append(row[0]) # r_id
+            # Rittername
             if config.is_kraehe() and row[1] is None:
                 zelle = '<a href="reich/' + str(row[0]) + '">?</a>'
             elif config.is_kraehe():
@@ -49,19 +51,17 @@ def list_versions():
             else:
                 zelle = row[1]
             line.append(zelle)
-            line.append(row[2])
-            string = ausgabe.datetime_delta_string(row[3])
-            delta = datetime.today() - row[3]
-            if delta > timedelta(days=config.tage_deaktivierung_2):
-                    zelle = '<div style="color:red">'
-                    zelle += string + '</div>'
-                    line.append(zelle)
-            elif delta > timedelta(hours=config.stunden_deaktivierung_1):
-                    zelle = '<div style="color:orange">'
-                    zelle += string + '</div>'
-                    line.append(zelle)
-            else:
-                line.append(string)
+            line.append(row[2]) # Version des Auges
+            # zuletzt gesehen
+            zelle = ausgabe.datetime_delta_color_string(row[3],
+                    timedelta(hours=config.stunden_deaktivierung_1),
+                    timedelta(days=config.tage_deaktivierung_2))
+            line.append(zelle)
+            # letzter Zug
+            zelle = ausgabe.date_delta_color_string(row[5],
+                    timedelta(hours=config.stunden_deaktivierung_1),
+                    timedelta(days=config.tage_deaktivierung_2))
+            line.append(zelle)
             tabelle.addLine(line)
             row = cursor.fetchone()
         print "Es sind", tabelle.length(), "Benutzerreiche in der Datenbank"

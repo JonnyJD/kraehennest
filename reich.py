@@ -68,6 +68,8 @@ def translate(column):
         return column.capitalize()
 
 def last_turn_color(last_turn):
+    """Faerbt den Zeitpunkt des letzten Zuges passend ein
+    """
     return ausgabe.date_delta_color_string(last_turn,
             timedelta(days=6), timedelta(days=10))
 

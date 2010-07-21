@@ -14,8 +14,9 @@ db = ""                 #: Name der Datenbank
 
 preisdatei = '../preise'#: Ort der staendig aktualisierten Preisdatei
 
-stunden_deaktivierung_1 = 48
-tage_deaktivierung_2 = 7
+stunden_deaktivierung_1 = 48    #: Stunden zur 1. Deaktivierung (Armeen?)
+tage_deaktivierung_2 = 7        #: Tage bis zur 2. Deaktivierung (Doerfer?)
+tage_neu = 2                    #: Anzahl der Tage fuer den Layer "neu"
 
 
 def get_username():
@@ -63,9 +64,13 @@ def is_tw(username=None):
         return False
 
 def allow_armeen(username=None, floating_message=False):
+    """Ob dem Benutzer Armeen angezeigt werden duerfen
+    """
     return True
 
 def allow_doerfer(username=None, floating_message=False):
+    """Ob dem Benutzer Doerfer angezeigt werden duerfen
+    """
     return True
 
 

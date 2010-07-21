@@ -680,7 +680,8 @@ if __name__ == '__main__':
             show_dorf = True
             dorf = Dorf()
             if "neu" in layer:
-                dorf.set_add_cond("datediff(now(), aktdatum) < 364")
+                add_cond = "datediff(now(), aktdatum) < "+str(config.tage_neu)
+                dorf.set_add_cond(add_cond)
             dorf.fetch_data()
 
         if allow_armeen and "armeen" in layer:

@@ -682,7 +682,7 @@ class Armee(Feld):
         @rtype: L{Tabelle<ausgabe.Tabelle>}
         """
 
-        cols = ["status", "ritternr", "allicolor", "rittername"]
+        cols = ["active", "status", "ritternr", "allicolor", "rittername"]
         cols += ["img", "name", "last_seen"]
         cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
         cols += ["schiffstyp"]
@@ -691,8 +691,6 @@ class Armee(Feld):
         sql += " JOIN ritter ON armeen.r_id = ritternr"
         sql += " JOIN allis ON ritter.alli = allis.allinr"
         sql += " WHERE level = %s AND x = %s AND y = %s"
-        sql += " AND active = 1"
-        sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
         sql += " ORDER BY last_seen DESC, allicolor, rittername, name"
         try:
             self.cursor.execute(sql, (level, x, y))

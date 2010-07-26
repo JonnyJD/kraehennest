@@ -619,14 +619,14 @@ class Armee(Feld):
                         line.append("Ja")
                     else:
                         line.append('<div style="color:red">Nein</div>')
-                elif cols[i] == "x":
+                elif cols[i] == "x" and armee[i] != None:
                     link = "/show/feld/" + str(armee[i]) + "." + str(armee[i+1])
-                    if armee[i-1] != "N":
+                    if armee[i-1] and armee[i-1] != "N":
                         link += "/" + armee[i-1]
                     line.append(ausgabe.link(link, armee[i]))
-                elif cols[i] == "y":
+                elif cols[i] == "y" and armee[i] != None:
                     link = "/show/feld/" + str(armee[i-1]) + "." + str(armee[i])
-                    if armee[i-2] != "N":
+                    if armee[i-2] and armee[i-2] != "N":
                         link += "/" + armee[i-2]
                     line.append(ausgabe.link(link, armee[i]))
                 elif cols[i] == "img":
@@ -642,7 +642,7 @@ class Armee(Feld):
                     else:
                         link = ausgabe.link(url, armee[i+1])
                     line.append(link)
-                elif cols[i] == "last_seen":
+                elif cols[i] == "last_seen" and armee[i] != None:
                     string = ausgabe.datetime_delta_string(armee[i])
                     delta = datetime.today() - armee[i]
                     if delta > timedelta(hours=30):
@@ -685,7 +685,7 @@ class Armee(Feld):
         @rtype: L{Tabelle<ausgabe.Tabelle>}
         """
 
-        cols = ["status", "ritternr", "allicolor", "rittername"]
+        cols = ["active", "status", "ritternr", "allicolor", "rittername"]
         cols += ["img", "name", "last_seen"]
         cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
         cols += ["schiffstyp"]
@@ -694,8 +694,6 @@ class Armee(Feld):
         sql += " JOIN ritter ON armeen.r_id = ritternr"
         sql += " JOIN allis ON ritter.alli = allis.allinr"
         sql += " WHERE level = %s AND x = %s AND y = %s"
-        sql += " AND active = 1"
-        sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
         sql += " ORDER BY last_seen DESC, allicolor, rittername, name"
         try:
             self.cursor.execute(sql, (level, x, y))

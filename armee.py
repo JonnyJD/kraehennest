@@ -433,9 +433,6 @@ class Armee(Feld):
         sql += ", ".join(sqllist)
         sql += " WHERE h_id = %s"
         args += entry["h_id"],
-        if not "update_self" in entry or not entry["update_self"]:
-            # versteckte Armeen updaten nur sich selbst
-            sql += " AND (status IS NULL OR status <> '" + S_HIDDEN + "')"
         return self.try_execute_safe_secondary(sql, args)
 
 

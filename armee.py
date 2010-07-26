@@ -743,7 +743,10 @@ class Armee(Feld):
         @rtype: L{Tabelle<ausgabe.Tabelle>}
         """
 
-        cols = ["status", "level", "x", "y", "ritternr"]
+        cols = []
+        if a_id != -1:
+            cols.append("active")
+        cols += ["status", "level", "x", "y", "ritternr"]
         if a_id == -1:
             cols.append("allicolor")
         cols += ["rittername", "name", "last_seen"]
@@ -752,12 +755,13 @@ class Armee(Feld):
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"
         sql += " JOIN allis ON ritter.alli = allis.allinr"
-        sql += " WHERE"
-        sql += " active = 1"
-        if a_id != -1:
-            sql += " AND allinr = %s"
-        sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
-        sql += " ORDER BY last_seen DESC, allicolor, rittername, x, y, name"
+        if a_id == -1:
+            sql += " WHERE active = 1"
+            sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"
+        else:
+            sql += " WHERE allinr = %s"
+        sql += " ORDER BY active DESC, last_seen DESC"
+        sql += ", allicolor, rittername, x, y, name"
         try:
             if a_id != -1:
                 self.cursor.execute(sql, a_id)

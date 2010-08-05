@@ -542,24 +542,26 @@ def small_map(x, y, level="N", sicht=2, achsen=True):
 
     terrain = Terrain()
     terrain.fetch_data(level, x - sicht, x + sicht, y - sicht, y + sicht)
+    xmin = x - sicht; xmax = x + sicht
+    ymin = y - sicht; ymax = y + sicht
 
     if achsen:
-        width = size * (terrain.xmax - terrain.xmin + 1 + 2)
+        width = size * (sicht + 2)
     else:
-        width = size * (terrain.xmax - terrain.xmin + 1 )
+        width = size * (sicht)
     karte = '\n\n<table id="karte" style="width:' + str(width) + 'px;">\n'
     if achsen:
         # X - Achse
         karte += '<tr style="height:' + str(size) + 'px;"><td></td>\n'
-        for x in range(terrain.xmin, terrain.xmax + 1):
+        for x in range(xmin, xmax + 1):
             karte += '<td>' + str(x) + '</td>\n'
         karte += '</tr>\n'
-    for y in range(terrain.ymin, terrain.ymax + 1):
+    for y in range(ymin, ymax + 1):
         karte += '<tr style="height:' + str(size) + 'px;">\n'
         if achsen:
             # Y - Achse
             karte += '<td>' + str(y)  + '</td>\n'
-        for x in range(terrain.xmin, terrain.xmax + 1):
+        for x in range(xmin, xmax + 1):
             if terrain.has(x,y): # Kartenbereich
                 terrain.get(x,y)
                 row = '<td style="background-image:url(/img/terrain/'
@@ -590,7 +592,7 @@ def small_map(x, y, level="N", sicht=2, achsen=True):
     if achsen:
         # X - Achse
         karte += '<tr style="height:' + str(size) + 'px;"><td></td>\n'
-        for x in range(terrain.xmin, terrain.xmax + 1):
+        for x in range(xmin, xmax + 1):
             karte += '<td>' + str(x) + '</td>\n'
         karte += '</tr>\n'
     karte += '</table>\n'

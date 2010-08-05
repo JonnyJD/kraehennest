@@ -42,10 +42,11 @@ def test_referer(url):
 def redirect(url, code=302):
     """Sendet einen HTTP Redirect
 
-    code:       301 fuer eine permanente Weiterleitung,
-                302 als standard temporaere W.
-                303 GET nach der Ausfuehrung von Befehlen (hier wichtig),
-                307 temporaere Weiterleitung, bleibe bei POST
+    code:       
+        - 301 fuer eine permanente Weiterleitung,
+        - 302 als standard temporaere W.
+        - 303 GET nach der Ausfuehrung von Befehlen (hier wichtig),
+        - 307 temporaere Weiterleitung, bleibe bei POST
 
     @param code: http code (301,302,303,307)
     @type code: C{IntType}

@@ -160,6 +160,21 @@ class Armee(Feld):
         else:
             ausgabe.print_important("darf nur der Admin freigegeben")
 
+    def deactivate(self):
+        """Deaktiviert die Armee, also zeigt sie nicht mehr auf der Karte
+        """
+
+        if config.is_admin():
+            sql = "UPDATE armeen"
+            sql += " SET active = 0"
+            sql += " WHERE h_id = %s"
+            if util.sql_execute(sql, self.id) > 0:
+                ausgabe.print_important("wurde deaktiviert")
+            else:
+                ausgabe.print_important("wurde nicht deaktiviert")
+        else:
+            ausgabe.print_important("darf nur der Admin deaktivieren")
+
 
     def __is(self, is_int, entry, mandatory, db_col, key, length):
         """Prueft einen Wert  auf korrekten Typ.
@@ -662,12 +677,15 @@ class Armee(Feld):
                 elif cols[i] == "status":
                     line.append(status_string(armee[i]))
                 elif config.is_admin() and cols[i] == "h_id":
+                    url = "/deactivate/armee/" + str(armee[i])
+                    cell = ausgabe.link(url, "[deact] ")
                     if armee[i+1] is None: # keine max_dauer
                         url = "/delete/armee/" + str(armee[i])
-                        line.append(ausgabe.link(url, "[delete]"))
+                        cell += ausgabe.link(url, "[del]")
                     else:
                         url = "/free/armee/" + str(armee[i])
-                        line.append(ausgabe.link(url, "[free]"))
+                        cell += ausgabe.link(url, "[free]")
+                    line.append(cell)
                 elif cols[i-1] in ["ritternr", "allicolor"]:
                     # rittername wurde schon abgehakt
                     pass
@@ -888,7 +906,14 @@ if __name__ == '__main__':
             else:
                 confirmation = False
 
-            if config.is_admin() and form["action"].value == "free":
+            # todo: man sollte auch seine eigenen Armeen deaktivieren koennen
+            if config.is_admin() and form["action"].value == "deactivate":
+                h_id = form["id"].value
+                armee = Armee(h_id)
+                # Hier ist keine Konfirmation noetig
+                armee.deactivate()
+                ausgabe.redirect("/show/reich/" + str(armee.owner), 303)
+            elif config.is_admin() and form["action"].value == "free":
                 h_id = form["id"].value
                 armee = Armee(h_id)
                 ausgabe.print_header("Armee " + h_id + " freigeben")

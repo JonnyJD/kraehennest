@@ -49,7 +49,8 @@ class Dorf(Feld):
         @rtype: C{BooleanType}"""
 
         sql = """SELECT koords, dorfname, dorflevel, aktdatum, mauer,
-                        rittername, allis.alli, alliname, allicolor, inaktiv
+                        rittername, allis.alli, alliname, allicolor, inaktiv,
+                        dorf.ritternr
                 FROM dorf INNER JOIN ritter ON dorf.ritternr= ritter.ritternr
                     LEFT OUTER JOIN allis ON ritter.alli=allis.allinr"""
         # so dass die andere clauses angehangen werden koennen:
@@ -77,6 +78,8 @@ class Dorf(Feld):
                     elif row[9] == reich.S_SCHUTZ and config.is_kraehe():
                         farbe = util.color_shade('#FFFFFF', row[8], 0.3)
                         self.entries[x,y]["allyfarbe"] = farbe
+                    elif row[10] in config.marked_reiche:
+                        self.entries[x,y]["allyfarbe"] = "white"
                 row = self.cursor.fetchone()
             return True
         except rbdb.Error, e:

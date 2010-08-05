@@ -18,6 +18,8 @@ stunden_deaktivierung_1 = 48    #: Stunden zur 1. Deaktivierung (Armeen?)
 tage_deaktivierung_2 = 7        #: Tage bis zur 2. Deaktivierung (Doerfer?)
 tage_neu = 2                    #: Anzahl der Tage fuer den Layer "neu"
 
+marked_reiche = []
+"""auf der Karte zu markierende Reiche"""
 
 def get_username():
     """Gebe den Namen des aktuell eingeloggten Benutzes zurueck.

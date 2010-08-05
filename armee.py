@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 from feld import Feld
 from reich import get_ritter_id_form
 import reich
+from user import User
 import ausgabe
 
 
@@ -608,6 +609,8 @@ class Armee(Feld):
         @rtype: L{Tabelle<ausgabe.Tabelle>}
         """
 
+        # erkenne aktuellen Benutzer
+        user = User()
         tabelle = ausgabe.Tabelle()
         secondary = ["ruf", "max_bp", "max_ap"]
         virtual = ["ritternr", "allicolor", "max_dauer"]
@@ -618,7 +621,7 @@ class Armee(Feld):
                 tabelle.addColumn(translate(cols[i]), 3)
             elif cols[i] == "ap" and cols[i+1] == "max_ap":
                 tabelle.addColumn(translate(cols[i]), 3)
-            elif config.is_admin() and cols[i] == "h_id":
+            elif cols[i] == "h_id":
                 tabelle.addColumn("Admin")
             elif cols[i] not in virtual + secondary:
                 tabelle.addColumn(translate(cols[i]))
@@ -644,16 +647,18 @@ class Armee(Feld):
                 elif cols[i] == "img":
                     line.append('<img src="/img/armee/' + armee[i] + '.gif" />')
                 elif cols[i] == "ritternr":
+                    ritter = armee[i]
                     # nachfolgenden Ritternamen verlinken
-                    url = "/show/reich/" + str(armee[i])
+                    url = "/show/reich/" + str(ritter)
                     if cols[i+1] == "allicolor":
-                        if armee[i] is None:
+                        if ritter is None:
                             link = "(nicht existent)"
                         else:
                             link = ausgabe.link(url, armee[i+2], armee[i+1])
-                    else:
+                        line.append(link)
+                    elif cols[i+1] == "rittername":
                         link = ausgabe.link(url, armee[i+1])
-                    line.append(link)
+                        line.append(link)
                 elif cols[i] == "last_seen" and armee[i] != None:
                     string = ausgabe.datetime_delta_string(armee[i])
                     delta = datetime.today() - armee[i]
@@ -676,15 +681,18 @@ class Armee(Feld):
                         line.append(armee[i])
                 elif cols[i] == "status":
                     line.append(status_string(armee[i]))
-                elif config.is_admin() and cols[i] == "h_id":
-                    url = "/deactivate/armee/" + str(armee[i])
-                    cell = ausgabe.link(url, "[deact] ")
-                    if armee[i+1] is None: # keine max_dauer
-                        url = "/delete/armee/" + str(armee[i])
-                        cell += ausgabe.link(url, "[del]")
+                elif cols[i] == "h_id":
+                    if (config.is_admin() or user.r_id == ritter):
+                        url = "/deactivate/armee/" + str(armee[i])
+                        cell = ausgabe.link(url, "[deact] ")
+                        if armee[i+1] is None: # keine max_dauer
+                            url = "/delete/armee/" + str(armee[i])
+                            cell += ausgabe.link(url, "[del]")
+                        else:
+                            url = "/free/armee/" + str(armee[i])
+                            cell += ausgabe.link(url, "[free]")
                     else:
-                        url = "/free/armee/" + str(armee[i])
-                        cell += ausgabe.link(url, "[free]")
+                        cell = "id: " + str(armee[i])
                     line.append(cell)
                 elif cols[i-1] in ["ritternr", "allicolor"]:
                     # rittername wurde schon abgehakt
@@ -704,6 +712,7 @@ class Armee(Feld):
         cols += ["img", "name", "last_seen"]
         cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
         cols += ["schiffstyp"]
+        cols += ["h_id", "max_dauer"] # zum admin.
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"
@@ -728,8 +737,7 @@ class Armee(Feld):
         cols += ["last_seen"]
         cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
         cols += ["schiffstyp"]
-        if config.is_admin():
-            cols += ["h_id", "max_dauer"]
+        cols += ["ritternr", "h_id", "max_dauer"] # zum admin.
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"
@@ -906,16 +914,16 @@ if __name__ == '__main__':
             else:
                 confirmation = False
 
-            # todo: man sollte auch seine eigenen Armeen deaktivieren koennen
-            if config.is_admin() and form["action"].value == "deactivate":
-                h_id = form["id"].value
-                armee = Armee(h_id)
+            # das nur bei Armeen, aber mehr gibt es auch vorerst nicht
+            h_id = form["id"].value
+            armee = Armee(h_id)
+            user = User()
+            if ((config.is_admin() or user.r_id == armee.owner)
+                    and form["action"].value == "deactivate"):
                 # Hier ist keine Konfirmation noetig
                 armee.deactivate()
                 ausgabe.redirect("/show/reich/" + str(armee.owner), 303)
             elif config.is_admin() and form["action"].value == "free":
-                h_id = form["id"].value
-                armee = Armee(h_id)
                 ausgabe.print_header("Armee " + h_id + " freigeben")
                 armee.show()
                 url = "/free/armee/" + str(h_id)
@@ -926,14 +934,13 @@ if __name__ == '__main__':
                     url += "/yes"
                     ausgabe.confirmation(message, url)
             elif config.is_admin() and form["action"].value == "delete":
-                h_id = form["id"].value
-                armee = Armee(h_id)
-                ausgabe.print_header("Armee " + h_id + " l&ouml;schen")
-                armee.show()
                 url = "/delete/armee/" + str(h_id)
                 if confirmation and ausgabe.test_referer(url):
                     armee.delete()
+                    ausgabe.redirect("/show/reich/" + str(armee.owner), 303)
                 else:
+                    ausgabe.print_header("Armee " + h_id + " l&ouml;schen")
+                    armee.show()
                     message = "Wollen sie diese Armee wirklich l&ouml;schen?"
                     url += "/yes"
                     ausgabe.confirmation(message, url)

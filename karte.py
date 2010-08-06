@@ -633,6 +633,7 @@ if __name__ == '__main__':
     elif "sicht" in form:
         print '<style type="text/css">'
         print create_styles(32, 9)#, show_armeen, show_dorf, background)
+        print 'body { margin:0px; }'
         print '</style>\n'
         print small_map(int(form["x"].value), int(form["y"].value),
                 form["level"].value, int(form["sicht"].value),

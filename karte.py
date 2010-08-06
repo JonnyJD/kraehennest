@@ -506,7 +506,7 @@ def create_styles(size, fontsize,
     text += '}\n'
     return text
 
-def small_map(x, y, level="N", sicht=2, achsen=True):
+def small_map(x, y, level="N", sicht=2, imported=False):
     """Eine kleine integrierbare Karte
 
     vorher sollte L{create_styles<karte.create_styles>} abgesetzt werden
@@ -517,6 +517,8 @@ def small_map(x, y, level="N", sicht=2, achsen=True):
     @type y: C{IntType}
     @param sicht: Sichtweite vom Mittelpunkt
     @type sicht: C{IntType}
+    @param imported: Karte wird woanders integriert
+    @type imported: C{BooleanType}
     """
 
     from dorf import Dorf
@@ -545,6 +547,13 @@ def small_map(x, y, level="N", sicht=2, achsen=True):
     xmin = x - sicht; xmax = x + sicht
     ymin = y - sicht; ymax = y + sicht
 
+    if imported:
+        achsen = False
+        new_window = True
+    else:
+        achsen = True
+        new_window = False
+
     if achsen:
         width = size * (sicht + 2)
     else:
@@ -571,10 +580,10 @@ def small_map(x, y, level="N", sicht=2, achsen=True):
                 if (show_doerfer and dorf.has(x,y)
                         and dorf.get(x,y)["rittername"] != "."):
                     color = dorf.get(x,y)['allyfarbe']
-                    row += __detail_link(x, y, level, color, new_window=False)
+                    row += __detail_link(x, y, level, color, new_window)
                 elif show_armeen and armee.has(x,y):
                     color = None
-                    row += __detail_link(x, y, level, color, new_window=False)
+                    row += __detail_link(x, y, level, color, new_window)
 
                 if show_doerfer and dorf.has(x,y):
                     row += __dorf(dorf, x, y, terrain)
@@ -637,7 +646,7 @@ if __name__ == '__main__':
         print '</style>\n'
         print small_map(int(form["x"].value), int(form["y"].value),
                 form["level"].value, int(form["sicht"].value),
-                achsen=False)
+                imported=True)
     else:
         # Zeige eine Karte
 

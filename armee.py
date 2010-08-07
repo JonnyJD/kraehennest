@@ -644,7 +644,8 @@ class Armee(Feld):
             armee = ausgabe.escape_row(armee)
             for i in range(0, len(armee)):
                 if cols[i] == "active":
-                    if armee[i] == 1:
+                    active = armee[i]
+                    if active == 1:
                         line.append("Ja")
                     else:
                         line.append('<div style="color:red">Nein</div>')
@@ -699,10 +700,17 @@ class Armee(Feld):
                     if (config.is_admin() or user.r_id == ritter):
                         url = "/deactivate/armee/" + str(armee[i])
                         cell = '<span style="font-size:8pt;">'
-                        cell += ausgabe.link(url, "[deact]&nbsp;")
+                        deact_string = "[deact]"
+                        if active:
+                            cell += ausgabe.link(url, deact_string)
+                        else:
+                            cell += '<span style="color:gray;">'
+                            cell += deact_string + '</span>'
+                        cell += "&nbsp;"
                         if armee[i+1] is None: # keine max_dauer
                             url = "/delete/armee/" + str(armee[i])
-                            cell += ausgabe.link(url, "[del]&nbsp;")
+                            cell += ausgabe.link(url, "[del]")
+                            cell += "&nbsp;"
                         else:
                             url = "/free/armee/" + str(armee[i])
                             cell += ausgabe.link(url, "[free]")

@@ -458,9 +458,9 @@ class Armee(Feld):
             # oder
             sql += " OR "
             # position hat sich veraendert
-            sql += "(x IS NULL OR x <> " + entry["x"]
-            sql += " OR y IS NULL OR x <> " + entry["y"] + ")"
+            sql += "(x IS NULL OR x <> %s OR y IS NULL OR y <> %s )"
             sql += " ) "
+            args += entry["x"], entry["y"]
         return self.try_execute_safe_secondary(sql, args)
 
 

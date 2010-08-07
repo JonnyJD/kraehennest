@@ -698,13 +698,15 @@ class Armee(Feld):
                 elif cols[i] == "h_id":
                     if (config.is_admin() or user.r_id == ritter):
                         url = "/deactivate/armee/" + str(armee[i])
-                        cell = ausgabe.link(url, "[deact] ")
+                        cell = '<span style="font-size:8pt;">'
+                        cell += ausgabe.link(url, "[deact]&nbsp;")
                         if armee[i+1] is None: # keine max_dauer
                             url = "/delete/armee/" + str(armee[i])
-                            cell += ausgabe.link(url, "[del]")
+                            cell += ausgabe.link(url, "[del]&nbsp;")
                         else:
                             url = "/free/armee/" + str(armee[i])
                             cell += ausgabe.link(url, "[free]")
+                        cell += '</span>'
                     else:
                         cell = "id: " + str(armee[i])
                     line.append(cell)

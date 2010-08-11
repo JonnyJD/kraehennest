@@ -312,6 +312,34 @@ class Armee(Feld):
         else:
             return False
 
+    def __armeen_ohne_ids(self, x, y):
+        """Listet die Armeen ohne bekannte IDs als sql_string, args
+
+        @param x: X-Koordinate
+        @param y: Y-Koordinate
+        @rtype: C{StringType}, C{ArgList}
+        """
+
+        sqllist = []
+        args = ()
+        i = 0
+        new = self.new_entries
+        while i < len(new):
+            if ("h_id" not in new[i] and "r_id" in new[i]
+                    and new[i]["x"] == x and new[i]["y"] == y):
+                # in genau diesem Fall wollen wir das deaktivieren verhindern
+                sqllist.append("(name <> %s OR img <> %s OR r_id <> %s)")
+                args += new[i]["name"], new[i]["img"], new[i]["r_id"]
+                # danach werden diese Armeen ohne IDs nicht weiter verarbeitet
+                del new[i]
+            else:
+                i += 1
+        if len(sqllist) > 0:
+            sql_string = " AND " + " AND ".join(sqllist)
+            return sql_string, args
+        else:
+            return "", ()
+
     def __deactivate(self):
         """Deaktiviert alle Armeen in der inactive Liste.
         
@@ -327,14 +355,21 @@ class Armee(Feld):
             sqllist = []
             args = ()
             for entry in self.__inactive_entries:
-                sqllist.append("(level=%s AND x=%s AND y=%s)")
+                sql2 = "(level=%s AND x=%s AND y=%s"
+                # Armeen ohne IDs die aber mit name,img und r_id passen
+                # sollen nicht deaktiviert werden.
+                sql_ohne, args_ohne = self.__armeen_ohne_ids(
+                        entry["x"], entry["y"])
+                sql2 += sql_ohne + ")"
+                sqllist.append(sql2);
                 args += entry["level"], entry["x"], entry["y"]
+                args += args_ohne
             
             sql += "(" + " OR ".join(sqllist) + ") AND "
             # versteckte Armeen nicht deaktivieren
             sql += "(status is null OR status <> '" + S_HIDDEN + "')"
 
-            # die hier anwesenden Armeen garnicht erst deaktivieren
+            # die hier anwesenden Armeen (mit ID) auch nicht erst deaktivieren
             sqllist = []
             for entry in self.new_entries:
                 sqllist.append("h_id<>%s")
@@ -395,8 +430,6 @@ class Armee(Feld):
                     new[i]["h_id"] = int(row[0])
                 else:
                     print "Keine ID fuer", new[i]["name"], "gefunden.<br />"
-                    del new[i]
-                    i -= 1
             elif "h_id" not in new[i]:
                 print "Konnte eine Armee nicht identifizieren!<br/>"
                 del new[i]

@@ -994,7 +994,10 @@ if __name__ == '__main__':
                 url = "/delete/armee/" + str(h_id)
                 if confirmation and ausgabe.test_referer(url):
                     armee.delete()
-                    ausgabe.redirect("/show/reich/" + str(armee.owner), 303)
+                    if armee.owner != None:
+                        ausgabe.redirect("/show/reich/" + str(armee.owner), 303)
+                    else:
+                        ausgabe.redirect("/delete", 303)
                 else:
                     ausgabe.print_header("Armee " + h_id + " l&ouml;schen")
                     armee.show()

@@ -577,20 +577,24 @@ def small_map(x, y, level="N", sicht=2, imported=False):
                 row += str(size) + '/' + terrain.entry["terrain"]
                 row += '.gif);">'
 
+                detail_link = False
                 if (show_doerfer and dorf.has(x,y)
                         and dorf.get(x,y)["rittername"] != "."):
                     color = dorf.get(x,y)['allyfarbe']
                     row += __detail_link(x, y, level, color, new_window)
+                    detail_link = True
                 elif show_armeen and armee.has(x,y):
                     color = None
                     row += __detail_link(x, y, level, color, new_window)
+                    detail_link = True
 
                 if show_doerfer and dorf.has(x,y):
                     row += __dorf(dorf, x, y, terrain)
                 if show_armeen:
                     row += __armeen(armee, x, y)
 
-                row += '</a></td>\n'
+                if detail_link: row += '</a>'
+                row += '</td>\n'
                 karte += row
             else:
                 karte += '<td></td>\n'

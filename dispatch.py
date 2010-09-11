@@ -51,12 +51,9 @@ if __name__ == '__main__':
         print "\nKeine REQUEST_METHOD"
     elif os.environ['REQUEST_METHOD'] == "OPTIONS":
         # "preflight"
-        print "Access-Control-Allow-Methods: POST"
+        print "Access-Control-Allow-Methods: POST, GET"
         print "Access-Control-Allow-Headers: Content-type"
         print "Access-Control-Max-Age: 86400\n" # 24 Stunden
-    elif os.environ['REQUEST_METHOD'] != "POST":
-        print "Status: 405 Method Not Allowed\n"
-        print "HTTP-Methode nicht erlaubt"
     else:
         form = cgi.FieldStorage()
         valid = False

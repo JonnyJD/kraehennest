@@ -44,16 +44,22 @@ def process(doc):
 
 if __name__ == '__main__':
     # Cross-Origin-Resource Sharing
-    # noetig fuer cross-site-xmlhttprequest des Auges
+    # noetig fuer cross-site-xmlhttprequest des Auges (einige Browser)
     print "Access-Control-Allow-Origin: http://www.ritterburgwelt.de"
     print "Access-Control-Allow-Credentials: true"
     if 'REQUEST_METHOD' not in os.environ:
         print "\nKeine REQUEST_METHOD"
     elif os.environ['REQUEST_METHOD'] == "OPTIONS":
         # "preflight"
-        print "Access-Control-Allow-Methods: POST, GET"
+        print "Access-Control-Allow-Methods: POST"
         print "Access-Control-Allow-Headers: Content-type"
         print "Access-Control-Max-Age: 86400\n" # 24 Stunden
+    elif os.environ['REQUEST_METHOD'] != "POST":
+        print "Status: 405 Method Not Allowed"
+        print "Allow: POST, OPTIONS"
+        print "Content-type: text/plain\n"
+        print "Dateneingabe:"
+        print os.environ['REQUEST_METHOD'], "Methode nicht zugelassen."
     else:
         form = cgi.FieldStorage()
         valid = False

@@ -67,6 +67,10 @@ if __name__ == "__main__":
         print '<h2>Wirtschaft</h2>'
         print ausgabe.link("/show/preise", "Preise")
         print ausgabe.link("/show/rezepte", "Rezepte", br=True)
+        print ausgabe.link("/show/rezepte/gueter", "G&uuml;ter", br=True)
+        print ausgabe.link("/show/rezepte/gegenstaende",
+                                        "Gegenst&auml;nde", br=True)
+        print ausgabe.link("/show/rezepte/runen", "Runen", br=True)
         print '</div>'
     # Adminbereich
     if config.is_admin():

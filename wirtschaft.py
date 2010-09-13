@@ -22,7 +22,7 @@ def translate(column):
     @return: Anzeigename (mit HTML entities)
     @rtype: C{StringType}
     """
-    dictionary = {'aktdatum': "zuletzt gesehen"}
+    dictionary = {'rezept_id': "ID", 'rezept.name': "Rezeptname"}
     if column in dictionary:
         return dictionary[column]
     else:
@@ -207,11 +207,31 @@ class Rezept(Feld):
         tabelle = ausgabe.Tabelle()
         for col in cols:
             tabelle.addColumn(translate(col))
-        for ware in waren:
-            line = []
-            ware = ausgabe.escape_row(ware)
-            for i in range(0, len(ware)):
-                line.append(ware[i])
+        if len(cols) < 4:
+            offset = 1 # Rezeptname faellt bei Gegenstaenden weg
+        else:
+            offset = 0
+        i = 0
+        while i < len(waren):
+            row = ausgabe.escape_row(waren[i])
+            line = [row[0]]
+            if len(cols) > 3:
+                line.append(row[1]) # Rezeptname
+            produkt = ""
+            kosten = ""
+            current_id = row[0]
+            while i < len(waren) and current_id == waren[i][0]:
+                row = ausgabe.escape_row(waren[i])
+                menge = row[3-offset]
+                if menge > 0:
+                    if len(produkt) > 0: produkt += "<br />"
+                    produkt += str(menge) + " " + row[2-offset]
+                else:
+                    if len(kosten) > 0: kosten += "<br />"
+                    kosten += str(menge*-1) + " " + row[2-offset]
+                i += 1
+            line.append(produkt)
+            line.append(kosten)
             tabelle.addLine(line)
         return tabelle
 
@@ -221,21 +241,98 @@ class Rezept(Feld):
         @return: L{Tabelle<ausgabe.Tabelle>}
         """
 
-        cols = ["rezept.name", "ware.name", "produktion.menge"]
+        cols = ["rezept_id", "rezept.name"]
+        cols += ["ware.name", "produktion.menge"]
         sql = "SELECT " + ", ".join(cols)
-        sql += " FROM rezept JOIN produktion ON"
-        sql += " rezept.rezept_id = produktion.rezept JOIN ware ON"
-        sql += " produktion.ware = ware.ware_id"
-        sql += " ORDER BY rezept.name ASC, produktion.menge ASC"
+        sql += " FROM rezept"
+        sql += " JOIN produktion ON rezept.rezept_id = produktion.rezept"
+        sql += " JOIN ware ON produktion.ware = ware.ware_id"
+        sql += " ORDER BY rezept_id ASC, ware_id ASC"
 
         try:
             self.cursor.execute(sql)
             waren = self.cursor.fetchall()
+            cols = ["rezept_id", "rezept.name"]
+            cols += ["Produkt", "Kosten"]
             return self.__list(cols, waren)
         except rbdb.Error, e:
             util.print_html_error(e)
             return None
 
+    def list_gueter(self):
+        """Gibt eine Tabelle aller Gueter aus
+        
+        @return: L{Tabelle<ausgabe.Tabelle>}
+        """
+
+        cols = ["rezept_id", "rezept.name"]
+        cols += ["ware.name", "produktion.menge"]
+        sql = "SELECT " + ", ".join(cols)
+        sql += " FROM rezept"
+        sql += " JOIN produktion ON rezept.rezept_id = produktion.rezept"
+        sql += " JOIN ware ON produktion.ware = ware.ware_id"
+        sql += " WHERE rezept_id < 100"
+        sql += " ORDER BY rezept_id ASC, ware_id ASC"
+
+        try:
+            self.cursor.execute(sql)
+            waren = self.cursor.fetchall()
+            cols = ["rezept_id", "rezept.name"]
+            cols += ["Produkt", "Kosten"]
+            return self.__list(cols, waren)
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return None
+
+    def list_gegenstaende(self):
+        """Gibt eine Tabelle aller Gegenstaende aus
+        
+        @return: L{Tabelle<ausgabe.Tabelle>}
+        """
+
+        cols = ["rezept_id", "ware.name", "produktion.menge"]
+        sql = "SELECT " + ", ".join(cols)
+        sql += " FROM rezept"
+        sql += " JOIN produktion ON rezept.rezept_id = produktion.rezept"
+        sql += " JOIN ware ON produktion.ware = ware.ware_id"
+        sql += " WHERE rezept_id > 100 AND rezept_id < 4000"
+        sql += " ORDER BY rezept_id ASC, ware_id ASC"
+
+        try:
+            self.cursor.execute(sql)
+            waren = self.cursor.fetchall()
+            cols = ["rezept_id"]
+            cols += ["Produkt", "Kosten"]
+            return self.__list(cols, waren)
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return None
+
+    def list_runen(self):
+        """Gibt eine Tabelle aller Runen aus
+        
+        @return: L{Tabelle<ausgabe.Tabelle>}
+        """
+
+        cols = ["rezept_id", "rezept.name"]
+        cols += ["ware.name", "produktion.menge"]
+        sql = "SELECT " + ", ".join(cols)
+        sql += " FROM rezept"
+        sql += " JOIN produktion ON rezept.rezept_id = produktion.rezept"
+        sql += " JOIN ware ON produktion.ware = ware.ware_id"
+        # TODO: interessant sind hier wohl nur die veraenderbaren: id < 4000
+        sql += " WHERE rezept.name LIKE '%Rune'"
+        sql += " ORDER BY rezept_id ASC, ware_id ASC"
+
+        try:
+            self.cursor.execute(sql)
+            waren = self.cursor.fetchall()
+            cols = ["rezept_id", "rezept.name"]
+            cols += ["Produkt", "Kosten"]
+            return self.__list(cols, waren)
+        except rbdb.Error, e:
+            util.print_html_error(e)
+            return None
 
 # Aufruf als Skript
 if __name__ == '__main__':
@@ -254,6 +351,24 @@ if __name__ == '__main__':
             rezept = Rezept()
             rezepttabelle = rezept.list_all()
             print "Anzahl Rezepte:", rezepttabelle.length()
+            rezepttabelle.show()
+        elif form["list"].value == "gueter":
+            ausgabe.print_header("G&uuml;terrezepte")
+            rezept = Rezept()
+            rezepttabelle = rezept.list_gueter()
+            print "Anzahl G&uuml;terrezepte:", rezepttabelle.length()
+            rezepttabelle.show()
+        elif form["list"].value == "gegenstaende":
+            ausgabe.print_header("Gegenstandsrezepte")
+            rezept = Rezept()
+            rezepttabelle = rezept.list_gegenstaende()
+            print "Anzahl Gegenstandsrezepte:", rezepttabelle.length()
+            rezepttabelle.show()
+        elif form["list"].value == "runen":
+            ausgabe.print_header("Runenrezepte")
+            rezept = Rezept()
+            rezepttabelle = rezept.list_runen()
+            print "Anzahl Runenrezepte:", rezepttabelle.length()
             rezepttabelle.show()
     else:
         ausgabe.print_header("Wirtschaft")

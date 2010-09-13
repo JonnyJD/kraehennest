@@ -80,7 +80,7 @@ def print_error_message(message, floating=False):
     print '<div style="'
     if floating:
         print 'position:relative; z-index:99;'
-        print ' left:70px; top:25px; padding:3px;'
+        print ' left:70px; top:25px; max-width:730px; padding:3px;'
     print ' color:red; background-color:black;">'
     print message
     print '</div>'

@@ -8,14 +8,18 @@ import config
 class User:
     """Ein eingeloggter Benutzer des Nestes"""
 
-    def __init__(self):
+    def __init__(self, name=None):
         """erstellt eine Instanz fuer den aktuell eingeloggten Benutzer
         """
 
-        self.name = config.get_username()
-        """Benutzername/Login
-        @type: C{StringType}
-        """
+        if name == None:
+            self.name = config.get_username()
+            """Benutzername/Login
+            @type: C{StringType}
+            """
+        else:
+            self.name = name
+
         sql = "SELECT r_id, rittername, last_seen"
         sql += " FROM versionen"
         sql += " LEFT JOIN ritter ON r_id = ritternr"

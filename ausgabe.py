@@ -39,6 +39,31 @@ def test_referer(url):
     else:
         return False
 
+def redirect(url, code=302):
+    """Sendet einen HTTP Redirect
+
+    code:       
+        - 301 fuer eine permanente Weiterleitung,
+        - 302 als standard temporaere W.
+        - 303 GET nach der Ausfuehrung von Befehlen (hier wichtig),
+        - 307 temporaere Weiterleitung, bleibe bei POST
+
+    @param code: http code (301,302,303,307)
+    @type code: C{IntType}
+    @param url: Die URL ohne host
+    @type url: C{StringType}
+    """
+    if code == 301:
+        print 'Status: 301 Moved Permanently'
+    elif code == 302:
+        print 'Status: 302 Found'
+    elif code == 303:
+        print 'Status: 303 See Other'
+    elif code == 307:
+        print 'Status: 307 Temporary Redirect'
+    print 'Location: ' + url +'\n'
+
+
 def print_header(title=None, styles=None):
     """Gibt den HTML-Header aus
 

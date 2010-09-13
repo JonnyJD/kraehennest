@@ -463,50 +463,50 @@ def create_styles(size, fontsize,
     """erstellt ein passendes Stylesheet
     """
 
-    text = '#karte tr td {'
-    text += '    padding:0px;'
-    text += '    height: ' + str(size) + 'px;'
-    text += '    width: ' + str(size) + 'px;'
-    text += '    background-repeat:no-repeat;'
-    text += '    font-size: ' + str(fontsize) + 'pt;'
-    text += '    text-align:center;'
-    text += '}'
-    text += 'div.armeen {'
-    text += '    margin-left: ' + str(fontsize-5) + 'px;'
+    text = '#karte tr td {\n'
+    text += '    padding:0px;\n'
+    text += '    height: ' + str(size) + 'px;\n'
+    text += '    width: ' + str(size) + 'px;\n'
+    text += '    background-repeat:no-repeat;\n'
+    text += '    font-size: ' + str(fontsize) + 'pt;\n'
+    text += '    text-align:center;\n'
+    text += '}\n'
+    text += 'div.armeen {\n'
+    text += '    margin-left: ' + str(fontsize-5) + 'px;\n'
     if show_armeen and not show_dorf:
-        text += '    margin-top:5px;'
-    text += '    text-align:left;'
-    text += '    max-height: ' + str(fontsize-5) + 'px;'
-    text += '}'
-    text += 'span.armee_dark {'
-    text += '    display: inline-block;'
+        text += '    margin-top:5px;\n'
+    text += '    text-align:left;\n'
+    text += '    max-height: ' + str(fontsize-5) + 'px;\n'
+    text += '}\n'
+    text += 'span.armee_dark {\n'
+    text += '    display: inline-block;\n'
     if fontsize > 8:
-        text += '    height: ' + str(fontsize-5) + 'px;'
-        text += '    width: ' + str(fontsize-5) + 'px;'
-        text += '    border: 1px solid white;'
+        text += '    height: ' + str(fontsize-5) + 'px;\n'
+        text += '    width: ' + str(fontsize-5) + 'px;\n'
+        text += '    border: 1px solid white;\n'
     else:
-        text += '    height: 0px;'
-        text += '    width: 0px;'
-    text += '}'
-    text += 'span.armee_bright {'
-    text += '    display: inline-block;'
+        text += '    height: 0px;\n'
+        text += '    width: 0px;\n'
+    text += '}\n'
+    text += 'span.armee_bright {\n'
+    text += '    display: inline-block;\n'
     if fontsize > 8:
-        text += '    height: ' + str(fontsize-5) + 'px;'
-        text += '    width: ' + str(fontsize-5) + 'px;'
-        text += '    border: 1px solid black;'
+        text += '    height: ' + str(fontsize-5) + 'px;\n'
+        text += '    width: ' + str(fontsize-5) + 'px;\n'
+        text += '    border: 1px solid black;\n'
     else:
-        text += '    height: 0px;'
-        text += '    width: 0px;'
-    text += '}'
-    text += 'td.navi, div.navi{'
+        text += '    height: 0px;\n'
+        text += '    width: 0px;\n'
+    text += '}\n'
+    text += 'td.navi, div.navi{\n'
     if background:
-        text += '    background-color:#333333;'
-    text += '    font-weight:bold;'
-    text += '    font-size:12pt;'
-    text += '}'
+        text += '    background-color:#333333;\n'
+    text += '    font-weight:bold;\n'
+    text += '    font-size:12pt;\n'
+    text += '}\n'
     return text
 
-def small_map(x, y, level="N", sicht=2):
+def small_map(x, y, level="N", sicht=2, imported=False):
     """Eine kleine integrierbare Karte
 
     vorher sollte L{create_styles<karte.create_styles>} abgesetzt werden
@@ -517,6 +517,8 @@ def small_map(x, y, level="N", sicht=2):
     @type y: C{IntType}
     @param sicht: Sichtweite vom Mittelpunkt
     @type sicht: C{IntType}
+    @param imported: Karte wird woanders integriert
+    @type imported: C{BooleanType}
     """
 
     from dorf import Dorf
@@ -542,46 +544,70 @@ def small_map(x, y, level="N", sicht=2):
 
     terrain = Terrain()
     terrain.fetch_data(level, x - sicht, x + sicht, y - sicht, y + sicht)
+    xmin = x - sicht; xmax = x + sicht
+    ymin = y - sicht; ymax = y + sicht
 
-    width = size * (terrain.xmax - terrain.xmin + 1 + 2)
+    if imported:
+        achsen = False
+        new_window = True
+    else:
+        achsen = True
+        new_window = False
+
+    if achsen:
+        width = size * (sicht + 2)
+    else:
+        width = size * (sicht)
     karte = '\n\n<table id="karte" style="width:' + str(width) + 'px;">\n'
-    karte += '<tr style="height:' + str(size) + 'px;"><td></td>\n'
-    # X - Achse
-    for x in range(terrain.xmin, terrain.xmax + 1):
-        karte += '<td>' + str(x) + '</td>\n'
-    for y in range(terrain.ymin, terrain.ymax + 1):
+    if achsen:
+        # X - Achse
+        karte += '<tr style="height:' + str(size) + 'px;"><td></td>\n'
+        for x in range(xmin, xmax + 1):
+            karte += '<td>' + str(x) + '</td>\n'
+        karte += '</tr>\n'
+    for y in range(ymin, ymax + 1):
         karte += '<tr style="height:' + str(size) + 'px;">\n'
-        karte += '<td>' + str(y)  + '</td>\n' # Y - Achse
-        for x in range(terrain.xmin, terrain.xmax + 1):
+        if achsen:
+            # Y - Achse
+            karte += '<td>' + str(y)  + '</td>\n'
+        for x in range(xmin, xmax + 1):
             if terrain.has(x,y): # Kartenbereich
                 terrain.get(x,y)
                 row = '<td style="background-image:url(/img/terrain/'
                 row += str(size) + '/' + terrain.entry["terrain"]
                 row += '.gif);">'
 
+                detail_link = False
                 if (show_doerfer and dorf.has(x,y)
                         and dorf.get(x,y)["rittername"] != "."):
                     color = dorf.get(x,y)['allyfarbe']
-                    row += __detail_link(x, y, level, color, new_window=False)
+                    row += __detail_link(x, y, level, color, new_window)
+                    detail_link = True
                 elif show_armeen and armee.has(x,y):
                     color = None
-                    row += __detail_link(x, y, level, color, new_window=False)
+                    row += __detail_link(x, y, level, color, new_window)
+                    detail_link = True
 
                 if show_doerfer and dorf.has(x,y):
                     row += __dorf(dorf, x, y, terrain)
                 if show_armeen:
                     row += __armeen(armee, x, y)
 
-                row += '</a></td>\n'
+                if detail_link: row += '</a>'
+                row += '</td>\n'
                 karte += row
             else:
                 karte += '<td></td>\n'
-        # y - Achse
-        karte += '<td>' + str(y) + '</td></tr>\n'
-    # X - Achse
-    karte += '<tr style="height:' + str(size) + 'px;"><td></td>\n'
-    for x in range(terrain.xmin, terrain.xmax + 1):
-        karte += '<td>' + str(x) + '</td>\n'
+        if achsen:
+            # y - Achse
+            karte += '<td>' + str(y) + '</td>'
+        karte += '</tr>\n'
+    if achsen:
+        # X - Achse
+        karte += '<tr style="height:' + str(size) + 'px;"><td></td>\n'
+        for x in range(xmin, xmax + 1):
+            karte += '<td>' + str(x) + '</td>\n'
+        karte += '</tr>\n'
     karte += '</table>\n'
     return karte
 
@@ -617,6 +643,14 @@ if __name__ == '__main__':
     if "list" in form:
         print '<h1>' + title + '</h1>'
         list_maps()
+    elif "sicht" in form:
+        print '<style type="text/css">'
+        print create_styles(32, 9)#, show_armeen, show_dorf, background)
+        print 'body { margin:0px; }'
+        print '</style>\n'
+        print small_map(int(form["x"].value), int(form["y"].value),
+                form["level"].value, int(form["sicht"].value),
+                imported=True)
     else:
         # Zeige eine Karte
 
@@ -723,7 +757,7 @@ if __name__ == '__main__':
             if show_armeen:
                 # Armeedetail
                 print '<div id="armeedetail" style="z-index:2; position:fixed;',
-                print 'top:170px; right:5px; width:13em; min-height:10em;',
+                print 'top:170px; right:5px; width:15em; min-height:10em;',
                 print 'font-size:9pt; background-color:#333333;',
                 print 'padding:5px;"><div>&nbsp;</div></div>'
 

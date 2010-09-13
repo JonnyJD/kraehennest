@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 from feld import Feld
 from reich import get_ritter_id_form
 import reich
+from user import User
 import ausgabe
 
 
@@ -160,6 +161,21 @@ class Armee(Feld):
         else:
             ausgabe.print_important("darf nur der Admin freigegeben")
 
+    def deactivate(self):
+        """Deaktiviert die Armee, also zeigt sie nicht mehr auf der Karte
+        """
+
+        if config.is_admin():
+            sql = "UPDATE armeen"
+            sql += " SET active = 0"
+            sql += " WHERE h_id = %s"
+            if util.sql_execute(sql, self.id) > 0:
+                ausgabe.print_important("wurde deaktiviert")
+            else:
+                ausgabe.print_important("wurde nicht deaktiviert")
+        else:
+            ausgabe.print_important("darf nur der Admin deaktivieren")
+
 
     def __is(self, is_int, entry, mandatory, db_col, key, length):
         """Prueft einen Wert  auf korrekten Typ.
@@ -296,6 +312,34 @@ class Armee(Feld):
         else:
             return False
 
+    def __armeen_ohne_ids(self, x, y):
+        """Listet die Armeen ohne bekannte IDs als sql_string, args
+
+        @param x: X-Koordinate
+        @param y: Y-Koordinate
+        @rtype: C{StringType}, C{ArgList}
+        """
+
+        sqllist = []
+        args = ()
+        i = 0
+        new = self.new_entries
+        while i < len(new):
+            if ("h_id" not in new[i] and "r_id" in new[i]
+                    and new[i]["x"] == x and new[i]["y"] == y):
+                # in genau diesem Fall wollen wir das deaktivieren verhindern
+                sqllist.append("(name <> %s OR img <> %s OR r_id <> %s)")
+                args += new[i]["name"], new[i]["img"], new[i]["r_id"]
+                # danach werden diese Armeen ohne IDs nicht weiter verarbeitet
+                del new[i]
+            else:
+                i += 1
+        if len(sqllist) > 0:
+            sql_string = " AND " + " AND ".join(sqllist)
+            return sql_string, args
+        else:
+            return "", ()
+
     def __deactivate(self):
         """Deaktiviert alle Armeen in der inactive Liste.
         
@@ -311,14 +355,21 @@ class Armee(Feld):
             sqllist = []
             args = ()
             for entry in self.__inactive_entries:
-                sqllist.append("(level=%s AND x=%s AND y=%s)")
+                sql2 = "(level=%s AND x=%s AND y=%s"
+                # Armeen ohne IDs die aber mit name,img und r_id passen
+                # sollen nicht deaktiviert werden.
+                sql_ohne, args_ohne = self.__armeen_ohne_ids(
+                        entry["x"], entry["y"])
+                sql2 += sql_ohne + ")"
+                sqllist.append(sql2);
                 args += entry["level"], entry["x"], entry["y"]
+                args += args_ohne
             
             sql += "(" + " OR ".join(sqllist) + ") AND "
             # versteckte Armeen nicht deaktivieren
             sql += "(status is null OR status <> '" + S_HIDDEN + "')"
 
-            # die hier anwesenden Armeen garnicht erst deaktivieren
+            # die hier anwesenden Armeen (mit ID) auch nicht erst deaktivieren
             sqllist = []
             for entry in self.new_entries:
                 sqllist.append("h_id<>%s")
@@ -379,8 +430,6 @@ class Armee(Feld):
                     new[i]["h_id"] = int(row[0])
                 else:
                     print "Keine ID fuer", new[i]["name"], "gefunden.<br />"
-                    del new[i]
-                    i -= 1
             elif "h_id" not in new[i]:
                 print "Konnte eine Armee nicht identifizieren!<br/>"
                 del new[i]
@@ -433,6 +482,18 @@ class Armee(Feld):
         sql += ", ".join(sqllist)
         sql += " WHERE h_id = %s"
         args += entry["h_id"],
+        if not "update_self" in entry or not entry["update_self"]:
+            # wenn die Armee sich nicht "selbst" sieht
+            # nur aktualisieren (weitere where clause) wenn:
+            sql += " AND ( "
+            # nicht versteckt
+            sql += "(status IS NULL OR status <> '" + S_HIDDEN + "')"
+            # oder
+            sql += " OR "
+            # position hat sich veraendert
+            sql += "(x IS NULL OR x <> %s OR y IS NULL OR y <> %s )"
+            sql += " ) "
+            args += entry["x"], entry["y"]
         return self.try_execute_safe_secondary(sql, args)
 
 
@@ -561,6 +622,8 @@ class Armee(Feld):
                 entry = dict()
                 if row[2] == 174:
                     entry["allyfarbe"] = '#00A000'
+                elif row[2] in config.marked_reiche:
+                    entry["allyfarbe"] = "white"
                 elif row[11] == reich.S_INAKTIV and config.is_kraehe():
                     entry["allyfarbe"] = "#00A000"
                 elif row[11] == reich.S_SCHUTZ and config.is_kraehe():
@@ -593,6 +656,8 @@ class Armee(Feld):
         @rtype: L{Tabelle<ausgabe.Tabelle>}
         """
 
+        # erkenne aktuellen Benutzer
+        user = User()
         tabelle = ausgabe.Tabelle()
         secondary = ["ruf", "max_bp", "max_ap"]
         virtual = ["ritternr", "allicolor", "max_dauer"]
@@ -603,7 +668,7 @@ class Armee(Feld):
                 tabelle.addColumn(translate(cols[i]), 3)
             elif cols[i] == "ap" and cols[i+1] == "max_ap":
                 tabelle.addColumn(translate(cols[i]), 3)
-            elif config.is_admin() and cols[i] == "h_id":
+            elif cols[i] == "h_id":
                 tabelle.addColumn("Admin")
             elif cols[i] not in virtual + secondary:
                 tabelle.addColumn(translate(cols[i]))
@@ -612,7 +677,8 @@ class Armee(Feld):
             armee = ausgabe.escape_row(armee)
             for i in range(0, len(armee)):
                 if cols[i] == "active":
-                    if armee[i] == 1:
+                    active = armee[i]
+                    if active == 1:
                         line.append("Ja")
                     else:
                         line.append('<div style="color:red">Nein</div>')
@@ -629,16 +695,18 @@ class Armee(Feld):
                 elif cols[i] == "img":
                     line.append('<img src="/img/armee/' + armee[i] + '.gif" />')
                 elif cols[i] == "ritternr":
+                    ritter = armee[i]
                     # nachfolgenden Ritternamen verlinken
-                    url = "/show/reich/" + str(armee[i])
+                    url = "/show/reich/" + str(ritter)
                     if cols[i+1] == "allicolor":
-                        if armee[i] is None:
+                        if ritter is None:
                             link = "(nicht existent)"
                         else:
                             link = ausgabe.link(url, armee[i+2], armee[i+1])
-                    else:
+                        line.append(link)
+                    elif cols[i+1] == "rittername":
                         link = ausgabe.link(url, armee[i+1])
-                    line.append(link)
+                        line.append(link)
                 elif cols[i] == "last_seen" and armee[i] != None:
                     string = ausgabe.datetime_delta_string(armee[i])
                     delta = datetime.today() - armee[i]
@@ -661,13 +729,28 @@ class Armee(Feld):
                         line.append(armee[i])
                 elif cols[i] == "status":
                     line.append(status_string(armee[i]))
-                elif config.is_admin() and cols[i] == "h_id":
-                    if armee[i+1] is None: # keine max_dauer
-                        url = "/delete/armee/" + str(armee[i])
-                        line.append(ausgabe.link(url, "[delete]"))
+                elif cols[i] == "h_id":
+                    if (config.is_admin() or user.r_id == ritter):
+                        url = "/deactivate/armee/" + str(armee[i])
+                        cell = '<span style="font-size:8pt;">'
+                        deact_string = "[deact]"
+                        if active:
+                            cell += ausgabe.link(url, deact_string)
+                        else:
+                            cell += '<span style="color:gray;">'
+                            cell += deact_string + '</span>'
+                        cell += "&nbsp;"
+                        if armee[i+1] is None: # keine max_dauer
+                            url = "/delete/armee/" + str(armee[i])
+                            cell += ausgabe.link(url, "[del]")
+                            cell += "&nbsp;"
+                        else:
+                            url = "/free/armee/" + str(armee[i])
+                            cell += ausgabe.link(url, "[free]")
+                        cell += '</span>'
                     else:
-                        url = "/free/armee/" + str(armee[i])
-                        line.append(ausgabe.link(url, "[free]"))
+                        cell = "id: " + str(armee[i])
+                    line.append(cell)
                 elif cols[i-1] in ["ritternr", "allicolor"]:
                     # rittername wurde schon abgehakt
                     pass
@@ -686,6 +769,7 @@ class Armee(Feld):
         cols += ["img", "name", "last_seen"]
         cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
         cols += ["schiffstyp"]
+        cols += ["h_id", "max_dauer"] # zum admin.
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"
@@ -710,8 +794,7 @@ class Armee(Feld):
         cols += ["last_seen"]
         cols += ["strength", "size", "ruf", "bp", "max_bp", "ap", "max_ap"]
         cols += ["schiffstyp"]
-        if config.is_admin():
-            cols += ["h_id", "max_dauer"]
+        cols += ["ritternr", "h_id", "max_dauer"] # zum admin.
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"
@@ -888,9 +971,16 @@ if __name__ == '__main__':
             else:
                 confirmation = False
 
-            if config.is_admin() and form["action"].value == "free":
-                h_id = form["id"].value
-                armee = Armee(h_id)
+            # das nur bei Armeen, aber mehr gibt es auch vorerst nicht
+            h_id = form["id"].value
+            armee = Armee(h_id)
+            user = User()
+            if ((config.is_admin() or user.r_id == armee.owner)
+                    and form["action"].value == "deactivate"):
+                # Hier ist keine Konfirmation noetig
+                armee.deactivate()
+                ausgabe.redirect("/show/reich/" + str(armee.owner), 303)
+            elif config.is_admin() and form["action"].value == "free":
                 ausgabe.print_header("Armee " + h_id + " freigeben")
                 armee.show()
                 url = "/free/armee/" + str(h_id)
@@ -901,14 +991,16 @@ if __name__ == '__main__':
                     url += "/yes"
                     ausgabe.confirmation(message, url)
             elif config.is_admin() and form["action"].value == "delete":
-                h_id = form["id"].value
-                armee = Armee(h_id)
-                ausgabe.print_header("Armee " + h_id + " l&ouml;schen")
-                armee.show()
                 url = "/delete/armee/" + str(h_id)
                 if confirmation and ausgabe.test_referer(url):
                     armee.delete()
+                    if armee.owner != None:
+                        ausgabe.redirect("/show/reich/" + str(armee.owner), 303)
+                    else:
+                        ausgabe.redirect("/delete", 303)
                 else:
+                    ausgabe.print_header("Armee " + h_id + " l&ouml;schen")
+                    armee.show()
                     message = "Wollen sie diese Armee wirklich l&ouml;schen?"
                     url += "/yes"
                     ausgabe.confirmation(message, url)

@@ -49,7 +49,8 @@ class Dorf(Feld):
         @rtype: C{BooleanType}"""
 
         sql = """SELECT koords, dorfname, dorflevel, aktdatum, mauer,
-                        rittername, allis.alli, alliname, allicolor, inaktiv
+                        rittername, allis.alli, alliname, allicolor, inaktiv,
+                        dorf.ritternr
                 FROM dorf INNER JOIN ritter ON dorf.ritternr= ritter.ritternr
                     LEFT OUTER JOIN allis ON ritter.alli=allis.allinr"""
         # so dass die andere clauses angehangen werden koennen:
@@ -71,6 +72,8 @@ class Dorf(Feld):
                             'alliname': row[7], 'allyfarbe': row[8]}
                     if row[5] == "Keiner":
                         self.entries[x,y]["allyfarbe"] = "#00A000"
+                    elif row[10] in config.marked_reiche:
+                        self.entries[x,y]["allyfarbe"] = "white"
                     elif row[9] == reich.S_INAKTIV and config.is_kraehe():
                         farbe = util.color_shade('#00A000', row[8], 0.3)
                         self.entries[x,y]["allyfarbe"] = farbe

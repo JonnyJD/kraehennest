@@ -30,6 +30,7 @@ def list_versions():
     sql += " left JOIN ritter ON r_id = ritternr"
     if config.is_tw():
         sql += " WHERE version like '%TW-Edition%'"
+        sql += " AND username is not NULL"
     elif not config.is_kraehe():
         sql += " WHERE 0" # liste garnichts
     sql += " ORDER BY last_seen DESC"

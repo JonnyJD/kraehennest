@@ -207,28 +207,31 @@ class Rezept(Feld):
         tabelle = ausgabe.Tabelle()
         for col in cols:
             tabelle.addColumn(translate(col))
-        if len(cols) < 4:
-            offset = 1 # Rezeptname faellt bei Gegenstaenden weg
-        else:
-            offset = 0
+        offset = 0
+        if "rezept.name" not in cols:
+            offset -= 1 # Rezeptname faellt bei Gegenstaenden weg
+        if "zeit" in cols:
+            offset += 1 # Rezeptname faellt bei Gegenstaenden weg
         i = 0
         while i < len(waren):
             row = ausgabe.escape_row(waren[i])
             line = [row[0]]
-            if len(cols) > 3:
-                line.append(row[1]) # Rezeptname
+            if "rezept.name" in cols or "zeit" in cols:
+                line.append(row[1])
+            if "rezept.name" in cols and "zeit" in cols:
+                line.append(row[2])
             produkt = ""
             kosten = ""
             current_id = row[0]
             while i < len(waren) and current_id == waren[i][0]:
                 row = ausgabe.escape_row(waren[i])
-                menge = row[3-offset]
+                menge = row[3+offset]
                 if menge > 0:
                     if len(produkt) > 0: produkt += "<br />"
-                    produkt += str(menge) + " " + row[2-offset]
+                    produkt += str(menge) + " " + row[2+offset]
                 else:
                     if len(kosten) > 0: kosten += "<br />"
-                    kosten += str(menge*-1) + " " + row[2-offset]
+                    kosten += str(menge*-1) + " " + row[2+offset]
                 i += 1
             line.append(produkt)
             line.append(kosten)
@@ -241,7 +244,7 @@ class Rezept(Feld):
         @return: L{Tabelle<ausgabe.Tabelle>}
         """
 
-        cols = ["rezept_id", "rezept.name"]
+        cols = ["rezept_id", "rezept.name", "zeit"]
         cols += ["ware.name", "produktion.menge"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM rezept"
@@ -252,7 +255,7 @@ class Rezept(Feld):
         try:
             self.cursor.execute(sql)
             waren = self.cursor.fetchall()
-            cols = ["rezept_id", "rezept.name"]
+            cols = ["rezept_id", "rezept.name", "zeit"]
             cols += ["Produkt", "Kosten"]
             return self.__list(cols, waren)
         except rbdb.Error, e:
@@ -290,7 +293,7 @@ class Rezept(Feld):
         @return: L{Tabelle<ausgabe.Tabelle>}
         """
 
-        cols = ["rezept_id", "ware.name", "produktion.menge"]
+        cols = ["rezept_id", "zeit", "ware.name", "produktion.menge"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM rezept"
         sql += " JOIN produktion ON rezept.rezept_id = produktion.rezept"
@@ -301,7 +304,7 @@ class Rezept(Feld):
         try:
             self.cursor.execute(sql)
             waren = self.cursor.fetchall()
-            cols = ["rezept_id"]
+            cols = ["rezept_id", "zeit"]
             cols += ["Produkt", "Kosten"]
             return self.__list(cols, waren)
         except rbdb.Error, e:
@@ -314,7 +317,7 @@ class Rezept(Feld):
         @return: L{Tabelle<ausgabe.Tabelle>}
         """
 
-        cols = ["rezept_id", "rezept.name"]
+        cols = ["rezept_id", "rezept.name", "zeit"]
         cols += ["ware.name", "produktion.menge"]
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM rezept"
@@ -327,7 +330,7 @@ class Rezept(Feld):
         try:
             self.cursor.execute(sql)
             waren = self.cursor.fetchall()
-            cols = ["rezept_id", "rezept.name"]
+            cols = ["rezept_id", "rezept.name", "zeit"]
             cols += ["Produkt", "Kosten"]
             return self.__list(cols, waren)
         except rbdb.Error, e:

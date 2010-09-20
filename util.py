@@ -117,10 +117,10 @@ def try_executemany_safe(cursor, sql, arglist):
         print_html_error(e)
         return 0
 
-def get_sql_row(sql, args):
+def get_sql_row(sql, args=()):
     """Fuehrt eine Datenbankabfrage aus
 
-    @return: Gewonnene Werte
+    @return: Gewonnene Zeile
     @rtype: C{List}
     """
     conn = rbdb.connect()
@@ -129,6 +129,19 @@ def get_sql_row(sql, args):
     row = cursor.fetchone()
     conn.close()
     return row
+
+def get_sql_rows(sql, args=()):
+    """Fuehrt eine Datenbankabfrage aus
+
+    @return: Gewonnene Tabelle
+    @rtype: C{List}
+    """
+    conn = rbdb.connect()
+    cursor = conn.cursor()
+    try_execute_safe(cursor, sql, args)
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
 
 def sql_execute(sql, args):
     """Fuehrt eine Datenbankaktion aus

@@ -208,6 +208,9 @@ def track_client(node):
             name = client_elems[0].prop("name")
             version = client_elems[0].prop("version")
             update_usage(r_id, name + " " + version)
+        return r_id
+    else:
+        return None
 
 def last_sent(account=None):
     """Gibt die Zeit wann das zugehoerige Reich zuletzt Daten gesendet hat

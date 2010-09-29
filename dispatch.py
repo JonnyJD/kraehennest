@@ -25,12 +25,14 @@ def process(doc):
 
     nodes = data.xpathEval('auge')
     if len(nodes) > 0:
-        util.track_client(nodes[0])
+        r_id = util.track_client(nodes[0])
+    else:
+        r_id = None
 
     nodes = data.xpathEval('rb/armeen')
     if len(nodes) > 0:
         armee = Armee()
-        armee.process_xml(nodes[0])
+        armee.process_xml(nodes[0], r_id)
 
     nodes = data.xpathEval('rb/felder')
     if len(nodes) > 0:

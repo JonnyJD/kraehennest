@@ -340,13 +340,14 @@ class Armee(Feld):
         else:
             return "", ()
 
-    def __deactivate(self):
+    def __deactivate(self, sender_id):
         """Deaktiviert alle Armeen in der inactive Liste.
         
         Gibt die Anzahl der deaktivierten Armeen zurueck.
         Die Werte werden NICHT alle zurueckgesetzt.
         Dies ermoeglicht es zuletzt gesehene Werte noch einzusehen.
 
+        @param sender_id: Sendendes Reich
         @rtype: C{IntType}
         """
 
@@ -366,14 +367,20 @@ class Armee(Feld):
                 args += args_ohne
             
             sql += "(" + " OR ".join(sqllist) + ") AND "
-            # versteckte Armeen nicht deaktivieren
-            sql += "( (status is null OR status <> '" + S_HIDDEN + "')"
-            # es sei denn sie gehoeren einem selbst
-            if "update_self" in entry:
-                sql += " OR r_id = %s )"
-                args += entry["r_id"],
+            if "sicht_versteckt" not in entry:
+                # versteckte Armeen nicht deaktivieren
+                sql += "( (status is null OR status <> '" + S_HIDDEN + "')"
+                # es sei denn sie gehoeren einem selbst
+                if sender_id is not None:
+                    sql += " OR r_id = %s )"
+                    args += sender_id,
+                else:
+                    sql += " OR FALSE )"
+            elif sender_id is not None:
+                sql += "r_id = %s"
+                args += sender_id,
             else:
-                sql += " OR FALSE )"
+                sql += "FALSE"
 
             # die hier anwesenden Armeen (mit ID) auch nicht erst deaktivieren
             sqllist = []
@@ -574,7 +581,7 @@ class Armee(Feld):
         return num_inserted
 
 
-    def exec_queue(self):
+    def exec_queue(self, sender_id):
         """Die TODO-Liste wird abgearbeitet.
 
         Die Eintraege werden als Aktualisierung oder Anfuegung
@@ -583,13 +590,14 @@ class Armee(Feld):
 
         Die Anzahl der deaktivierten, aktualisierten und der neuen Eintraege
         wird zurueckgegeben.
+        @param sender_id: Sendendes Reich
         @rtype: C{IntType}, C{IntType}, C{IntType}
         """
 
         self.__get_ritter_ids()
         self.__get_held_ids()
         # setze alle Armeen die im Sichtbereich waeren auf inaktiv
-        inactive_count = self.__deactivate()
+        inactive_count = self.__deactivate(sender_id)
         update_count = self.__check_old()
         insert_count = self.__insert()
         return inactive_count, update_count, insert_count
@@ -857,7 +865,7 @@ class Armee(Feld):
             util.print_html_error(e)
             return None
 
-    def process_xml(self, node):
+    def process_xml(self, node, sender_id):
         """Liest Daten aus einem XML-Dokument ein"""
 
         sicht = util.get_view_type(node)
@@ -869,10 +877,12 @@ class Armee(Feld):
                 entry["level"] = feld.prop("level")
                 entry["x"] = feld.prop("x");  entry["y"] = feld.prop("y")
                 self.queue_inactive(entry)
-        elif sicht == "armee":
+        elif sicht in ["armee", "versteckt"]:
             # alle Armeen die gleiche Position, deshalb die 1. nehmen
             position = node.xpathEval('armee/position')[0] 
             entry = dict()
+            if sicht == "versteckt":
+                entry["sicht_versteckt"] = True
             entry["level"] = position.prop("level")
             entry["x"] = position.prop("x"); entry["y"] = position.prop("y")
             self.queue_inactive(entry)
@@ -949,7 +959,7 @@ class Armee(Feld):
             #    print entry, " eingehangen<br />"
 
         # fuehre updates aus
-        inactive, updated, added = self.exec_queue()
+        inactive, updated, added = self.exec_queue(sender_id)
         if (inactive + updated + added) > 0:
             print "Es wurden", inactive, "Armeen deaktiviert,",
             print updated, "aktualisiert und",

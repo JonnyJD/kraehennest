@@ -367,7 +367,13 @@ class Armee(Feld):
             
             sql += "(" + " OR ".join(sqllist) + ") AND "
             # versteckte Armeen nicht deaktivieren
-            sql += "(status is null OR status <> '" + S_HIDDEN + "')"
+            sql += "( (status is null OR status <> '" + S_HIDDEN + "')"
+            # es sei denn sie gehoeren einem selbst
+            if "update_self" in entry:
+                sql += " OR r_id = %s )"
+                args += entry["r_id"],
+            else:
+                sql += " OR FALSE )"
 
             # die hier anwesenden Armeen (mit ID) auch nicht erst deaktivieren
             sqllist = []

@@ -914,7 +914,7 @@ class Armee(Feld):
                     entry["r_id"] = ritter_elems[0].prop("r_id")
                     # muss dann die aktuelle eigene Armee sein
                     entry["update_self"] = True
-                    if sicht == "keine":
+                    if sicht in ["keine", "versteckt"]:
                         # nur sich selbst als versteckt markieren
                         entry["status"] = S_HIDDEN
                 else:

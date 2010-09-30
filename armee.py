@@ -451,12 +451,13 @@ class Armee(Feld):
             i += 1
 
 
-    def __update(self, entry):
+    def __update(self, entry, sender_id):
         """Datenbank mit Daten aus einem Eintrag aktualisieren
 
         Gibt den Erfolgsstatus zurueck
         @param entry: Zu pruefender Eintrag
         @type entry: C{Dict}
+        @param sender_id: Sendendes Reich
         @rtype: C{BooleanType}
         """
 
@@ -479,7 +480,10 @@ class Armee(Feld):
             sqllist.append("status='" + S_HIDDEN + "'")
         else:
             sqllist.append("active=1")
-            sqllist.append("status=NULL")
+            if sender_id is not None:
+                if int(entry["r_id"]) != int(sender_id):
+                    # nur fremde sichtbare Armeen sind sicher nicht versteckt
+                    sqllist.append("status=NULL")
 
         # Sonderbehandlung von Monstern mit veraendertem Standort
         if entry["r_id"] == 174 and "strength" not in entry:
@@ -499,6 +503,10 @@ class Armee(Feld):
             # wenn die Armee sich nicht "selbst" sieht
             # nur aktualisieren (weitere where clause) wenn:
             sql += " AND ( "
+            if sender_id is not None:
+                # es eine eigene Armeen ist (da sieht man auch versteckte)
+                sql += " r_id = %s OR "
+                args += sender_id,
             # nicht versteckt
             sql += "(status IS NULL OR status <> '" + S_HIDDEN + "')"
             # oder
@@ -510,13 +518,14 @@ class Armee(Feld):
         return self.try_execute_safe_secondary(sql, args)
 
 
-    def __check_old(self):
+    def __check_old(self, sender_id):
         """Gleicht die einzufuegenden Armeen mit in der DB vorhandenen ab.
         
         Identische Eintragungen werden aus der TODO-Liste entnommen
         und Aenderungen werden sofort ausgefuehrt.
 
         Gibt die Anzahl der aktualisierten Armeen zurueck.
+        @param sender_id: Sendendes Reich
         @rtype: C{IntType}
         """
 
@@ -536,7 +545,7 @@ class Armee(Feld):
                 i = 0
                 while i < len(new):
                     if (new[i]["h_id"] == row[0]):
-                        if self.__update(new[i]):
+                        if self.__update(new[i], sender_id):
                             num_updated += 1
                         del new[i]
                     else:
@@ -598,7 +607,7 @@ class Armee(Feld):
         self.__get_held_ids()
         # setze alle Armeen die im Sichtbereich waeren auf inaktiv
         inactive_count = self.__deactivate(sender_id)
-        update_count = self.__check_old()
+        update_count = self.__check_old(sender_id)
         insert_count = self.__insert()
         return inactive_count, update_count, insert_count
 

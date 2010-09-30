@@ -478,11 +478,16 @@ class Armee(Feld):
         elif "status" in entry and entry["status"] == S_HIDDEN:
             sqllist.append("active=1")
             sqllist.append("status='" + S_HIDDEN + "'")
+        elif "update_self" in entry:
+            # ist selbst sichtende Armee und meldet "hidden" nicht
+            sqllist.append("active=1")
+            sqllist.append("status=NULL")
         else:
             sqllist.append("active=1")
             if sender_id is not None:
                 if int(entry["r_id"]) != int(sender_id):
                     # nur fremde sichtbare Armeen sind sicher nicht versteckt
+                    # zzgl. zu obigen mit update_self und not hidden
                     sqllist.append("status=NULL")
 
         # Sonderbehandlung von Monstern mit veraendertem Standort
@@ -499,23 +504,17 @@ class Armee(Feld):
         sql += ", ".join(sqllist)
         sql += " WHERE h_id = %s"
         args += entry["h_id"],
-        if not "update_self" in entry or not entry["update_self"]:
-            # wenn die Armee sich nicht "selbst" sieht
-            # nur aktualisieren (weitere where clause) wenn:
-            sql += " AND ( "
-            if sender_id is not None:
-                # es eine eigene Armeen ist (da sieht man auch versteckte)
-                sql += " r_id = %s OR "
-                args += sender_id,
-            # nicht versteckt
-            sql += "(status IS NULL OR status <> '" + S_HIDDEN + "')"
-            # oder
-            sql += " OR "
-            # position hat sich veraendert
-            sql += "(x IS NULL OR x <> %s OR y IS NULL OR y <> %s )"
-            sql += " ) "
-            args += entry["x"], entry["y"]
-        return self.try_execute_safe_secondary(sql, args)
+        updated = self.try_execute_safe_secondary(sql, args)
+
+        # entferne den versteckt-status auch, wenn sich die Position aendert
+        sql = "UPDATE armeen SET status=NULL"
+        sql += " WHERE h_id = %s"
+        args = (entry["h_id"],)
+        sql += " AND (x IS NULL OR x <> %s OR y IS NULL OR y <> %s )"
+        args += entry["x"], entry["y"]
+        updated += self.try_execute_safe_secondary(sql, args)
+
+        return updated
 
 
     def __check_old(self, sender_id):

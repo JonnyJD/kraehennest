@@ -507,12 +507,13 @@ class Armee(Feld):
         updated = self.try_execute_safe_secondary(sql, args)
 
         # entferne den versteckt-status auch, wenn sich die Position aendert
-        sql = "UPDATE armeen SET status=NULL"
-        sql += " WHERE h_id = %s"
-        args = (entry["h_id"],)
-        sql += " AND (x IS NULL OR x <> %s OR y IS NULL OR y <> %s )"
-        args += entry["x"], entry["y"]
-        updated += self.try_execute_safe_secondary(sql, args)
+        if "x" in entry and "y" in entry:
+            sql = "UPDATE armeen SET status=NULL"
+            sql += " WHERE h_id = %s"
+            args = (entry["h_id"],)
+            sql += " AND (x IS NULL OR x <> %s OR y IS NULL OR y <> %s )"
+            args += entry["x"], entry["y"]
+            updated += self.try_execute_safe_secondary(sql, args)
 
         return updated
 

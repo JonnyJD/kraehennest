@@ -105,15 +105,17 @@ def list_too_many_armies():
         return False
 
 def list_dangling_armies():
-    """Listet Armeen mit unbekanntem Ritter"""
+    """Listet Armeen mit unbekanntem oder aufgeloestem Ritter"""
 
     tabelle = ausgabe.Tabelle()
     tabelle.addColumn("Armee")
     tabelle.addColumn("r_id")
     tabelle.addColumn("Admin")
-    sql = "SELECT h_id, name, r_id, max_dauer"
+    sql = "SELECT h_id, name, r_id, max_dauer, top10"
     sql += " FROM armeen"
-    sql += " WHERE r_id NOT IN (SELECT distinct ritternr FROM ritter)"
+    sql += " LEFT JOIN ritter ON r_id=ritternr"
+    sql += " WHERE r_id is not NULL AND r_id NOT IN (113,143,160,172,174)"
+    sql += " AND (top10 is NULL OR top10=0)"
     sql += " ORDER BY r_id"
     try:
         conn = rbdb.connect()
@@ -123,11 +125,14 @@ def list_dangling_armies():
         while row != None:
             row = ausgabe.escape_row(row)
             line = [row[1]]
-            line.append(row[2])
-            if row[3] is None: # kein Soeldner
+            if row[4] == 0:
+                line.append(ausgabe.link("/show/reich/"+str(row[2]), row[2]))
+            else:
+                line.append(row[2])
+            if row[4] is None and row[3] is None: # kein Soeldner
                 url = "/delete/armee/" + str(row[0])
                 line.append(ausgabe.link(url, "[del]"))
-            else:
+            elif row[4] is None:
                 url = "/disown/armee/" + str(row[0])
                 line.append(ausgabe.link(url, "[free]"))
             tabelle.addLine(line)

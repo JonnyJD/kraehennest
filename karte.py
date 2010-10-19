@@ -578,13 +578,13 @@ def small_map(x, y, level="N", sicht=2, imported=False):
                 row += '.gif);">'
 
                 detail_link = False
-                if (show_doerfer and dorf.has(x,y)
-                        and dorf.get(x,y)["rittername"] != "."):
+                if show_doerfer and dorf.has(x,y):
                     color = dorf.get(x,y)['allyfarbe']
-                    row += __detail_link(x, y, level, color, new_window)
-                    detail_link = True
-                elif show_armeen and armee.has(x,y):
+                else:
                     color = None
+                if ((show_doerfer and dorf.has(x,y)
+                        and dorf.get(x,y)["rittername"] != ".")
+                    or (show_armeen and armee.has(x,y))):
                     row += __detail_link(x, y, level, color, new_window)
                     detail_link = True
 

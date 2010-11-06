@@ -905,6 +905,9 @@ class Armee(Feld):
             if len(positions) > 0:
                 if positions[0].hasProp("level"):
                     entry["level"] = positions[0].prop("level")
+                    if entry["level"] == "U100":
+                        print "Das Jagdlevel wird ignoriert.<br />"
+                        continue
                     entry["x"] = positions[0].prop("x")
                     entry["y"] = positions[0].prop("y")
                 else:

@@ -78,6 +78,8 @@ def list_maps():
             layer = layer.join("+");
             if (layer != "armeen+doerfer")
                 link += "/" + layer;
+        } else {
+            link += "/clean";
         }
         for (var i=0; i < form.size.length; i++)
             if (form.size[i].checked)

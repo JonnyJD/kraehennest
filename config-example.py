@@ -14,8 +14,9 @@ db = ""                 #: Name der Datenbank
 
 preisdatei = '../preise'#: Ort der staendig aktualisierten Preisdatei
 
-stunden_deaktivierung_1 = 48    #: Stunden zur 1. Deaktivierung (Armeen?)
-tage_deaktivierung_2 = 7        #: Tage bis zur 2. Deaktivierung (Doerfer?)
+stunden_deaktivierung_1 = 30    #: Stunden zur 1. Deaktivierung (Details?)
+stunden_deaktivierung_2 = 48    #: Stunden zur 2. Deaktivierung (Armeen?)
+tage_deaktivierung_3 = 7        #: Tage bis zur 3. Deaktivierung (Doerfer?)
 tage_neu = 2                    #: Anzahl der Tage fuer den Layer "neu"
 
 marked_reiche = []
@@ -65,6 +66,11 @@ def is_tw(username=None):
     else:
         return False
 
+def allow_details(username=None, floating_message=False):
+    """Ob dem Benutzer Detail-Mouse-Overs angezeigt werden duerfen
+    """
+    return True
+
 def allow_armeen(username=None, floating_message=False):
     """Ob dem Benutzer Armeen angezeigt werden duerfen
     """
@@ -72,6 +78,11 @@ def allow_armeen(username=None, floating_message=False):
 
 def allow_doerfer(username=None, floating_message=False):
     """Ob dem Benutzer Doerfer angezeigt werden duerfen
+    """
+    return True
+
+def allow_hoehlen(username=None, floating_message=False):
+    """Ob dem Benutzer Hoehlen angezeigt werden duerfen
     """
     return True
 

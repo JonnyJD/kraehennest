@@ -38,10 +38,11 @@ def print_area_link(area, levels, name, br=False):
     if area != "":
         area = "/" + area
     print_link(area, name, br=br);
-    for level in levels:
-        link = area + "/u" + str(level)
-        new_name = "U" + str(level)
-        print_link(link, new_name)
+    if config.allow_hoehlen():
+        for level in levels:
+            link = area + "/u" + str(level)
+            new_name = "U" + str(level)
+            print_link(link, new_name)
 
 
 def list_maps():
@@ -60,6 +61,10 @@ def list_maps():
         var x1 = form.x1.value;
         if (document.URL.indexOf("tw/show") != -1) {
             var link = "/tw/show/karte/";
+        } else if (document.URL.indexOf("p/show") != -1) {
+            var link = "/p/show/karte/";
+        } else if (document.URL.indexOf("dr/show") != -1) {
+            var link = "/dr/show/karte/";
         } else {
             var link = "/show/karte/";
         }
@@ -128,8 +133,9 @@ def list_maps():
         print_link("/armeen", "reine Armeekarte", br=True)
         print "(cut)"
     print_link("/clean", "Terrainkarte", br=True)
-    for i in [1,2,3,4]:
-        print_link("/u" + str(i) + "/clean", "U" + str(i))
+    if config.allow_hoehlen():
+        for i in [1,2,3,4]:
+            print_link("/u" + str(i) + "/clean", "U" + str(i))
     print '</div>'
 
     # Formular fuer individuelle Karte
@@ -280,7 +286,7 @@ def center_link(x, y, level="N", text="zur Karte"):
     return nav_link(x, y, x, y, level, text, "center", 0, layer)
 
 def level_link(direction):
-    """Gibt eine Level-link zurueck.
+    """Gibt einen Level-link zurueck.
 
     Linktext ist das Ziellevel.
     @param direction: Ist C{"hoch"} oder C{"runter"}
@@ -363,8 +369,9 @@ def __print_navi(cross=False):
     print '<tr><td></td><td></td><td class="navi">' + level_link("hoch")
     print '</td></tr>'
     print '<tr><td></td><td></td><td class="navi">' + level + '</td></tr>'
-    print '<tr><td></td><td></td><td class="navi">' + level_link("runter")
-    print '</td></tr>'
+    if config.allow_hoehlen():
+        print '<tr><td></td><td></td><td class="navi">' + level_link("runter")
+        print '</td></tr>'
     print '</table>\n'
 
 def __escape(var):
@@ -658,7 +665,7 @@ if __name__ == '__main__':
 
 
         # Bereite gewuenschte Layer und Bereiche vor
-        if "level" in form:
+        if "level" in form and config.allow_hoehlen():
             level = form["level"].value
         else:
             level = 'N'
@@ -750,7 +757,7 @@ if __name__ == '__main__':
         print '</style>\n'
 
         # Detailboxen
-        if config.is_kraehe() or config.is_tw():
+        if config.allow_details():
             # Dorfdetail / Koordinateninfo (deshalb immer)
             print '<div id="dorfdetail" style="z-index:2; position:fixed;',
             print 'top:5px; left:38px; width:85em;',
@@ -850,7 +857,7 @@ if __name__ == '__main__':
                             row += ' class="bright"'
 
                     # Detail-Mouse-Over
-                    if config.is_kraehe() or config.is_tw():
+                    if config.allow_details():
                         row += ' onmouseover="showPos(\''
                         row += str(x) + "," + str(y)
                         if config.is_kraehe() and terrain.entry["typ"]:
@@ -903,6 +910,7 @@ if __name__ == '__main__':
                     row += '>'
 
                     # Detail-Link
+                    # != Details vom Mouse-Over
                     if not config.is_kraehe():
                         show_detail_link = False
                     elif show_armeen and armee.has(x,y):

@@ -10,6 +10,14 @@ ROOT=/var/www/kraehen.org
 NEST=$(ROOT)/nest
 KARTE=$(ROOT)/karte
 
+normal:
+	sed -i '1s/python2/python/' index.py dispatch.py
+	sed -i '1s/python2/python/' karte.py 
+
+arch:
+	sed -i '1s/python$$/python2/' index.py dispatch.py
+	sed -i '1s/python$$/python2/' karte.py
+
 serverconf:
 	echo -e "\
 	# Diese Datei wird mit 'make serverconf' automatisch erstellt\n\

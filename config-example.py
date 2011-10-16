@@ -89,6 +89,13 @@ def allow_hoehlen(username=None, floating_message=False):
 def bounding_box(username=None):
     """Eine Box ueber die die angezeigte Karte nicht hinausgehen darf
     """
+    # namedTuple nur ab python 2.6; sonst muss man ne Class machen
+    #class Bounding_Box:
+    #    def __init__(self, x1, y1, x2, y2):
+    #        self.x1 = x1
+    #        self.y1 = y1
+    #        self.x2 = x2
+    #        self.y2 = y2
     Bounding_Box = collections.namedtuple('Bounding_Box',
             ['x1', 'y1', 'x2', 'y2'])
     return Bounding_Box(x1=0, y1=0, x2=999, y2=999)

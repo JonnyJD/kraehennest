@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """Modul um die Karte anzuzeigen und eine Kartenuebersicht zu generieren"""
 
 import config
@@ -70,6 +70,7 @@ def list_maps():
         }
         link += form.x1.value + "." + form.x2.value + "-";
         link += form.y1.value + "." + form.y2.value;
+        level = "N";
         for (var i=0; i < form.level.length; i++)
             if (form.level[i].checked)
                 level = form.level[i].value;
@@ -166,6 +167,9 @@ def list_maps():
 """
     print """
 </td></tr>
+"""
+    if config.allow_hoehlen():
+        print """
 <tr><td>Level:&nbsp;</td><td colspan="2">
 <input name="level" type="radio" value="N" checked>N
 <input name="level" type="radio" value="u1">U1
@@ -173,6 +177,14 @@ def list_maps():
 <input name="level" type="radio" value="u3">U3
 <input name="level" type="radio" value="u4">U4
 </td></tr>
+"""
+    else:
+        print """
+<tr><td colspan="3">
+<input name="level" type="hidden" value="N">
+</td></tr>
+"""
+    print """
 <tr><td style="vertical-align:top;">Layer:&nbsp;</td><td>
 """
     if allow_armeen:

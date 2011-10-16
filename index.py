@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 """Das ist die Indexseite mit Links zu Uebersichten."""
 
 import config

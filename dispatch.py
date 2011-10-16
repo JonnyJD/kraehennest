@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """Reicht einkommende XML-Dokumente auf passende Module auf"""
 
 import config

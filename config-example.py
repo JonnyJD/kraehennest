@@ -86,5 +86,12 @@ def allow_hoehlen(username=None, floating_message=False):
     """
     return True
 
+def bounding_box(username=None):
+    """Eine Box ueber die die angezeigte Karte nicht hinausgehen darf
+    """
+    Bounding_Box = collections.namedtuple('Bounding_Box',
+            ['x1', 'y1', 'x2', 'y2'])
+    return Bounding_Box(x1=0, y1=0, x2=999, y2=999)
+
 
 # vim:set shiftwidth=4 expandtab smarttab:

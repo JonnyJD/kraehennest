@@ -57,13 +57,13 @@ def list_versions():
             line.append(row[2]) # Version des Auges
             # zuletzt gesehen
             zelle = ausgabe.datetime_delta_color_string(row[3],
-                    timedelta(hours=config.stunden_deaktivierung_1),
-                    timedelta(days=config.tage_deaktivierung_2))
+                    timedelta(hours=config.stunden_deaktivierung_2),
+                    timedelta(days=config.tage_deaktivierung_3))
             line.append(zelle)
             # letzter Zug
             zelle = ausgabe.date_delta_color_string(row[5],
-                    timedelta(hours=config.stunden_deaktivierung_1),
-                    timedelta(days=config.tage_deaktivierung_2))
+                    timedelta(hours=config.stunden_deaktivierung_2),
+                    timedelta(days=config.tage_deaktivierung_3))
             line.append(zelle)
             tabelle.addLine(line)
             row = cursor.fetchone()

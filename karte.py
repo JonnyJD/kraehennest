@@ -10,7 +10,7 @@ if config.debug:
 import ausgabe
 import util
 from types import StringType
-import email.utils
+import email.Utils      # Utils klappt auch vor python 2.5
 import os
 
 viel_armeen = 8

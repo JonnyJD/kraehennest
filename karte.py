@@ -757,11 +757,11 @@ if __name__ == '__main__':
                         armee.ymin-10, armee.ymax+10)
             else:
                 bounding_box = config.bounding_box()
-                real_x1 = min(bounding_box.x1, form["x1"].value)
-                real_y1 = min(bounding_box.y1, form["y1"].value)
-                real_x2 = min(bounding_box.x2, form["x2"].value)
-                real_y2 = min(bounding_box.y2, form["y2"].value)
-                terrain.fetch_data(level, real_x1,real_x2, real_y1, real_y2)
+                real_x1 = max(bounding_box.x1, int(form["x1"].value))
+                real_y1 = max(bounding_box.y1, int(form["y1"].value))
+                real_x2 = min(bounding_box.x2, int(form["x2"].value))
+                real_y2 = min(bounding_box.y2, int(form["y2"].value))
+                terrain.fetch_data(level, real_x1, real_x2, real_y1, real_y2)
         else:
             terrain.fetch_data(level)
 

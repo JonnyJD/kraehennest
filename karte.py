@@ -752,18 +752,21 @@ if __name__ == '__main__':
 
         terrain = Terrain()
         if "x2" in form:
+            bounding_box = config.bounding_box()
             if int(form["x2"].value) >= 999 and show_armeen:
-                terrain.fetch_data(level, armee.xmin-15, armee.xmax+15,
-                        armee.ymin-10, armee.ymax+10)
+                real_x1 = max(bounding_box.x1, armee.xmin-15)
+                real_y1 = max(bounding_box.y1, armee.ymin-10)
+                real_x2 = min(bounding_box.x2, armee.xmax+15)
+                real_y2 = min(bounding_box.y2, armee.ymax+10)
             else:
-                bounding_box = config.bounding_box()
                 real_x1 = max(bounding_box.x1, int(form["x1"].value))
                 real_y1 = max(bounding_box.y1, int(form["y1"].value))
                 real_x2 = min(bounding_box.x2, int(form["x2"].value))
                 real_y2 = min(bounding_box.y2, int(form["y2"].value))
-                terrain.fetch_data(level, real_x1, real_x2, real_y1, real_y2)
+            terrain.fetch_data(level, real_x1, real_x2, real_y1, real_y2)
         else:
-            terrain.fetch_data(level)
+            terrain.fetch_data(level, bounding_box.x1, bounding_box.x2,
+                                        bounding_box.y1, bounding_box.y2)
 
 
         # Formatierungen

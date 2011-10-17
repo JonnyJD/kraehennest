@@ -10,6 +10,8 @@ if config.debug:
 import ausgabe
 import util
 from types import StringType
+import email.utils
+import os
 
 viel_armeen = 8
 """Gibt an ab welcher Armeezahl auf einem Feld weniger Infos gezeigt werden"""
@@ -351,16 +353,7 @@ def __print_navi(cross=False):
         print '<td class="navi">' + __nav_link('&lArr;', 'ost', 24) + '</td>'
         print '<td class="navi">' + __nav_link('&larr;', 'ost', 4) + '</td>'
         print '<td>'
-        if config.is_kraehe() or config.is_tw():
-            # "Home" link
-            if config.is_kraehe():
-                link = "/show/karte/kraehen"
-            elif config.is_tw():
-                link = "/show/karte/osten"
-            if (not (len(layer) == 2
-                and "armeen" in layer and "doerfer" in layer)):
-                link += '/' + "+".join(layer)
-            print ausgabe.link(link, "&bull;")
+        print "<a href=\""+ os.environ["SCRIPT_URL"] +"\">&bull;</a><br />"
         print '</td>',
         print '<td class="navi">' + __nav_link('&rarr;', 'west', 4) + '</td>'
         print '<td class="navi">' + __nav_link('&rArr;', 'west', 24) + '</td>'
@@ -646,6 +639,7 @@ if __name__ == '__main__':
         title = "Kr&auml;henkarten"
     else:
         title = "Kr&auml;henkarte"
+    print 'Last-Modified: ' + email.utils.formatdate(usegmt=True)
     print 'Content-type: text/html; charset=utf-8\n'
     print '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"'
     print '          "http://www.w3.org/TR/html4/loose.dtd">'
@@ -796,6 +790,9 @@ if __name__ == '__main__':
         # Schalter
         print '<div style="z-index:2; position:fixed;'
         print ' bottom:10px; right:20px;" class="navi">'
+        # Soft-Reload
+        print "<a href=\""+ os.environ["SCRIPT_URL"] +"\">Soft-Reload</a><br />"
+        print "<br />"
         # Neu-Schalter
         print "Zeige:<br />"
         if "neu" in layer:

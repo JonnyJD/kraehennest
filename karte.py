@@ -10,7 +10,6 @@ if config.debug:
 import ausgabe
 import util
 from types import StringType
-import email.Utils      # Utils klappt auch vor python 2.5
 import os
 
 viel_armeen = 8
@@ -639,331 +638,347 @@ if __name__ == '__main__':
         title = "Kr&auml;henkarten"
     else:
         title = "Kr&auml;henkarte"
-    print 'Last-Modified: ' + email.Utils.formatdate(usegmt=True)
-    print 'Content-type: text/html; charset=utf-8\n'
-    print '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"'
-    print '          "http://www.w3.org/TR/html4/loose.dtd">'
-    print '<html><head>'
-    print '<title>' + title + '</title>'
-    print '<meta name="robots" content="noindex, nofollow">'
-    print '<meta http-equiv="content-type" content="text/html; charset=UTF-8">'
-    print '<meta http-equiv="expires" content="0">'
-    print '<link rel="stylesheet" type="text/css" href="',
-    print ausgabe.prefix + '/show/stylesheet">'
-    print '<script src="' + ausgabe.prefix + '/show/javascript"',
-    print 'type="text/javascript"></script>'
-    print '</head>\n'
-    print '<body>\n'
 
-    if "list" in form:
-        print '<h1>' + title + '</h1>'
-        list_maps()
-    elif "sicht" in form:
-        print '<style type="text/css">'
-        print create_styles(32, 9)#, show_armeen, show_dorf, background)
-        print 'body { margin:0px; }'
-        print '</style>\n'
-        print small_map(int(form["x"].value), int(form["y"].value),
-                form["level"].value, int(form["sicht"].value),
-                imported=True)
+    if "HTTP_IF_MODIFIED_SINCE" in os.environ:
+        cache_string = os.environ["HTTP_IF_MODIFIED_SINCE"]
+        db_string = util.map_last_modified_http(
+                config.allow_doerfer(), config.allow_armeen())
+        if db_string == cache_string:
+            is_still_valid = True
+        else:
+            is_still_valid = False
     else:
-        # Zeige eine Karte
+        is_still_valid = False
 
+    if is_still_valid:
+        print 'Status: 304 Not Modified\n'
+    else:
+        print 'Last-Modified: ' + util.map_last_modified_http(
+                config.allow_doerfer(), config.allow_armeen())
+        print 'Cache-Control: no-cache,must-revalidate'
+        print 'Content-type: text/html; charset=utf-8\n'
+        print '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"'
+        print '          "http://www.w3.org/TR/html4/loose.dtd">'
+        print '<html><head>'
+        print '<title>' + title + '</title>'
+        print '<meta name="robots" content="noindex, nofollow">'
+        print '<meta http-equiv="content-type" content="text/html; charset=UTF-8">'
+        print '<link rel="stylesheet" type="text/css" href="',
+        print ausgabe.prefix + '/show/stylesheet">'
+        print '<script src="' + ausgabe.prefix + '/show/javascript"',
+        print 'type="text/javascript"></script>'
+        print '</head>\n'
+        print '<body>\n'
 
-        # Bereite gewuenschte Layer und Bereiche vor
-        if "level" in form and config.allow_hoehlen():
-            level = form["level"].value
+        if "list" in form:
+            print '<h1>' + title + '</h1>'
+            list_maps()
+        elif "sicht" in form:
+            print '<style type="text/css">'
+            print create_styles(32, 9)#, show_armeen, show_dorf, background)
+            print 'body { margin:0px; }'
+            print '</style>\n'
+            print small_map(int(form["x"].value), int(form["y"].value),
+                    form["level"].value, int(form["sicht"].value),
+                    imported=True)
         else:
-            level = 'N'
+            # Zeige eine Karte
 
-        if "layer" in form:
-            layer = form["layer"].value.split()
-            for item in layer:
-                while layer.count(item) > 1:
-                    layer.remove(item)
-            if len(layer) > 1 and "clean" in layer:
-                layer.remove("clean")
-            if len(layer) == 1 and "neu" in layer:
-                layer.append("armeen")
-                layer.append("doerfer")
-            if len(layer) == 1 and "alt" in layer:
-                layer.append("armeen")
-        else:
-            layer = []
 
-        # bestimme was grundsaetzlich erlaubt ist
-        allow_dorf = config.allow_doerfer(floating_message=True)
-        allow_armeen = config.allow_armeen(floating_message=True)
-
-        # Bereite Formatierungen vor
-        size = 32 
-        fontsize = 9
-        if "size" in form:
-            if form["size"].value == "small":
-                size = 16
-                fontsize = 5
-            elif form["size"].value == "verysmall":
-                size = 8
-                fontsize = 0
-            elif form["size"].value == "tiny":
-                size = 5
-                fontsize = 0
-
-        # entferne unpassende Layer
-        if fontsize <= 8:
-            allow_armeen = False
-            if "armeen" in layer:
-                layer.remove("armeen")
-        if fontsize == 0 or level != "N":
-            allow_dorf = False
-            if "doerfer" in layer:
-                layer.remove("doerfer")
-        if len(layer) == 0:
-            # dummy layer der fuer "nichts" steht
-            layer.append("clean")
-
-        # bestimme was wirklich gezeigt wird
-        if not allow_dorf or "doerfer" not in layer:
-            show_dorf = False
-        else:
-            show_dorf = True
-            dorf = Dorf()
-            if "neu" in layer:
-                add_cond = "datediff(now(), aktdatum) < "+str(config.tage_neu)
-                dorf.set_add_cond(add_cond)
-            dorf.fetch_data()
-
-        if allow_armeen and "armeen" in layer:
-            show_armeen = True
-            armee = Armee()
-            if "alt" in layer:
-                armee.replace_cond("TRUE") # keine Bedingung
-            elif "neu" in layer:
-                armee.set_add_cond("hour(timediff(now(), last_seen)) < 6")
-            armee.fetch_data(level)
-        else:
-            show_armeen = False
-
-        terrain = Terrain()
-        if "x2" in form:
-            bounding_box = config.bounding_box()
-            if int(form["x2"].value) >= 999 and show_armeen:
-                real_x1 = max(bounding_box.x1, armee.xmin-15)
-                real_y1 = max(bounding_box.y1, armee.ymin-10)
-                real_x2 = min(bounding_box.x2, armee.xmax+15)
-                real_y2 = min(bounding_box.y2, armee.ymax+10)
+            # Bereite gewuenschte Layer und Bereiche vor
+            if "level" in form and config.allow_hoehlen():
+                level = form["level"].value
             else:
-                real_x1 = max(bounding_box.x1, int(form["x1"].value))
-                real_y1 = max(bounding_box.y1, int(form["y1"].value))
-                real_x2 = min(bounding_box.x2, int(form["x2"].value))
-                real_y2 = min(bounding_box.y2, int(form["y2"].value))
-            terrain.fetch_data(level, real_x1, real_x2, real_y1, real_y2)
-        else:
-            terrain.fetch_data(level, bounding_box.x1, bounding_box.x2,
-                                        bounding_box.y1, bounding_box.y2)
+                level = 'N'
+
+            if "layer" in form:
+                layer = form["layer"].value.split()
+                for item in layer:
+                    while layer.count(item) > 1:
+                        layer.remove(item)
+                if len(layer) > 1 and "clean" in layer:
+                    layer.remove("clean")
+                if len(layer) == 1 and "neu" in layer:
+                    layer.append("armeen")
+                    layer.append("doerfer")
+                if len(layer) == 1 and "alt" in layer:
+                    layer.append("armeen")
+            else:
+                layer = []
+
+            # bestimme was grundsaetzlich erlaubt ist
+            allow_dorf = config.allow_doerfer(floating_message=True)
+            allow_armeen = config.allow_armeen(floating_message=True)
+
+            # Bereite Formatierungen vor
+            size = 32 
+            fontsize = 9
+            if "size" in form:
+                if form["size"].value == "small":
+                    size = 16
+                    fontsize = 5
+                elif form["size"].value == "verysmall":
+                    size = 8
+                    fontsize = 0
+                elif form["size"].value == "tiny":
+                    size = 5
+                    fontsize = 0
+
+            # entferne unpassende Layer
+            if fontsize <= 8:
+                allow_armeen = False
+                if "armeen" in layer:
+                    layer.remove("armeen")
+            if fontsize == 0 or level != "N":
+                allow_dorf = False
+                if "doerfer" in layer:
+                    layer.remove("doerfer")
+            if len(layer) == 0:
+                # dummy layer der fuer "nichts" steht
+                layer.append("clean")
+
+            # bestimme was wirklich gezeigt wird
+            if not allow_dorf or "doerfer" not in layer:
+                show_dorf = False
+            else:
+                show_dorf = True
+                dorf = Dorf()
+                if "neu" in layer:
+                    add_cond = "datediff(now(), aktdatum) < "+str(config.tage_neu)
+                    dorf.set_add_cond(add_cond)
+                dorf.fetch_data()
+
+            if allow_armeen and "armeen" in layer:
+                show_armeen = True
+                armee = Armee()
+                if "alt" in layer:
+                    armee.replace_cond("TRUE") # keine Bedingung
+                elif "neu" in layer:
+                    armee.set_add_cond("hour(timediff(now(), last_seen)) < 6")
+                armee.fetch_data(level)
+            else:
+                show_armeen = False
+
+            terrain = Terrain()
+            if "x2" in form:
+                bounding_box = config.bounding_box()
+                if int(form["x2"].value) >= 999 and show_armeen:
+                    real_x1 = max(bounding_box.x1, armee.xmin-15)
+                    real_y1 = max(bounding_box.y1, armee.ymin-10)
+                    real_x2 = min(bounding_box.x2, armee.xmax+15)
+                    real_y2 = min(bounding_box.y2, armee.ymax+10)
+                else:
+                    real_x1 = max(bounding_box.x1, int(form["x1"].value))
+                    real_y1 = max(bounding_box.y1, int(form["y1"].value))
+                    real_x2 = min(bounding_box.x2, int(form["x2"].value))
+                    real_y2 = min(bounding_box.y2, int(form["y2"].value))
+                terrain.fetch_data(level, real_x1, real_x2, real_y1, real_y2)
+            else:
+                terrain.fetch_data(level, bounding_box.x1, bounding_box.x2,
+                                            bounding_box.y1, bounding_box.y2)
 
 
-        # Formatierungen
-        background = int(form["x2"].value) >= 999
-        print '<style type="text/css">'
-        print create_styles(size, fontsize, show_armeen, show_dorf, background)
-        print '</style>\n'
+            # Formatierungen
+            background = int(form["x2"].value) >= 999
+            print '<style type="text/css">'
+            print create_styles(size, fontsize, show_armeen, show_dorf, background)
+            print '</style>\n'
 
-        # Detailboxen
-        if config.allow_details():
-            # Dorfdetail / Koordinateninfo (deshalb immer)
-            print '<div id="dorfdetail" style="z-index:2; position:fixed;',
-            print 'top:5px; left:38px; width:85em;',
-            print 'padding:5px;"><div>&nbsp;</div></div>'
-            print '<br /><div></div>'
-            if show_armeen:
-                # Armeedetail
-                print '<div id="armeedetail" style="z-index:2; position:fixed;',
-                print 'top:170px; right:5px; width:15em; min-height:10em;',
-                print 'font-size:9pt; background-color:#333333;',
+            # Detailboxen
+            if config.allow_details():
+                # Dorfdetail / Koordinateninfo (deshalb immer)
+                print '<div id="dorfdetail" style="z-index:2; position:fixed;',
+                print 'top:5px; left:38px; width:85em;',
                 print 'padding:5px;"><div>&nbsp;</div></div>'
+                print '<br /><div></div>'
+                if show_armeen:
+                    # Armeedetail
+                    print '<div id="armeedetail" style="z-index:2; position:fixed;',
+                    print 'top:170px; right:5px; width:15em; min-height:10em;',
+                    print 'font-size:9pt; background-color:#333333;',
+                    print 'padding:5px;"><div>&nbsp;</div></div>'
 
-        # Kartennavigation
-        cross = int(form["x2"].value) < 999
-        __print_navi(cross)
+            # Kartennavigation
+            cross = int(form["x2"].value) < 999
+            __print_navi(cross)
 
-        # Schalter
-        print '<div style="z-index:2; position:fixed;'
-        print ' bottom:10px; right:20px;" class="navi">'
-        # Soft-Reload
-        print "<a href=\""+ os.environ["SCRIPT_URL"] +"\">Soft-Reload</a><br />"
-        print "<br />"
-        # Neu-Schalter
-        print "Zeige:<br />"
-        if "neu" in layer:
-            layer.remove("neu")
-            print __nav_link('  Alle'),
-            print '<span style="color:green">Neue</span><br />'
-            layer.append("neu")
-        else:
-            layer.append("neu")
-            print '<span style="color:green">Alle</span>',
-            print __nav_link("  Neue") + "<br />"
-            layer.remove("neu")
-        # Armeeschalter
-        if show_armeen:
-            print '<input type="checkbox" checked id="armeeschalter"',
-            print 'onclick="toggleArmeen()" />',
-            print '<span style="color:green">Armeen</span><br />',
-        elif allow_armeen:
-            layer.append("armeen")
-            print __nav_link("+ Armeen") + "<br />"
-            layer.remove("armeen")
-        # Dorfschalter
-        if show_dorf:
-            print '<input type="checkbox" checked id="dorfschalter"',
-            print 'onclick="toggleDorf()" />',
-            print '<span style="color:green">D&ouml;rfer</span><br />',
-        elif allow_dorf:
-            layer.append("doerfer")
-            print __nav_link("+ D&ouml;rfer") + "<br />"
-            layer.remove("doerfer")
-        # zeige wieder alles
-        if allow_dorf and allow_armeen and not (show_armeen or show_dorf):
-            layer += ["armeen", "doerfer"]
-            print __nav_link("+ Beides") + "<br />"
-            layer.remove("doerfer")
-            layer.remove("armeen")
-        print "<br />"
-        # zurueck zum Datenbankindex
-        print ausgabe.link("/show", "Index")
-        print '</div>'
+            # Schalter
+            print '<div style="z-index:2; position:fixed;'
+            print ' bottom:10px; right:20px;" class="navi">'
+            # Soft-Reload
+            print "<a href=\""+ os.environ["SCRIPT_URL"] +"\">Soft-Reload</a><br />"
+            print "<br />"
+            # Neu-Schalter
+            print "Zeige:<br />"
+            if "neu" in layer:
+                layer.remove("neu")
+                print __nav_link('  Alle'),
+                print '<span style="color:green">Neue</span><br />'
+                layer.append("neu")
+            else:
+                layer.append("neu")
+                print '<span style="color:green">Alle</span>',
+                print __nav_link("  Neue") + "<br />"
+                layer.remove("neu")
+            # Armeeschalter
+            if show_armeen:
+                print '<input type="checkbox" checked id="armeeschalter"',
+                print 'onclick="toggleArmeen()" />',
+                print '<span style="color:green">Armeen</span><br />',
+            elif allow_armeen:
+                layer.append("armeen")
+                print __nav_link("+ Armeen") + "<br />"
+                layer.remove("armeen")
+            # Dorfschalter
+            if show_dorf:
+                print '<input type="checkbox" checked id="dorfschalter"',
+                print 'onclick="toggleDorf()" />',
+                print '<span style="color:green">D&ouml;rfer</span><br />',
+            elif allow_dorf:
+                layer.append("doerfer")
+                print __nav_link("+ D&ouml;rfer") + "<br />"
+                layer.remove("doerfer")
+            # zeige wieder alles
+            if allow_dorf and allow_armeen and not (show_armeen or show_dorf):
+                layer += ["armeen", "doerfer"]
+                print __nav_link("+ Beides") + "<br />"
+                layer.remove("doerfer")
+                layer.remove("armeen")
+            print "<br />"
+            # zurueck zum Datenbankindex
+            print ausgabe.link("/show", "Index")
+            print '</div>'
 
-        #
-        # Die eigentliche Karte
-        #
-        width = size * (terrain.xmax - terrain.xmin + 1 + 2)
-        print '\n\n<table id="karte" style="width:' + str(width) + 'px;">'
-        print '<tr style="height:' + str(size) + 'px;"><td></td>'
-        # X - Achse
-        for x in range(terrain.xmin, terrain.xmax + 1):
-            print '<td>' + str(x) + '</td>'
-        for y in range(terrain.ymin, terrain.ymax + 1):
-            print '<tr style="height:' + str(size) + 'px;">'
-            print '<td>' + str(y)  + '</td>' # Y - Achse
+            #
+            # Die eigentliche Karte
+            #
+            width = size * (terrain.xmax - terrain.xmin + 1 + 2)
+            print '\n\n<table id="karte" style="width:' + str(width) + 'px;">'
+            print '<tr style="height:' + str(size) + 'px;"><td></td>'
+            # X - Achse
             for x in range(terrain.xmin, terrain.xmax + 1):
-                if terrain.has(x,y): # Kartenbereich
+                print '<td>' + str(x) + '</td>'
+            for y in range(terrain.ymin, terrain.ymax + 1):
+                print '<tr style="height:' + str(size) + 'px;">'
+                print '<td>' + str(y)  + '</td>' # Y - Achse
+                for x in range(terrain.xmin, terrain.xmax + 1):
+                    if terrain.has(x,y): # Kartenbereich
 
-                    # Terrainhintergrund
-                    terrain.get(x,y)
-                    row = '<td style="background-image:url(/img/terrain/'
-                    row += str(size) + '/' + terrain.entry["terrain"]
-                    row += '.gif)'
-                    if show_armeen and not show_dorf:
-                        row += '; vertical-align:top'
-                    if show_dorf and not config.is_kraehe() and dorf.has(x,y):
-                        row += '; color:'
-                        row += dorf.get(x,y)['allyfarbe']
-                    if "abgang" in terrain.entry:
-                        row += '; border: 1px solid red'
-                    if "aufgang" in terrain.entry:
-                        row += '; border: 1px solid green'
-                    if "quest" in terrain.entry:
-                        row += '; border: 1px solid yellow'
-                    row += ';"' # style attribut auf jeden Fall zumachen
-                    if show_dorf and not config.is_kraehe() and dorf.has(x,y):
-                        if util.brightness(dorf.get(x,y)['allyfarbe']) < 55:
-                            row += ' class="dark"'
-                        else:
-                            row += ' class="bright"'
-
-                    # Detail-Mouse-Over
-                    if config.allow_details():
-                        row += ' onmouseover="showPos(\''
-                        row += str(x) + "," + str(y)
-                        if config.is_kraehe() and terrain.entry["typ"]:
-                            row += " " + "." * terrain.entry["typ"]
-                        # fuer Dorf
-                        if show_dorf and dorf.has(x,y):
-                            dorf.get(x,y)
-                            list = []
-                            for col in ['rittername', 'alliname', 'dorfname',
-                                    'dorflevel', 'mauer', 'aktdatum']:
-                                list.append(__format(dorf.entry[col]))
-                            list = '|' + '|'.join(list)
-                        else:
-                            list = '|?' * 6
-                        # fuer Armeen
-                        if show_armeen and armee.has(x,y):
-                            armee.get(x,y)
-                            # Anzahl Infos pro Armee
-                            if len(armee.entry) < viel_armeen:
-                                list += '|7'
+                        # Terrainhintergrund
+                        terrain.get(x,y)
+                        row = '<td style="background-image:url(/img/terrain/'
+                        row += str(size) + '/' + terrain.entry["terrain"]
+                        row += '.gif)'
+                        if show_armeen and not show_dorf:
+                            row += '; vertical-align:top'
+                        if show_dorf and not config.is_kraehe() and dorf.has(x,y):
+                            row += '; color:'
+                            row += dorf.get(x,y)['allyfarbe']
+                        if "abgang" in terrain.entry:
+                            row += '; border: 1px solid red'
+                        if "aufgang" in terrain.entry:
+                            row += '; border: 1px solid green'
+                        if "quest" in terrain.entry:
+                            row += '; border: 1px solid yellow'
+                        row += ';"' # style attribut auf jeden Fall zumachen
+                        if show_dorf and not config.is_kraehe() and dorf.has(x,y):
+                            if util.brightness(dorf.get(x,y)['allyfarbe']) < 55:
+                                row += ' class="dark"'
                             else:
-                                list += '|4'
-                            # Armeen anhaengen
-                            for entry in armee.entry:
-                                list += '|' + __escape(entry["allyfarbe"])
-                                if (entry["rittername"] == "Keiner"
-                                        and len(armee.entry) >= viel_armeen):
-                                    list += '|' + __escape(entry["name"])
-                                else:
-                                    list += '|' + __escape(entry["rittername"])
-                                if (entry["schiffstyp"] is not None
-                                        and len(armee.entry) >= viel_armeen):
-                                    list += '&br;['
-                                    list += __escape(entry["schiffstyp"]) + ']'
-                                list += '|' + __format(entry["size"])
-                                list += '|' + __format(entry["strength"])
-                                # mehr Infos bei wenigen Armeen
+                                row += ' class="bright"'
+
+                        # Detail-Mouse-Over
+                        if config.allow_details():
+                            row += ' onmouseover="showPos(\''
+                            row += str(x) + "," + str(y)
+                            if config.is_kraehe() and terrain.entry["typ"]:
+                                row += " " + "." * terrain.entry["typ"]
+                            # fuer Dorf
+                            if show_dorf and dorf.has(x,y):
+                                dorf.get(x,y)
+                                list = []
+                                for col in ['rittername', 'alliname', 'dorfname',
+                                        'dorflevel', 'mauer', 'aktdatum']:
+                                    list.append(__format(dorf.entry[col]))
+                                list = '|' + '|'.join(list)
+                            else:
+                                list = '|?' * 6
+                            # fuer Armeen
+                            if show_armeen and armee.has(x,y):
+                                armee.get(x,y)
+                                # Anzahl Infos pro Armee
                                 if len(armee.entry) < viel_armeen:
-                                    list += '|(' + __escape(entry["name"]) + ')'
-                                    if entry["schiffstyp"] is not None:
+                                    list += '|7'
+                                else:
+                                    list += '|4'
+                                # Armeen anhaengen
+                                for entry in armee.entry:
+                                    list += '|' + __escape(entry["allyfarbe"])
+                                    if (entry["rittername"] == "Keiner"
+                                            and len(armee.entry) >= viel_armeen):
+                                        list += '|' + __escape(entry["name"])
+                                    else:
+                                        list += '|' + __escape(entry["rittername"])
+                                    if (entry["schiffstyp"] is not None
+                                            and len(armee.entry) >= viel_armeen):
                                         list += '&br;['
-                                        list += __escape(entry["schiffstyp"])
-                                        list += ']'
-                                    list += '|' + __format(entry["ap"])
-                                    list += '|' + __format(entry["bp"])
-                        if ((show_dorf and dorf.has(x,y))
-                                or (show_armeen and armee.has(x,y))):
-                            row += list
-                        row += '\')" onmouseout="delPos()"'
-                    row += '>'
+                                        list += __escape(entry["schiffstyp"]) + ']'
+                                    list += '|' + __format(entry["size"])
+                                    list += '|' + __format(entry["strength"])
+                                    # mehr Infos bei wenigen Armeen
+                                    if len(armee.entry) < viel_armeen:
+                                        list += '|(' + __escape(entry["name"]) + ')'
+                                        if entry["schiffstyp"] is not None:
+                                            list += '&br;['
+                                            list += __escape(entry["schiffstyp"])
+                                            list += ']'
+                                        list += '|' + __format(entry["ap"])
+                                        list += '|' + __format(entry["bp"])
+                            if ((show_dorf and dorf.has(x,y))
+                                    or (show_armeen and armee.has(x,y))):
+                                row += list
+                            row += '\')" onmouseout="delPos()"'
+                        row += '>'
 
-                    # Detail-Link
-                    # != Details vom Mouse-Over
-                    if not config.is_kraehe():
-                        show_detail_link = False
-                    elif show_armeen and armee.has(x,y):
-                        show_detail_link = True
-                    elif (show_dorf and dorf.has(x,y)
-                            and dorf.get(x,y)["rittername"] != "."):
-                        show_detail_link = True
-                    else:
-                        show_detail_link = False
-                    if show_detail_link:
-                        if show_dorf and dorf.has(x,y):
-                            color = dorf.get(x,y)['allyfarbe']
+                        # Detail-Link
+                        # != Details vom Mouse-Over
+                        if not config.is_kraehe():
+                            show_detail_link = False
+                        elif show_armeen and armee.has(x,y):
+                            show_detail_link = True
+                        elif (show_dorf and dorf.has(x,y)
+                                and dorf.get(x,y)["rittername"] != "."):
+                            show_detail_link = True
                         else:
-                            color = None
-                        row += __detail_link(x, y, level, color)
+                            show_detail_link = False
+                        if show_detail_link:
+                            if show_dorf and dorf.has(x,y):
+                                color = dorf.get(x,y)['allyfarbe']
+                            else:
+                                color = None
+                            row += __detail_link(x, y, level, color)
 
-                    # Dorf
-                    if show_dorf and dorf.has(x,y):
-                        row += __dorf(dorf, x, y, terrain)
+                        # Dorf
+                        if show_dorf and dorf.has(x,y):
+                            row += __dorf(dorf, x, y, terrain)
 
-                    # Armeen
-                    if show_armeen:
-                        row += __armeen(armee, x, y)
-                    if show_detail_link:
-                        row += '</a>'
-                    row += '</td>'
-                    print row
-                else: # not terrain.has(x,y):
-                    print '<td></td>'
-            # y - Achse
-            print '<td>' + str(y) + '</td></tr>'
-        # X - Achse
-        print '<tr style="height:' + str(size) + 'px;"><td></td>'
-        for x in range(terrain.xmin, terrain.xmax + 1):
-            print '<td>' + str(x) + '</td>'
-        print '</table>'
+                        # Armeen
+                        if show_armeen:
+                            row += __armeen(armee, x, y)
+                        if show_detail_link:
+                            row += '</a>'
+                        row += '</td>'
+                        print row
+                    else: # not terrain.has(x,y):
+                        print '<td></td>'
+                # y - Achse
+                print '<td>' + str(y) + '</td></tr>'
+            # X - Achse
+            print '<tr style="height:' + str(size) + 'px;"><td></td>'
+            for x in range(terrain.xmin, terrain.xmax + 1):
+                print '<td>' + str(x) + '</td>'
+            print '</table>'
 
-    print "\n</body></html>"
+        print "\n</body></html>"
 
 # vim:set shiftwidth=4 expandtab smarttab:

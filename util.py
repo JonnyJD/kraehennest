@@ -1,6 +1,8 @@
 """Einige kleine Hilfsfunktionen"""
 
 import datetime
+import time
+import email.Utils # damit es auch vor python 2.5 geht
 import rbdb
 from MySQLdb import escape_string
 
@@ -155,6 +157,51 @@ def sql_execute(sql, args):
     count = cursor.rowcount
     conn.close()
     return count
+
+
+def map_last_modified(allow_doerfer=True, allow_armeen=True):
+    """Bestimmt das letzte Aenderungsdatum der Karte.
+    Es wird bedacht ob Aenderungen von Armeen,
+    oder Doerfern ueberhaupt relevant sind.
+
+    @return: Aenderungsdatum
+    @rtype: C{datetime}
+    """
+    row = get_sql_row("show table status from rb like 'armeen'")
+    last_update_armeen = row[12] # Update_time
+    row = get_sql_row("show table status from rb like 'dorf'")
+    last_update_doerfer = row[12] # Update_time
+    row = get_sql_row("show table status from rb like 'felder'")
+    last_update_felder = row[12] # Update_time
+    last_update = last_update_felder
+    if allow_armeen and last_update < last_update_armeen:
+        last_update = last_update_armeen
+    if allow_doerfer and last_update < last_update_doerfer:
+        last_update = last_update_doerfer
+    return last_update
+
+def map_last_modified_tuple(allow_doerfer=True, allow_armeen=True):
+    """Bestimmt das letzte Aenderungsdatum als Tupel
+    Es wird bedacht ob Aenderungen von Armeen,
+    oder Doerfern ueberhaupt relevant sind.
+
+    @return: Aenderungsdatum
+    @rtype: C{struct_time}
+    """
+    last_modified = map_last_modified(allow_doerfer, allow_armeen)
+    return last_modified.timetuple()
+
+def map_last_modified_http(allow_doerfer=True, allow_armeen=True):
+    """Bestimmt das letzte Aenderungsdatum der Karte im HTTP Format
+    Es wird bedacht ob Aenderungen von Armeen,
+    oder Doerfern ueberhaupt relevant sind.
+
+    @return: Aenderungsdatum
+    @rtype: C{String}
+    """
+    time_tuple = map_last_modified_tuple(allow_doerfer, allow_armeen)
+    time_float = time.mktime(time_tuple)
+    return email.Utils.formatdate(time_float, localtime=False, usegmt=True)
 
 
 ######################################################################

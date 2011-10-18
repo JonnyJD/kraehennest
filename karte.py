@@ -642,7 +642,8 @@ if __name__ == '__main__':
     if "HTTP_IF_MODIFIED_SINCE" in os.environ:
         cache_string = os.environ["HTTP_IF_MODIFIED_SINCE"]
         db_string = util.map_last_modified_http(
-                config.allow_doerfer(), config.allow_armeen())
+                config.allow_doerfer(message=False),
+                config.allow_armeen(message=False))
         if db_string == cache_string:
             is_still_valid = True
         else:
@@ -654,7 +655,8 @@ if __name__ == '__main__':
         print 'Status: 304 Not Modified\n'
     else:
         print 'Last-Modified: ' + util.map_last_modified_http(
-                config.allow_doerfer(), config.allow_armeen())
+                config.allow_doerfer(message=False),
+                config.allow_armeen(message=False))
         print 'Cache-Control: no-cache,must-revalidate'
         print 'Content-type: text/html; charset=utf-8\n'
         print '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"'
@@ -709,6 +711,7 @@ if __name__ == '__main__':
             # bestimme was grundsaetzlich erlaubt ist
             allow_dorf = config.allow_doerfer(floating_message=True)
             allow_armeen = config.allow_armeen(floating_message=True)
+            allow_details = config.allow_details(floating_message=True)
 
             # Bereite Formatierungen vor
             size = 32 
@@ -785,7 +788,7 @@ if __name__ == '__main__':
             print '</style>\n'
 
             # Detailboxen
-            if config.allow_details():
+            if allow_details:
                 # Dorfdetail / Koordinateninfo (deshalb immer)
                 print '<div id="dorfdetail" style="z-index:2; position:fixed;',
                 print 'top:5px; left:38px; width:85em;',
@@ -888,7 +891,7 @@ if __name__ == '__main__':
                                 row += ' class="bright"'
 
                         # Detail-Mouse-Over
-                        if config.allow_details():
+                        if allow_details:
                             row += ' onmouseover="showPos(\''
                             row += str(x) + "," + str(y)
                             if config.is_kraehe() and terrain.entry["typ"]:

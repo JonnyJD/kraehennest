@@ -66,22 +66,22 @@ def is_tw(username=None):
     else:
         return False
 
-def allow_details(username=None, floating_message=False):
+def allow_details(username=None, message=True, floating_message=False):
     """Ob dem Benutzer Detail-Mouse-Overs angezeigt werden duerfen
     """
     return True
 
-def allow_armeen(username=None, floating_message=False):
+def allow_armeen(username=None, message=True, floating_message=False):
     """Ob dem Benutzer Armeen angezeigt werden duerfen
     """
     return True
 
-def allow_doerfer(username=None, floating_message=False):
+def allow_doerfer(username=None, message=True, floating_message=False):
     """Ob dem Benutzer Doerfer angezeigt werden duerfen
     """
     return True
 
-def allow_hoehlen(username=None, floating_message=False):
+def allow_hoehlen(username=None, message=True, floating_message=False):
     """Ob dem Benutzer Hoehlen angezeigt werden duerfen
     """
     return True

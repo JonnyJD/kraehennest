@@ -69,8 +69,8 @@ def list_maps():
         } else {
             var link = "/show/karte/";
         }
-        link += form.x1.value + "." + form.x2.value + "-";
-        link += form.y1.value + "." + form.y2.value;
+        link += form.x1.value + "." + form.y1.value + "-";
+        link += form.x2.value + "." + form.y2.value;
         level = "N";
         for (var i=0; i < form.level.length; i++)
             if (form.level[i].checked)
@@ -152,19 +152,28 @@ def list_maps():
       print \
 """
 <input name="x1" type="text" size="3" maxlength="3" value="256">,
-<input name="x2" type="text" size="3" maxlength="3" value="280">
+<input name="y1" type="text" size="3" maxlength="3" value="280">
 &nbsp;&nbsp; - &nbsp;&nbsp;
-<input name="y1" type="text" size="3" maxlength="3" value="289">,
+<input name="x2" type="text" size="3" maxlength="3" value="289">,
 <input name="y2" type="text" size="3" maxlength="3" value="303">
+"""
+    elif config.is_tw():
+      print \
+"""
+<input name="x1" type="text" size="3" maxlength="3" value="261">,
+<input name="y1" type="text" size="3" maxlength="3" value="287">
+&nbsp;&nbsp; - &nbsp;&nbsp;
+<input name="x2" type="text" size="3" maxlength="3" value="292">,
+<input name="y2" type="text" size="3" maxlength="3" value="322">
 """
     else:
       print \
 """
-<input name="x1" type="text" size="3" maxlength="3" value="261">,
-<input name="x2" type="text" size="3" maxlength="3" value="287">
+<input name="x1" type="text" size="3" maxlength="3" value="231">,
+<input name="y1" type="text" size="3" maxlength="3" value="290">
 &nbsp;&nbsp; - &nbsp;&nbsp;
-<input name="y1" type="text" size="3" maxlength="3" value="292">,
-<input name="y2" type="text" size="3" maxlength="3" value="322">
+<input name="x2" type="text" size="3" maxlength="3" value="264">,
+<input name="y2" type="text" size="3" maxlength="3" value="311">
 """
     print """
 </td></tr>
@@ -219,8 +228,10 @@ value="generiere Link"></td></tr>
 """
     if config.is_kraehe():
         print ausgabe.link("/show/karte/256.280-289.303")
-    else:
+    elif config.is_tw():
         print ausgabe.link("/show/karte/261.287-292.322")
+    else:
+        print ausgabe.link("/show/karte/231.290-264.311")
     print '</div>'
     print '</div>'
 

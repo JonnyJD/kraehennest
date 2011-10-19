@@ -77,7 +77,7 @@ class Dorf(Feld):
                     elif row[9] == reich.S_INAKTIV and config.is_kraehe():
                         farbe = util.color_shade('#00A000', row[8], 0.3)
                         self.entries[x,y]["allyfarbe"] = farbe
-                    elif row[9] == reich.S_SCHUTZ and config.is_kraehe():
+                    elif row[9] == reich.S_SCHUTZ:
                         farbe = util.color_shade('#FFFFFF', row[8], 0.3)
                         self.entries[x,y]["allyfarbe"] = farbe
                 row = self.cursor.fetchone()

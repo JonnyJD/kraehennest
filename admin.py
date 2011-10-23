@@ -52,7 +52,7 @@ def list_versions(ver_type=None):
     tabelle.addColumn("Version")
     tabelle.addColumn("zuletzt gesehen")
     tabelle.addColumn("letzter Zug")
-    sql = "SELECT r_id, rittername, version, last_seen"
+    sql = "SELECT r_id, rittername, allicolor, version, last_seen"
     sql += ", username, letzterzug"
     sql += " FROM versionen"
     sql += " left JOIN ritter ON r_id = ritternr"
@@ -81,26 +81,27 @@ def list_versions(ver_type=None):
         while row != None:
             line = []
             row = ausgabe.escape_row(row)
-            line.append(row[4]) # username
+            line.append(row[5]) # username
             line.append(row[0]) # r_id
             # Rittername
-            if config.is_kraehe() and row[1] is None:
-                zelle = '<a href="reich/' + str(row[0]) + '">?</a>'
-            elif config.is_kraehe():
-                zelle = '<a href="reich/' + str(row[0]) + '">' + row[1] + '</a>'
+            if config.is_kraehe():
+                if row[1] is None:
+                    zelle = ausgabe.link("reich/"+str(row[0]), "?")
+                else:
+                    zelle = ausgabe.link("reich/"+str(row[0]), row[1], row[2])
             elif row[1] is None:
                 zelle = "?"
             else:
                 zelle = row[1]
             line.append(zelle)
-            line.append(row[2]) # Version des Auges
+            line.append(row[3]) # Version des Auges
             # zuletzt gesehen
-            zelle = ausgabe.datetime_delta_color_string(row[3],
+            zelle = ausgabe.datetime_delta_color_string(row[4],
                     timedelta(hours=config.stunden_deaktivierung_2),
                     timedelta(days=config.tage_deaktivierung_3))
             line.append(zelle)
             # letzter Zug
-            zelle = ausgabe.date_delta_color_string(row[5],
+            zelle = ausgabe.date_delta_color_string(row[6],
                     timedelta(hours=config.stunden_deaktivierung_2),
                     timedelta(days=config.tage_deaktivierung_3))
             line.append(zelle)

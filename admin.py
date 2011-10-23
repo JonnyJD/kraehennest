@@ -85,10 +85,15 @@ def list_versions(ver_type=None):
             line.append(row[0]) # r_id
             # Rittername
             if config.is_kraehe():
-                if row[1] is None:
-                    zelle = ausgabe.link("reich/"+str(row[0]), "?")
+                if ver_type != None:
+                    vers = "../"
                 else:
-                    zelle = ausgabe.link("reich/"+str(row[0]), row[1], row[2])
+                    vers = ""
+                if row[1] is None:
+                    zelle = ausgabe.link(vers+"reich/"+str(row[0]), "?")
+                else:
+                    zelle = ausgabe.link(vers+"reich/"+str(row[0]),
+                                                        row[1], row[2])
             elif row[1] is None:
                 zelle = "?"
             else:

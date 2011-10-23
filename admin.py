@@ -56,6 +56,7 @@ def list_versions(ver_type=None):
     sql += ", username, letzterzug"
     sql += " FROM versionen"
     sql += " left JOIN ritter ON r_id = ritternr"
+    sql += " left JOIN allis ON ritter.alli = allinr"
     if ver_type:
         if ver_type.lower() == "ksk":
             sql += " WHERE version not like '%Edition%'"

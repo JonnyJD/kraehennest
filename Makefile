@@ -13,10 +13,12 @@ KARTE=$(ROOT)/karte
 normal:
 	sed -i '1s/python2/python/' index.py dispatch.py
 	sed -i '1s/python2/python/' karte.py admin.py
+	sed -i '1s/python2/python/' allianz.py armee.py dorf.py reich.py
 
 arch:
 	sed -i '1s/python$$/python2/' index.py dispatch.py
 	sed -i '1s/python$$/python2/' karte.py admin.py
+	sed -i '1s/python$$/python2/' allianz.py armee.py dorf.py reich.py
 
 serverconf:
 	echo -e "\

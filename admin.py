@@ -14,9 +14,37 @@ from datetime import datetime, timedelta
 
 import ausgabe
 
-def list_versions():
+def list_versions(ver_type=None):
     """Listet fuer jeden Ritter die benutze Kraehenaugenversion und Zeit"""
 
+    if config.is_kraehe():
+        if ver_type != None:
+            vers = ""
+            print ausgabe.link("../versionen", "[alle]")
+        else:
+            vers = "versionen/"
+            print "[alle]"
+        if ver_type == None or ver_type.lower() != "ksk":
+            print ausgabe.link(vers+"KSK", "[KSK]")
+        else:
+            print "[KSK]"
+        if ver_type == None or ver_type.lower() != "tw":
+            print ausgabe.link(vers+"TW", "[TW]")
+        else:
+            print "[TW]"
+        if ver_type == None or ver_type.lower() != "dr":
+            print ausgabe.link(vers+"DR", "[DR]")
+        else:
+            print "[DR]"
+        if ver_type == None or ver_type.lower() != "p":
+            print ausgabe.link(vers+"P", "[P]")
+        else:
+            print "[P]"
+        if ver_type == None or ver_type.lower() != "ext":
+            print ausgabe.link(vers+"EXT", "[EXT]")
+        else:
+            print "[EXT]"
+        print "<br /><br />"
     tabelle = ausgabe.Tabelle()
     tabelle.addColumn("Account")
     tabelle.addColumn("r_id")
@@ -28,9 +56,19 @@ def list_versions():
     sql += ", username, letzterzug"
     sql += " FROM versionen"
     sql += " left JOIN ritter ON r_id = ritternr"
-    if config.is_tw():
-        sql += " WHERE version like '%TW-Edition%'"
-        sql += " AND username is not NULL"
+    if ver_type:
+        if ver_type.lower() == "ksk":
+            sql += " WHERE version not like '%Edition%'"
+        elif ver_type.lower() == "tw":
+            sql += " WHERE version like '%TW-Edition%'"
+            if config.is_tw():
+                sql += " AND username is not NULL"
+        elif ver_type.lower() == "dr":
+            sql += " WHERE version like '%DR-Edition%'"
+        elif ver_type.lower() == "p":
+            sql += " WHERE version like '%P-Edition%'"
+        elif ver_type.lower() == "ext":
+            sql += " WHERE version like '%externe Edition%'"
     elif not config.is_kraehe():
         sql += " WHERE 0" # liste garnichts
     sql += " ORDER BY last_seen DESC"
@@ -153,8 +191,13 @@ if __name__ == '__main__':
         ausgabe.print_header("Unberechtigter Zugriff")
     elif "list" in form:
         if form["list"].value == "versionen":
-            ausgabe.print_header("Versionsliste")
-            list_versions()
+            if "type" in form:
+                ver_type = form["type"].value 
+                ausgabe.print_header("Versionsliste: " + ver_type)
+                list_versions(ver_type)
+            else:
+                ausgabe.print_header("Versionsliste")
+                list_versions()
         elif form["list"].value == "delete":
             ausgabe.print_header("L&ouml;schliste")
             print '<div class="box">'

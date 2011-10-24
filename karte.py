@@ -894,6 +894,8 @@ if __name__ == '__main__':
                             row += '; border: 1px solid green'
                         if "quest" in terrain.entry:
                             row += '; border: 1px solid yellow'
+                        if "ziel" in terrain.entry:
+                            row += '; border: 1px solid blue'
                         row += ';"' # style attribut auf jeden Fall zumachen
                         if show_dorf and not config.is_kraehe() and dorf.has(x,y):
                             if util.brightness(dorf.get(x,y)['allyfarbe']) < 55:

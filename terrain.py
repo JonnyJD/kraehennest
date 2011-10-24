@@ -270,6 +270,8 @@ class Terrain(Feld):
                     entry["aufgang"] = True
                 if row[4] and row[4].find("{{{quest}}}") >= 0:
                     entry["quest"] = True
+                if row[4] and row[4].find("{{{ziel}}}") >= 0:
+                    entry["ziel"] = True
                 self.entries[row[0],row[1]] = entry
                 row = self.cursor.fetchone()
             return True

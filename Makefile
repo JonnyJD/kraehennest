@@ -10,6 +10,10 @@ ROOT=/var/www/kraehen.org
 NEST=$(ROOT)/nest
 KARTE=$(ROOT)/karte
 
+
+compile: normal
+	python -m compileall -l .
+
 normal:
 	sed -i '1s/python2/python/' index.py dispatch.py
 	sed -i '1s/python2/python/' karte.py admin.py

@@ -23,6 +23,7 @@ arch:
 	sed -i '1s/python$$/python2/' index.py dispatch.py
 	sed -i '1s/python$$/python2/' karte.py admin.py
 	sed -i '1s/python$$/python2/' allianz.py armee.py dorf.py reich.py
+	python2 -m compileall -l -q .
 
 serverconf:
 	echo -e "\
@@ -46,8 +47,10 @@ doctest:
 		--exclude=config *.py \
 		| grep -v __package__
 
-clean:
-	rm serverurl.conf test.xml
+clean: normal
+	rm -f serverurl.conf test.xml
+	rm -f *.pyc
+	rm -rf __pycache__
 
 test:
 	cp /srv/http/cgi-bin/saves/127.0.0.1_xml test.xml

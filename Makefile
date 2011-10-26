@@ -11,7 +11,7 @@ NEST=$(ROOT)/nest
 KARTE=$(ROOT)/karte
 
 
-compile: normal
+compile: normal serverconf
 	python -m compileall -l .
 
 normal:

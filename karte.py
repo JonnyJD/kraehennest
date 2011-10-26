@@ -116,19 +116,22 @@ def list_maps():
     elif config.is_tw():
         text = '<span style="font-weight:bold;">Der Osten</span>'
         print_link("/osten", text)
-    print '<br />'
-    print_area_link("osten", [1,2,3,4], "Der Osten", br=True)
-    print_area_link("westen", [1,2,3],  "Der Westen", br=True)
-    print_area_link("sueden", [1,2,3],  "Der S&uuml;den", br=True)
-    print '<br />'
-    print_area_link("drache", [1,2],    "Drachenh&ouml;hle", br=True)
-    print "(Piraten)"
-    print_area_link("axt", [1,2,3],     "Axtw&auml;chterquest", br=True)
-    print "(Zentral)"
-    print_area_link("schuetzen", [1],   "Meistersch&uuml;tzenquest", br=True)
-    print "(K&uuml;ste)"
-    print '<br />'
-    print_link("/doerfer", "komplette Dorfkarte", br=True)
+    if (config.is_kraehe() or config.is_tw()
+            or config.is_dr() or config.is_p()):
+        print '<br />'
+        print_area_link("osten", [1,2,3,4], "Der Osten", br=True)
+        print_area_link("westen", [1,2,3],  "Der Westen", br=True)
+        print_area_link("sueden", [1,2,3],  "Der S&uuml;den", br=True)
+        print '<br />'
+        print_area_link("drache", [1,2],    "Drachenh&ouml;hle", br=True)
+        print "(Piraten)"
+        print_area_link("axt", [1,2,3],     "Axtw&auml;chterquest", br=True)
+        print "(Zentral)"
+        print_area_link("schuetzen", [1],  "Meistersch&uuml;tzenquest", br=True)
+        print "(K&uuml;ste)"
+        print '<br />'
+    if allow_armeen:
+        print_link("/doerfer", "komplette Dorfkarte", br=True)
     print_area_link("", [1,2,3,4], "komplett", br=True)
     if allow_armeen:
         print "(cut)"
@@ -169,11 +172,11 @@ def list_maps():
     else:
       print \
 """
-<input name="x1" type="text" size="3" maxlength="3" value="231">,
-<input name="y1" type="text" size="3" maxlength="3" value="290">
+<input name="x1" type="text" size="3" maxlength="3" value="237">,
+<input name="y1" type="text" size="3" maxlength="3" value="293">
 &nbsp;&nbsp; - &nbsp;&nbsp;
-<input name="x2" type="text" size="3" maxlength="3" value="264">,
-<input name="y2" type="text" size="3" maxlength="3" value="311">
+<input name="x2" type="text" size="3" maxlength="3" value="271">,
+<input name="y2" type="text" size="3" maxlength="3" value="323">
 """
     print """
 </td></tr>
@@ -199,10 +202,10 @@ def list_maps():
 """
     if allow_armeen:
         print '<input name="layer" value="armeen" type="checkbox" checked>',
-        print 'Armeen'
+        print 'Armeen<br />'
     print \
 """
-<br /><input name="layer" value="doerfer" type="checkbox" checked> D&ouml;rfer
+<input name="layer" value="doerfer" type="checkbox" checked> D&ouml;rfer
 </td><td>
 """
     if allow_armeen:
@@ -231,7 +234,7 @@ value="generiere Link"></td></tr>
     elif config.is_tw():
         print ausgabe.link("/show/karte/261.287-292.322")
     else:
-        print ausgabe.link("/show/karte/231.290-264.311")
+        print ausgabe.link("/show/karte/237.293-271.323")
     print '</div>'
     print '</div>'
 

@@ -86,6 +86,11 @@ def allow_hoehlen(username=None, message=True, floating_message=False):
     """
     return True
 
+def allow_target(username=None):
+    """Ob dem Benutzer {{{ziel}}}-Markierungen gezeigt werden duerfen
+    """
+    return True
+
 def bounding_box(username=None):
     """Eine Box ueber die die angezeigte Karte nicht hinausgehen darf
     """

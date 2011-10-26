@@ -723,6 +723,7 @@ if __name__ == '__main__':
             allow_dorf = config.allow_doerfer(floating_message=True)
             allow_armeen = config.allow_armeen(floating_message=True)
             allow_details = config.allow_details(floating_message=True)
+            allow_target = config.allow_target()
 
             # Bereite Formatierungen vor
             size = 32 
@@ -895,7 +896,7 @@ if __name__ == '__main__':
                             row += '; border: 1px solid green'
                         if "quest" in terrain.entry:
                             row += '; border: 1px solid yellow'
-                        if "ziel" in terrain.entry:
+                        if allow_target and "ziel" in terrain.entry:
                             row += '; border: 1px solid blue'
                         row += ';"' # style attribut auf jeden Fall zumachen
                         if show_dorf and not is_kraehe and dorf.has(x,y):

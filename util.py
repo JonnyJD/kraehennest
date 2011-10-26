@@ -275,19 +275,12 @@ def last_sent(account=None):
     else:
         sql += " WHERE username = %s"
         args = (account)
-    try:
-        conn = rbdb.connect()
-        cursor = conn.cursor()
-        cursor.execute(sql, args)
-        row = cursor.fetchone()
-        if row == None:
-            # garnicht in der Tabelle -> garkein Zugriffsrecht
-            return None
-        else:
-            return row[0]
-    except rbdb.Error, e:
-        util.print_html_error(e)
+    row = get_sql_row(sql, args)
+    if row == None:
+        # garnicht in der Tabelle -> garkein Zugriffsrecht
         return None
+    else:
+        return row[0]
 
 def get_user_r_id(username):
     """Gebe die zugeordnete Reichsid eines Benutzers zurueck.

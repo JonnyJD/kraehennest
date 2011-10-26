@@ -866,6 +866,7 @@ if __name__ == '__main__':
             #
             # Die eigentliche Karte
             #
+            is_kraehe = config.is_kraehe()
             width = size * (terrain.xmax - terrain.xmin + 1 + 2)
             print '\n\n<table id="karte" style="width:' + str(width) + 'px;">'
             print '<tr style="height:' + str(size) + 'px;"><td></td>'
@@ -885,7 +886,7 @@ if __name__ == '__main__':
                         row += '.gif)'
                         if show_armeen and not show_dorf:
                             row += '; vertical-align:top'
-                        if show_dorf and not config.is_kraehe() and dorf.has(x,y):
+                        if show_dorf and not is_kraehe and dorf.has(x,y):
                             row += '; color:'
                             row += dorf.get(x,y)['allyfarbe']
                         if "abgang" in terrain.entry:
@@ -897,7 +898,7 @@ if __name__ == '__main__':
                         if "ziel" in terrain.entry:
                             row += '; border: 1px solid blue'
                         row += ';"' # style attribut auf jeden Fall zumachen
-                        if show_dorf and not config.is_kraehe() and dorf.has(x,y):
+                        if show_dorf and not is_kraehe and dorf.has(x,y):
                             if util.brightness(dorf.get(x,y)['allyfarbe']) < 55:
                                 row += ' class="dark"'
                             else:
@@ -907,7 +908,7 @@ if __name__ == '__main__':
                         if allow_details:
                             row += ' onmouseover="showPos(\''
                             row += str(x) + "," + str(y)
-                            if config.is_kraehe() and terrain.entry["typ"]:
+                            if is_kraehe and terrain.entry["typ"]:
                                 row += " " + "." * terrain.entry["typ"]
                             # fuer Dorf
                             if show_dorf and dorf.has(x,y):
@@ -958,7 +959,7 @@ if __name__ == '__main__':
 
                         # Detail-Link
                         # != Details vom Mouse-Over
-                        if not config.is_kraehe():
+                        if not is_kraehe:
                             show_detail_link = False
                         elif show_armeen and armee.has(x,y):
                             show_detail_link = True

@@ -10,6 +10,8 @@ ROOT=/var/www/kraehen.org
 NEST=$(ROOT)/nest
 KARTE=$(ROOT)/karte
 
+export QUERY_STRING:=group&x1=0&x2=998&y1=0&y2=998
+export SCRIPT_URL:=/show/karte
 
 compile: normal serverconf
 	python -m compileall -l .
@@ -52,7 +54,15 @@ clean: normal
 	rm -f *.pyc
 	rm -rf __pycache__
 
-test:
+test: test-karte
+
+test-xml:
 	cp /srv/http/cgi-bin/saves/127.0.0.1_xml test.xml
-	python test.py \
+	python2 test.py \
 	| sed -e 's: /home.*/trunk/: :'
+
+test-karte:
+	#python2 -m cProfile -o profile karte.py > /dev/null
+	python2 -m cProfile -o profile karte.py
+	python2 -c "import pstats; pstats.Stats('profile').sort_stats('cum').print_stats('\A[a-z]*.py', 10)"
+	python2 -c "import pstats; pstats.Stats('profile').sort_stats('time').print_stats('\A[a-z]*.py', 10)"

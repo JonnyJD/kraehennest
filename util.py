@@ -289,6 +289,18 @@ def last_sent(account=None):
         util.print_html_error(e)
         return None
 
+def get_user_r_id(username):
+    """Gebe die zugeordnete Reichsid eines Benutzers zurueck.
+
+    @rtype: C{IntType}
+    """
+    sql = "SELECT r_id from versionen where username=%s"
+    row = get_sql_row(sql, username)
+    if row:
+        return row[0]
+    else:
+        return 0
+
 
 ######################################################################
 #{ HTML-Farben

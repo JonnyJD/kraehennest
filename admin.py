@@ -69,7 +69,7 @@ def list_versions(ver_type=None):
         elif ver_type.lower() == "p":
             sql += " WHERE version like '%P-Edition%'"
         elif ver_type.lower() == "ext":
-            sql += " WHERE version like '%externe Edition%'"
+            sql += " WHERE version like '%xtern%Edition%'"
     elif not config.is_kraehe():
         sql += " WHERE 0" # liste garnichts
     sql += " ORDER BY last_seen DESC"

@@ -23,7 +23,7 @@ marked_reiche = []
 """auf der Karte zu markierende Reiche"""
 
 def get_username():
-    """Gebe den Namen des aktuell eingeloggten Benutzes zurueck.
+    """Gebe den Namen des aktuell eingeloggten Benutzers zurueck.
 
     @rtype: C{StringType}
     """
@@ -31,6 +31,13 @@ def get_username():
         return os.environ['REMOTE_USER']
     else:
         return ""
+
+def get_user_r_id(username=None):
+    """Gebe die zugeordnete Reichsid eines Benutzers zurueck.
+
+    @rtype: C{IntType}
+    """
+    return 0
 
 def is_admin(username=None):
     """Ob der aktuelle (oder ein bestimmter) Benutzer Admin ist
@@ -73,6 +80,21 @@ def allow_details(username=None, message=True, floating_message=False):
 
 def allow_armeen(username=None, message=True, floating_message=False):
     """Ob dem Benutzer Armeen angezeigt werden duerfen
+    """
+    return True
+
+def allow_armeen_all(username=None):
+    """Ob dem Benutzer alle Armeen angezeigt werden duerfen
+    """
+    return True
+
+def allow_armeen_ally(username=None):
+    """Ob dem Benutzer Armeen der eigenen Allianz angezeigt werden duerfen
+    """
+    return True
+
+def allow_armeen_own(username=None):
+    """Ob dem Benutzer eigene Armeen angezeigt werden duerfen
     """
     return True
 

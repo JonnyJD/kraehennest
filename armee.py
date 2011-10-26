@@ -94,6 +94,14 @@ class Armee(Feld):
             self.cond_clause = " AND active = 1"
             self.cond_clause += " AND last_seen >= DATE_SUB(now()"
             self.cond_clause += ", interval 30 hour)"
+            if not config.allow_armeen_all():
+                if config.allow_armeen_own():
+                    self.cond_clause += " AND r_id="
+                    # weird protection that this is int..
+                    self.cond_clause += str(int(str(config.get_user_r_id())))
+                else:
+                    self.cond_clause += " AND FALSE"
+
         else:
             self.id = h_id
             """ID der Armee

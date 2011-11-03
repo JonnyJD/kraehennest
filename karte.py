@@ -555,24 +555,25 @@ def small_map(x, y, level="N", sicht=2, imported=False):
     size = 32 
     fontsize = 9
 
+    xmin = x - sicht; xmax = x + sicht
+    ymin = y - sicht; ymax = y + sicht
+
     if level == "N" and config.allow_doerfer():
         dorf = Dorf()
-        dorf.fetch_data()
+        dorf.fetch_data(xmin, xmax, ymin, ymax)
         show_doerfer = True
     else:
         show_doerfer = False
 
     if config.allow_armeen():
         armee = Armee()
-        armee.fetch_data(level)
+        armee.fetch_data(level, xmin, xmax, ymin, ymax)
         show_armeen = True
     else:
         show_armeen = False
 
     terrain = Terrain()
-    terrain.fetch_data(level, x - sicht, x + sicht, y - sicht, y + sicht)
-    xmin = x - sicht; xmax = x + sicht
-    ymin = y - sicht; ymax = y + sicht
+    terrain.fetch_data(level, xmin, xmax, ymin, ymax)
 
     if imported:
         achsen = False
@@ -756,27 +757,6 @@ if __name__ == '__main__':
                 layer.append("clean")
 
             # bestimme was wirklich gezeigt wird
-            if not allow_dorf or "doerfer" not in layer:
-                show_dorf = False
-            else:
-                show_dorf = True
-                dorf = Dorf()
-                if "neu" in layer:
-                    add_cond = "datediff(now(), aktdatum) < "+str(config.tage_neu)
-                    dorf.set_add_cond(add_cond)
-                dorf.fetch_data()
-
-            if allow_armeen and "armeen" in layer:
-                show_armeen = True
-                armee = Armee()
-                if "alt" in layer:
-                    armee.replace_cond("TRUE") # keine Bedingung
-                elif "neu" in layer:
-                    armee.set_add_cond("hour(timediff(now(), last_seen)) < 6")
-                armee.fetch_data(level)
-            else:
-                show_armeen = False
-
             terrain = Terrain()
             if "x2" in form:
                 bounding_box = config.bounding_box()
@@ -794,6 +774,33 @@ if __name__ == '__main__':
             else:
                 terrain.fetch_data(level, bounding_box.x1, bounding_box.x2,
                                             bounding_box.y1, bounding_box.y2)
+
+            if not allow_dorf or "doerfer" not in layer:
+                show_dorf = False
+            else:
+                show_dorf = True
+                dorf = Dorf()
+                if "neu" in layer:
+                    add_cond = "datediff(now(), aktdatum) < "+str(config.tage_neu)
+                    dorf.set_add_cond(add_cond)
+                if "x2" in form:
+                    dorf.fetch_data(real_x1, real_x2, real_y1, real_y2)
+                else:
+                    dorf.fetch_data()
+
+            if allow_armeen and "armeen" in layer:
+                show_armeen = True
+                armee = Armee()
+                if "alt" in layer:
+                    armee.replace_cond("TRUE") # keine Bedingung
+                elif "neu" in layer:
+                    armee.set_add_cond("hour(timediff(now(), last_seen)) < 6")
+                if "x1" in form:
+                    armee.fetch_data(level, real_x1, real_x2, real_y1, real_y2)
+                else:
+                    armee.fetch_data(level)
+            else:
+                show_armeen = False
 
 
             # Formatierungen

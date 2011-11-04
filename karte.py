@@ -756,7 +756,30 @@ if __name__ == '__main__':
                 # dummy layer der fuer "nichts" steht
                 layer.append("clean")
 
+
             # bestimme was wirklich gezeigt wird
+
+            if "x2" in form:
+                bounding_box = config.bounding_box()
+                xmin = max(bounding_box.x1, int(form["x1"].value))
+                ymin = max(bounding_box.y1, int(form["y1"].value))
+                xmax = min(bounding_box.x2, int(form["x2"].value))
+                ymax = min(bounding_box.y2, int(form["y2"].value))
+
+            if allow_armeen and "armeen" in layer:
+                show_armeen = True
+                armee = Armee()
+                if "alt" in layer:
+                    armee.replace_cond("TRUE") # keine Bedingung
+                elif "neu" in layer:
+                    armee.set_add_cond("hour(timediff(now(), last_seen)) < 6")
+                if "x1" in form:
+                    armee.fetch_data(level, xmin, xmax, ymin, ymax)
+                else:
+                    armee.fetch_data(level)
+            else:
+                show_armeen = False
+
             terrain = Terrain()
             if "x2" in form:
                 bounding_box = config.bounding_box()
@@ -787,20 +810,6 @@ if __name__ == '__main__':
                     dorf.fetch_data(real_x1, real_x2, real_y1, real_y2)
                 else:
                     dorf.fetch_data()
-
-            if allow_armeen and "armeen" in layer:
-                show_armeen = True
-                armee = Armee()
-                if "alt" in layer:
-                    armee.replace_cond("TRUE") # keine Bedingung
-                elif "neu" in layer:
-                    armee.set_add_cond("hour(timediff(now(), last_seen)) < 6")
-                if "x1" in form:
-                    armee.fetch_data(level, real_x1, real_x2, real_y1, real_y2)
-                else:
-                    armee.fetch_data(level)
-            else:
-                show_armeen = False
 
 
             # Formatierungen

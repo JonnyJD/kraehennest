@@ -691,13 +691,17 @@ if __name__ == '__main__':
             print '<h1>' + title + '</h1>'
             list_maps()
         elif "sicht" in form:
-            print '<style type="text/css">'
-            print create_styles(32, 9)#, show_armeen, show_dorf, background)
-            print 'body { margin:0px; }'
-            print '</style>\n'
-            print small_map(int(form["x"].value), int(form["y"].value),
-                    form["level"].value, int(form["sicht"].value),
-                    imported=True)
+            if config.importkarte:
+                print '<style type="text/css">'
+                print create_styles(32, 9)#, show_armeen, show_dorf, background)
+                print 'body { margin:0px; }'
+                print '</style>\n'
+                print small_map(int(form["x"].value), int(form["y"].value),
+                        form["level"].value, int(form["sicht"].value),
+                        imported=True)
+            else:
+                msg = "Importkarte deaktiviert"
+                util.print_error_message(msg) 
         else:
             # Zeige eine Karte
 

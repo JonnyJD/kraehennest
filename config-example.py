@@ -22,6 +22,8 @@ tage_neu = 2                    #: Anzahl der Tage fuer den Layer "neu"
 marked_reiche = []
 """auf der Karte zu markierende Reiche"""
 
+importkarte = True      #: ob die Importkarte angezeigt werden soll
+
 def get_username():
     """Gebe den Namen des aktuell eingeloggten Benutzers zurueck.
 

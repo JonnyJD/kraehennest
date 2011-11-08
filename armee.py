@@ -654,7 +654,7 @@ class Armee(Feld):
                 if row[2] == 174:
                     entry["allyfarbe"] = '#00A000'
                 elif row[2] in config.marked_reiche:
-                    entry["allyfarbe"] = "white"
+                    entry["allyfarbe"] = config.marked_reiche_color
                 elif row[11] == reich.S_INAKTIV and config.is_kraehe():
                     entry["allyfarbe"] = "#00A000"
                 elif row[11] == reich.S_SCHUTZ and config.is_kraehe():

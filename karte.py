@@ -669,9 +669,11 @@ if __name__ == '__main__':
     if is_still_valid:
         print 'Status: 304 Not Modified\n'
     else:
-        print 'Last-Modified: ' + util.map_last_modified_http(
-                config.allow_doerfer(message=False),
-                config.allow_armeen(message=False))
+        if "sicht" not in form or config.importkarte:
+            # kein Last-Modified fuer deaktivierte Importkarte
+            print 'Last-Modified: ' + util.map_last_modified_http(
+                    config.allow_doerfer(message=False),
+                    config.allow_armeen(message=False))
         print 'Cache-Control: no-cache,must-revalidate'
         print 'Content-type: text/html; charset=utf-8\n'
         print '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"'

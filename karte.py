@@ -558,14 +558,14 @@ def small_map(x, y, level="N", sicht=2, imported=False):
     xmin = x - sicht; xmax = x + sicht
     ymin = y - sicht; ymax = y + sicht
 
-    if level == "N" and config.allow_doerfer():
+    if level == "N" and config.allow_doerfer(message=False):
         dorf = Dorf()
         dorf.fetch_data(xmin, xmax, ymin, ymax)
         show_doerfer = True
     else:
         show_doerfer = False
 
-    if config.allow_armeen():
+    if config.allow_armeen(message=False):
         armee = Armee()
         armee.fetch_data(level, xmin, xmax, ymin, ymax)
         show_armeen = True
@@ -601,20 +601,32 @@ def small_map(x, y, level="N", sicht=2, imported=False):
         for x in range(xmin, xmax + 1):
             if terrain.has(x,y): # Kartenbereich
                 terrain.get(x,y)
-                row = '<td style="background-image:url(/img/terrain/'
-                row += str(size) + '/' + terrain.entry["terrain"]
-                row += '.gif);">'
-
-                detail_link = False
                 if show_doerfer and dorf.has(x,y):
                     color = dorf.get(x,y)['allyfarbe']
                 else:
                     color = None
-                if ((show_doerfer and dorf.has(x,y)
-                        and dorf.get(x,y)["rittername"] != ".")
-                    or (show_armeen and armee.has(x,y))):
-                    row += __detail_link(x, y, level, color, new_window)
-                    detail_link = True
+
+                row = '<td style="background-image:url(/img/terrain/'
+                row += str(size) + '/' + terrain.entry["terrain"]
+                row += '.gif);'
+                if color and not config.is_kraehe():
+                    row += ' color:' + color + ';"'
+                    if util.brightness(color) < 55:
+                        row += ' class="dark">'
+                    else:
+                        row += ' class="bright">'
+                else:
+                    row += '">'
+
+                detail_link = False
+                if config.is_kraehe():
+                    if (show_doerfer and dorf.has(x,y)
+                            and dorf.get(x,y)["rittername"] != "."):
+                        row += __detail_link(x, y, level, color, new_window)
+                        detail_link = True
+                    elif show_armeen and armee.has(x,y):
+                        row += __detail_link(x, y, level, color, new_window)
+                        detail_link = True
 
                 if show_doerfer and dorf.has(x,y):
                     row += __dorf(dorf, x, y, terrain)

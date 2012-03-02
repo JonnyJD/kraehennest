@@ -32,6 +32,10 @@ def list_versions(ver_type=None):
             print ausgabe.link(vers+"TW", "[TW]")
         else:
             print "[TW]"
+        if ver_type == None or ver_type.lower() != "brg":
+            print ausgabe.link(vers+"BRG", "[BRG]")
+        else:
+            print "[BRG]"
         if ver_type == None or ver_type.lower() != "dr":
             print ausgabe.link(vers+"DR", "[DR]")
         else:
@@ -64,6 +68,8 @@ def list_versions(ver_type=None):
             sql += " WHERE version like '%TW-Edition%'"
             if config.is_tw():
                 sql += " AND username is not NULL"
+        elif ver_type.lower() == "brg":
+            sql += " WHERE version like '%BRG-Edition%'"
         elif ver_type.lower() == "dr":
             sql += " WHERE version like '%DR-Edition%'"
         elif ver_type.lower() == "p":

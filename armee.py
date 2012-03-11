@@ -947,7 +947,9 @@ class Armee(Feld):
                     entry["ruf"] = sizes[0].prop("max")
             strengths = armee.xpathEval('strength')
             if len(strengths) == 1:
-                entry["strength"] = strengths[0].prop("now")
+                strength = strengths[0].prop("now")
+                if "?" not in str(strength):
+                    entry["strength"] = strength
             bps = armee.xpathEval('bp')
             if len(bps) == 1:
                 if bps[0].hasProp("now"):

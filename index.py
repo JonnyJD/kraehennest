@@ -61,17 +61,28 @@ if __name__ == "__main__":
         print ausgabe.link("/show/reich/113", "Plunkett", br=True)
         print '</div>'
     # Adminbereich
+    print '<div class="box">'
+    print '<h2>Administration</h2>'
     if config.is_admin():
-        print '<div class="box">'
-        print '<h2>Administration</h2>'
         if config.is_kraehe():
             print '<a href="/karte/datenpflege.php">Datenpflege</a>'
             print ausgabe.link("/show/versionen", "Versionsliste", br=True)
             print ausgabe.link("/delete", "L&ouml;schliste", br=True)
         else:
             print ausgabe.link("/show/versionen", "Versionsliste")
-        print '<br /><a href="/create_md5.html">Account erstellen</a>'
-        print '</div>'
+    print '<br /><a href="/create_md5.html">Account erstellen</a>'
+    if ausgabe.prefix:
+        if ausgabe.prefix == "/ext":
+            suffix = "extern"
+	else:
+            suffix = ausgabe.prefix[1:]
+	auge = "/kraehenauge_" + suffix + ".user.js"
+    	print ausgabe.link(auge, "Kr&auml;henauge", br=True)
+    else:
+	link = "http://svn.kraehen.org/tools/auge/tags"
+	print '<br /><a href="%s">Kr&auml;henauge</a>' % link
+    print '</div>'
+
     karte.list_maps()
 
     ausgabe.print_footer()

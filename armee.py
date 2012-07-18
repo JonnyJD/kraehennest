@@ -172,7 +172,7 @@ class Armee(Feld):
         """Deaktiviert die Armee, also zeigt sie nicht mehr auf der Karte
         """
 
-        if config.is_admin():
+        if config.is_kraehe() or self.owner == User().r_id:
             sql = "UPDATE armeen"
             sql += " SET active = 0"
             sql += " WHERE h_id = %s"
@@ -760,7 +760,7 @@ class Armee(Feld):
                 elif cols[i] == "status":
                     line.append(status_string(armee[i]))
                 elif cols[i] == "h_id":
-                    if (config.is_admin() or user.r_id == ritter):
+                    if (config.is_kraehe() or user.r_id == ritter):
                         url = "/deactivate/armee/" + str(armee[i])
                         cell = '<span style="font-size:8pt;">'
                         deact_string = "[deact]"
@@ -1012,8 +1012,8 @@ if __name__ == '__main__':
             h_id = form["id"].value
             armee = Armee(h_id)
             user = User()
-            if ((config.is_admin() or user.r_id == armee.owner)
-                    and form["action"].value == "deactivate"):
+            if ((config.is_kraehe() or user.r_id == armee.owner)
+			    and form["action"].value == "deactivate"):
                 # Hier ist keine Konfirmation noetig
                 armee.deactivate()
                 ausgabe.redirect("/show/reich/" + str(armee.owner), 303)

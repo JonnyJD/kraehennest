@@ -109,7 +109,7 @@ def list_by_allianz(a_id):
     sql += ", count(distinct h_id)"
     sql += ", letzterzug, inaktiv"
     sql += " FROM ritter"
-    sql += " JOIN allis ON ritter.alli = allis.allinr"
+    sql += " LEFT JOIN allis ON ritter.alli = allis.allinr"
     sql += " LEFT JOIN dorf ON ritter.ritternr = dorf.ritternr"
     sql += " LEFT JOIN armeen ON ritter.ritternr = r_id"
     sql += " WHERE (top10 > 0"
@@ -320,9 +320,9 @@ class Reich:
             """ID des Reiches
             @type: C{IntType}
             """
-            sql = "SELECT rittername, allinr, alliname, allicolor"
+            sql = "SELECT rittername, ritter.alli, alliname, allicolor"
             sql += ", reichsname, reichslevel, top10, letzterzug, inaktiv"
-            sql += " FROM ritter JOIN allis ON ritter.alli = allinr"
+            sql += " FROM ritter LEFT JOIN allis ON ritter.alli = allinr"
             sql += " WHERE ritternr = %s"
             row = util.get_sql_row(sql, r_id)
             if row is None:

@@ -157,7 +157,7 @@ class Dorf(Feld):
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM dorf"
         sql += " JOIN ritter ON dorf.ritternr = ritter.ritternr"
-        sql += " JOIN allis ON ritter.alli = allis.allinr"
+        sql += " LEFT JOIN allis ON ritter.alli = allis.allinr"
         sql += " WHERE koords = %s"
         try:
             self.cursor.execute(sql, x + ',' + y)
@@ -212,7 +212,7 @@ class Dorf(Feld):
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM dorf"
         sql += " JOIN ritter ON dorf.ritternr = ritter.ritternr"
-        sql += " JOIN allis ON ritter.alli = allis.allinr"
+        sql += " LEFT JOIN allis ON ritter.alli = allis.allinr"
         if a_id != -1:
             sql += " WHERE allinr = %s"
         else:

@@ -639,7 +639,7 @@ class Armee(Feld):
         sql += ", name, ap, bp, schiffstyp, inaktiv"
         sql += " FROM armeen"
         sql += " JOIN ritter ON r_id = ritternr"
-        sql += " JOIN allis ON ritter.alli = allinr"
+        sql += " LEFT JOIN allis ON ritter.alli = allinr"
         sql += " WHERE level='" + self.level + "'"
         sql += self.crop_clause
         sql += self.cond_clause
@@ -658,6 +658,9 @@ class Armee(Feld):
                     entry["allyfarbe"] = "#00A000"
                 elif row[11] == reich.S_SCHUTZ and config.is_kraehe():
                     entry["allyfarbe"] = "white"
+                elif row[3] is None:
+                    # unknown allis are standard link color (no color given)
+                    entry["allyfarbe"] = "#FFCC00"   # yellowish
                 else: 
                     entry["allyfarbe"] = row[3]
                 entry["rittername"] = row[4]
@@ -803,7 +806,7 @@ class Armee(Feld):
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"
-        sql += " JOIN allis ON ritter.alli = allis.allinr"
+        sql += " LEFT JOIN allis ON ritter.alli = allis.allinr"
         sql += " WHERE level = %s AND x = %s AND y = %s"
         sql += " ORDER BY last_seen DESC, allicolor, rittername, name"
         try:
@@ -862,7 +865,7 @@ class Armee(Feld):
         sql = "SELECT " + ", ".join(cols)
         sql += " FROM armeen"
         sql += " JOIN ritter ON armeen.r_id = ritternr"
-        sql += " JOIN allis ON ritter.alli = allis.allinr"
+        sql += " LEFT JOIN allis ON ritter.alli = allis.allinr"
         if a_id == -1:
             sql += " WHERE active = 1"
             sql += " AND last_seen >= DATE_SUB(now(), interval 30 hour)"

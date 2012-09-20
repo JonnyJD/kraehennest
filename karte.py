@@ -481,7 +481,7 @@ def __armeen(armee, x, y):
             else:
                 text += '<span class="armee_bright"'
             text += ' style="background-color:'
-            text += entry["allyfarbe"] + ';"></span>'
+            text += __format(entry["allyfarbe"]) + ';"></span>'
     text += '</div>'
     return text
 
@@ -926,7 +926,7 @@ if __name__ == '__main__':
                             row += '; vertical-align:top'
                         if show_dorf and not is_kraehe and dorf.has(x,y):
                             row += '; color:'
-                            row += dorf.get(x,y)['allyfarbe']
+                            row += __format(dorf.get(x,y)['allyfarbe'])
                         if "abgang" in terrain.entry:
                             row += '; border: 1px solid red'
                         if "aufgang" in terrain.entry:

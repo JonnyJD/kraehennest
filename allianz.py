@@ -26,11 +26,14 @@ def link(a_id, name=None, color=None):
     @raise KeyError: Wenn keine Allianz mit der C{a_id} gefunden wird
     """
 
-    if name is None or color is None:
-        sql = "SELECT alliname, color FROM allis WHERE allinr = %s"
+    if a_id is None:
+        return "?"
+    elif name is None or color is None:
+        sql = "SELECT alliname, allicolor FROM allis WHERE allinr = %s"
         row = util.get_sql_row(sql, a_id)
         if row is None:
-            raise KeyError(a_id)
+            name = str(a_id)
+	    color = None
         else:
             name = row[0]
             color = row[1]

@@ -4,6 +4,7 @@ import datetime
 import time
 import email.Utils # damit es auch vor python 2.5 geht
 import rbdb
+import config
 from MySQLdb import escape_string
 
 
@@ -167,11 +168,11 @@ def map_last_modified(allow_doerfer=True, allow_armeen=True):
     @return: Aenderungsdatum
     @rtype: C{datetime}
     """
-    row = get_sql_row("show table status from rb like 'armeen'")
+    row = get_sql_row("show table status from %s like 'armeen'" % config.db)
     last_update_armeen = row[12] # Update_time
-    row = get_sql_row("show table status from rb like 'dorf'")
+    row = get_sql_row("show table status from %s like 'dorf'" % config.db)
     last_update_doerfer = row[12] # Update_time
-    row = get_sql_row("show table status from rb like 'felder'")
+    row = get_sql_row("show table status from %s like 'felder'" % config.db)
     last_update_felder = row[12] # Update_time
     last_update = last_update_felder
     if allow_armeen and last_update < last_update_armeen:

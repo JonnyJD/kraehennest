@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Ein Modul um Allianzdaten auszugeben und zu listen."""
+"""Ein Skript um Allianzdaten auszugeben und zu listen."""
 
 import config
 

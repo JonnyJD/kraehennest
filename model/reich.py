@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Eine Modul und Skript um Reichsdaten ein- und auszulesen.
+"""Reichsdaten
 """
 
 from datetime import timedelta

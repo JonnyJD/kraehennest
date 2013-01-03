@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Modul zum einlesen und ausgeben von Dorfdaten"""
+"""Skript zum einlesen und ausgeben von Dorfdaten"""
 
 import config
 

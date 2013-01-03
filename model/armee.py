@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Armeedaten einlesen und ausgeben"""
+"""Armeedaten"""
 
 import re
 from datetime import datetime, timedelta

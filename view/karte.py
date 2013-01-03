@@ -6,7 +6,7 @@ from types import StringType
 import config
 import ausgabe
 import util
-from terrain import Terrain
+from model.terrain import Terrain
 from model.armee import Armee
 from model.dorf import Dorf
 

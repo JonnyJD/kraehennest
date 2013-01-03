@@ -11,7 +11,7 @@ import cgi
 import os
 import util
 import libxml2
-from terrain import Terrain
+from model.terrain import Terrain
 from model.armee import Armee
 from control import reich
 

@@ -8,22 +8,15 @@ if config.debug:
     cgitb.enable()
 
 import cgi
-import re
-from datetime import datetime, timedelta
-
-import rbdb
-import util
 import ausgabe
 import reich
-from reich import get_ritter_id_form
-from model import Feld, Armee
-from model.armee import S_SOLD, S_HIDDEN, S_QUEST, S_DEAD
+from model import Armee
 from user import User
 
 
 # Aufruf als Skript
-if True:
 #if __name__ == '__main__':
+if True:
     form = cgi.FieldStorage()
 
     if "list" in form:

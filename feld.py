@@ -10,8 +10,7 @@ if config.debug:
 
 import cgi
 import ausgabe
-from model import Feld, Armee
-from dorf import Dorf
+from model import Feld, Armee, Dorf
 from view import karte
 
 

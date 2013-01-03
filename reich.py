@@ -389,8 +389,7 @@ if __name__ == '__main__':
 
         ausgabe.print_footer()
     elif "id" in form:
-        from model import Armee
-        from dorf import Dorf
+        from model import Armee, Dorf
         import allianz
 
         r_id = form["id"].value

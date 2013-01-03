@@ -224,8 +224,7 @@ def small_map(x, y, level="N", sicht=2, imported=False):
     @type imported: C{BooleanType}
     """
 
-    from dorf import Dorf
-    from model import Armee
+    from model import Armee, Dorf
     from terrain import Terrain
 
     size = 32 

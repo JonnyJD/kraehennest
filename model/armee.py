@@ -1,17 +1,12 @@
 #!/usr/bin/env python
 """Armeedaten einlesen und ausgeben"""
 
-import config
-
-if config.debug:
-    import cgitb
-    cgitb.enable()
-
-import rbdb
-import util
 import re
 from datetime import datetime, timedelta
 
+import config
+import rbdb
+import util
 from model import Feld
 from reich import get_ritter_id_form
 import reich

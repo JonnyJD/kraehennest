@@ -2,12 +2,6 @@
 """Die Grundstruktur von Klassen die Daten zu einem bestimmten Feld bearbeiten.
 """
 
-import config
-
-if config.debug:
-    import cgitb
-    cgitb.enable()
-
 import rbdb
 import util
 

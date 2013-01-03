@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 """Modul um die Karte anzuzeigen und eine Kartenuebersicht zu generieren"""
 
+from types import StringType
+
 import config
-
-if config.debug:
-    import cgitb
-    cgitb.enable()
-
 import ausgabe
 import util
-from types import StringType
-import os
 
 viel_armeen = 8
 """Gibt an ab welcher Armeezahl auf einem Feld weniger Infos gezeigt werden"""

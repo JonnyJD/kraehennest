@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 """Modul zum einlesen und ausgeben von Dorfdaten"""
 
+import re
+from datetime import date, timedelta
+
 import config
-
-if config.debug:
-    import cgitb
-    cgitb.enable()
-
 import rbdb
 import util
-import re
-from datetime import date, datetime, timedelta
 from model import Feld
 import reich
 import ausgabe

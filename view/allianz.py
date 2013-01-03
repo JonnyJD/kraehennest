@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 """Ein Modul um Allianzdaten auszugeben und zu listen."""
 
-import config
-
-if config.debug:
-    import cgitb
-    cgitb.enable()
-
 import util
 import ausgabe
 

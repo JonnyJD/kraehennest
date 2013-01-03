@@ -12,7 +12,7 @@ import util
 import re
 from datetime import datetime, timedelta
 
-from feld import Feld
+from model import Feld
 from reich import get_ritter_id_form
 import reich
 from user import User

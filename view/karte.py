@@ -294,22 +294,22 @@ def small_map(x, y, level="N", sicht=2, imported=False):
                 else:
                     row += '">'
 
-                detail_link = False
+                has_detail_link = False
                 if config.is_kraehe():
                     if (show_doerfer and dorf.has(x,y)
                             and dorf.get(x,y)["rittername"] != "."):
                         row += detail_link(x, y, level, color, new_window)
-                        detail_link = True
+                        has_detail_link = True
                     elif show_armeen and armee.has(x,y):
                         row += detail_link(x, y, level, color, new_window)
-                        detail_link = True
+                        has_detail_link = True
 
                 if show_doerfer and dorf.has(x,y):
                     row += dorf_output(dorf, x, y, terrain)
                 if show_armeen:
                     row += armee_output(armee, x, y)
 
-                if detail_link: row += '</a>'
+                if has_detail_link: row += '</a>'
                 row += '</td>\n'
                 karte += row
             else:

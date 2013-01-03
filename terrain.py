@@ -10,7 +10,7 @@ if config.debug:
 import cgi
 import rbdb
 import util
-from feld import Feld
+from model import Feld
 
 class Terrain(Feld):
     """Eine Klasse um Terraindaten ein- und auszulesen.  

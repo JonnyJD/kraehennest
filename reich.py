@@ -17,11 +17,13 @@ if config.debug:
 
 import cgi
 import libxml2
+from types import StringType
+from datetime import timedelta
+
 import rbdb
 import util
 import ausgabe
-from types import StringType
-from datetime import timedelta
+from view import allianz
 
 
 # Reichsstati
@@ -90,8 +92,6 @@ def list_by_allianz(a_id):
     @param a_id: Allianznummer
     @rtype: L{Tabelle<ausgabe.Tabelle>}
     """
-
-    import allianz
 
     tabelle = ausgabe.Tabelle()
     tabelle.addColumn(translate("r_id"))
@@ -390,7 +390,6 @@ if __name__ == '__main__':
         ausgabe.print_footer()
     elif "id" in form:
         from model import Armee, Dorf
-        import allianz
 
         r_id = form["id"].value
         try:

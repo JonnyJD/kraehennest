@@ -44,7 +44,8 @@ def process(doc):
         reich.process_xml(nodes[0])
 
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
+if True:
     # Cross-Origin-Resource Sharing
     # noetig fuer cross-site-xmlhttprequest des Auges (einige Browser)
     print "Access-Control-Allow-Origin: http://www.ritterburgwelt.de"

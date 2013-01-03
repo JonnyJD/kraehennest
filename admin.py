@@ -197,7 +197,8 @@ def list_dangling_armies():
 
 
 # Aufruf als Skript: Reich eintragen
-if __name__ == '__main__':
+#if __name__ == '__main__':
+if True:
     form = cgi.FieldStorage()
 
     if not config.is_admin():

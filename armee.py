@@ -9,9 +9,8 @@ if config.debug:
 
 import cgi
 import ausgabe
-import reich
-from model import Armee
 from user import User
+from model.armee import Armee
 
 
 # Aufruf als Skript

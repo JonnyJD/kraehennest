@@ -7,11 +7,12 @@ from datetime import datetime, timedelta
 import config
 import rbdb
 import util
-from model import Feld
-from reich import get_ritter_id_form
-import reich
-from user import User
 import ausgabe
+from user import User
+
+from feld import Feld
+import reich
+#from view.reich import get_ritter_id_form
 
 
 # Armeestati
@@ -422,7 +423,8 @@ class Armee(Feld):
         while i < len(self.new_entries):
             if "r_id" not in self.new_entries[i]:
                 print "Ritter", self.new_entries[i]["ritter"], "ist unbekannt!"
-                print get_ritter_id_form(self.new_entries[i]["ritter"]),"<br />"
+		# TODO: move that part to control or some other place
+		#print get_ritter_id_form(self.new_entries[i]["ritter"]),"<br />"
                 del self.new_entries[i]
             else:
                 i += 1

@@ -11,6 +11,10 @@ import cgi
 import rbdb
 import util
 import ausgabe
+from model.dorf import Dorf
+from model.armee import Armee
+from view import reich
+
 
 
 def list():
@@ -108,9 +112,6 @@ if True:
         ausgabe.print_header("Allianzliste")
         list()
     elif "id" in form:
-        import reich
-        from model import Dorf, Armee
-
         a_id = form["id"].value
         try:
             allianz = Allianz(a_id)
@@ -140,7 +141,6 @@ if True:
             armeetabelle.show()
         except KeyError, e:
             ausgabe.print_header("Unbekannte Allianz!")
-
 
     ausgabe.print_footer()
 

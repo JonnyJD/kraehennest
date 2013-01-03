@@ -9,7 +9,7 @@ if config.debug:
 
 import cgi
 import ausgabe
-from model import Dorf
+from model.dorf import Dorf
 
 
 # Aufruf als Skript

@@ -7,9 +7,10 @@ from datetime import date, timedelta
 import config
 import rbdb
 import util
-from model import Feld
-import reich
 import ausgabe
+
+from feld import Feld
+import reich
 
 
 def translate(column):

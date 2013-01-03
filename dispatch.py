@@ -12,8 +12,8 @@ import os
 import util
 import libxml2
 from terrain import Terrain
-from model import Armee
-import reich
+from model.armee import Armee
+from control import reich
 
 def process(doc):
     """Reicht bestimmte Knoten zu Modulen weiter

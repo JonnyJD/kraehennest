@@ -6,6 +6,10 @@ from types import StringType
 import config
 import ausgabe
 import util
+from terrain import Terrain
+from model.armee import Armee
+from model.dorf import Dorf
+
 
 viel_armeen = 8
 """Gibt an ab welcher Armeezahl auf einem Feld weniger Infos gezeigt werden"""
@@ -218,9 +222,6 @@ def small_map(x, y, level="N", sicht=2, imported=False):
     @param imported: Karte wird woanders integriert
     @type imported: C{BooleanType}
     """
-
-    from model import Armee, Dorf
-    from terrain import Terrain
 
     size = 32 
     fontsize = 9

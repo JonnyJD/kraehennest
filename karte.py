@@ -13,11 +13,12 @@ import os
 import ausgabe
 import util
 from terrain import Terrain
-from model import Armee, Dorf
 from view import format, viel_armeen
 from view.karte import escape
 from view.karte import small_map, create_styles, nav_link, detail_link
 from view.karte import dorf_output, armee_output
+from model.armee import Armee
+from model.dorf import Dorf
 
 
 def __nav_link(text, direction=None, amount=0):

@@ -10,8 +10,10 @@ if config.debug:
 
 import cgi
 import ausgabe
-from model import Feld, Armee, Dorf
 from view import karte
+from model.feld import Feld
+from model.armee import Armee
+from model.dorf import Dorf
 
 
 # Aufruf als Skript: Felddetails

@@ -225,7 +225,7 @@ def small_map(x, y, level="N", sicht=2, imported=False):
     """
 
     from dorf import Dorf
-    from armee import Armee
+    from model import Armee
     from terrain import Terrain
 
     size = 32 

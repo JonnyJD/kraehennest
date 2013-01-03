@@ -136,7 +136,7 @@ if __name__ == '__main__':
     elif "id" in form:
         import reich
         from dorf import Dorf
-        from armee import Armee
+        from model import Armee
 
         a_id = form["id"].value
         try:

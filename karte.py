@@ -14,7 +14,7 @@ import ausgabe
 import util
 from terrain import Terrain
 from dorf import Dorf
-from armee import Armee
+from model import Armee
 from view import format, viel_armeen
 from view.karte import escape
 from view.karte import small_map, create_styles, nav_link, detail_link

@@ -12,7 +12,7 @@ import os
 import util
 import libxml2
 from terrain import Terrain
-from armee import Armee
+from model import Armee
 import reich
 
 def process(doc):

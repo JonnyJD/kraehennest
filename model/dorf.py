@@ -57,28 +57,25 @@ class Dorf(Feld):
         sql += self.add_cond
         try:
             self.cursor.execute(sql)
-            row = self.cursor.fetchone()
-            while row != None:
-                match = re.search('([0-9]{3}),([0-9]{3})', row[0])
-                if match:
-                    x = int(match.group(1))
-                    y = int(match.group(2))
-                    self.entries[x,y] = {'dorfname': row[1],
-                            'dorflevel': row[2], 'aktdatum': row[3],
-                            'mauer': row[4], 'rittername': row[5],
-                            'alliname': row[7], 'allyfarbe': row[8]}
-                    if row[5] == "Keiner":
-                        self.entries[x,y]["allyfarbe"] = "#00A000"
-                    elif row[10] in config.marked_reiche:
-                        self.entries[x,y]["allyfarbe"] = (
-                                            config.marked_reiche_color)
-                    elif row[9] == reich.S_INAKTIV and config.is_kraehe():
-                        farbe = util.color_shade('#00A000', row[8], 0.3)
-                        self.entries[x,y]["allyfarbe"] = farbe
-                    elif row[9] == reich.S_SCHUTZ:
-                        farbe = util.color_shade('#FFFFFF', row[8], 0.3)
-                        self.entries[x,y]["allyfarbe"] = farbe
-                row = self.cursor.fetchone()
+            rows = self.cursor.fetchall()
+            is_kraehe = config.is_kraehe()
+            for row in rows:
+                x, y = row[0].split(",")
+                self.entries[x,y] = {'dorfname': row[1],
+                        'dorflevel': row[2], 'aktdatum': row[3],
+                        'mauer': row[4], 'rittername': row[5],
+                        'alliname': row[7], 'allyfarbe': row[8]}
+                if row[5] == "Keiner":
+                    self.entries[x,y]["allyfarbe"] = "#00A000"
+                elif row[10] in config.marked_reiche:
+                    self.entries[x,y]["allyfarbe"] = (
+                                        config.marked_reiche_color)
+                elif row[9] == reich.S_INAKTIV and is_kraehe:
+                    farbe = util.color_shade('#00A000', row[8], 0.3)
+                    self.entries[x,y]["allyfarbe"] = farbe
+                elif row[9] == reich.S_SCHUTZ:
+                    farbe = util.color_shade('#FFFFFF', row[8], 0.3)
+                    self.entries[x,y]["allyfarbe"] = farbe
             return True
         except rbdb.Error, e:
             util.print_html_error(e)

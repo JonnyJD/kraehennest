@@ -103,22 +103,22 @@ def detail_link(x, y, level="N", color=None, new_window=True):
     @return: Start-Tag eines HTML-links
     @rtype: C{StringType}
     """
-    text = '<a href="' + ausgabe.prefix + '/show/feld/'
-    text += str(x) + '.' + str(y)
+    strings = []
+    strings.append('<a href="%s/show/feld/%d.%d' % (ausgabe.prefix, x, y))
     if level != "N":
-        text += '/' + level
-    text += '"'
+        strings.append('/%s' % level )
+    strings.append('"')
     if color is not None:
-        text += ' style="color:' + color
+        strings.append(' style="color:%s' % color)
         if util.brightness(color) < 55:
-            text += ';" class="dark"'
+            strings.append(';" class="dark"')
         else:
-            text += ';" class="bright"'
+            strings.append(';" class="bright"')
     if new_window:
-        text += ' target="_blank">'
+        strings.append(' target="_blank">')
     else:
-        text += '>'
-    return text
+        strings.append('>')
+    return "".join(strings)
 
 def dorf_output(dorf, x, y, terrain=None):
     """Kartenanzeige eines Dorfes
@@ -128,18 +128,20 @@ def dorf_output(dorf, x, y, terrain=None):
     """
 
     dorf.get(x,y)
-    text = '<div class="dorf">'
+    strings = []
+    strings.append('<div class="dorf">')
     if dorf.entry['rittername'] != ".":
         # translate(None, "<>"),  None erst ab python 2.6
-        text += dorf.entry['rittername'].replace("<", "").replace(">", "")[0:3]
+        strings.append(
+            dorf.entry['rittername'].replace("<", "").replace(">", "")[0:3])
     elif terrain is not None and config.is_kraehe() and terrain.entry["typ"]:
-        text += "." * terrain.entry["typ"]
+        strings.append("." * terrain.entry["typ"])
     elif config.is_kraehe():
-        text += "_"
+        strings.append("_")
     else:
-        text += "."
-    text += '</div>'
-    return text
+        strings.append(".")
+    strings.append('</div>')
+    return "".join(strings)
 
 def armee_output(armee, x, y):
     """Kartenanzeige von Armeen auf einem Feld
@@ -148,17 +150,18 @@ def armee_output(armee, x, y):
     @rtype: C{StringType}
     """
 
-    text = '<div class="armeen">'
+    strings = []
+    strings.append('<div class="armeen">')
     if armee.has(x,y):
         for entry in armee.get(x,y):
             if util.brightness(entry["allyfarbe"]) < 55:
-                text += '<span class="armee_dark"'
+                strings.append('<span class="armee_dark"')
             else:
-                text += '<span class="armee_bright"'
-            text += ' style="background-color:'
-            text += format(entry["allyfarbe"]) + ';"></span>'
-    text += '</div>'
-    return text
+                strings.append('<span class="armee_bright"')
+            strings.append(' style="background-color:%s;"></span>'
+                    % format(entry["allyfarbe"]))
+    strings.append('</div>')
+    return "".join(strings)
 
 def create_styles(size, fontsize,
         show_armeen=True, show_dorf=True, background=False):

@@ -126,7 +126,6 @@ def __print_navi(cross=False):
 # mod_python.cgihandler doesn't count as direct
 #if __name__ == '__main__':
 if True:
-
     form = cgi.FieldStorage()
 
     if "list" in form:
@@ -377,91 +376,102 @@ if True:
             print '\n\n<table id="karte" style="width:' + str(width) + 'px;">'
             print '<tr style="height:' + str(size) + 'px;"><td></td>'
             # X - Achse
+            strings = []
             for x in range(terrain.xmin, terrain.xmax + 1):
-                print '<td>' + str(x) + '</td>'
+                strings.append('<td>%d</td>' % x)
             for y in range(terrain.ymin, terrain.ymax + 1):
-                print '<tr style="height:' + str(size) + 'px;">'
-                print '<td>' + str(y)  + '</td>' # Y - Achse
+                # Y - Achse
+                strings.append('<tr style="height:%dpx;"><td>%d</td>'
+                        % (size, y))
                 for x in range(terrain.xmin, terrain.xmax + 1):
                     if terrain.has(x,y): # Kartenbereich
 
                         # Terrainhintergrund
                         terrain.get(x,y)
-                        row = '<td style="background-image:url(/img/terrain/'
-                        row += str(size) + '/' + terrain.entry["terrain"]
-                        row += '.gif)'
+                        strings.append('<td style="background-image:')
+                        strings.append('url(/img/terrain/%d/%s.gif)'
+                            % (size, terrain.entry["terrain"]))
                         if show_armeen and not show_dorf:
-                            row += '; vertical-align:top'
+                            strings.append('; vertical-align:top')
                         if show_dorf and not is_kraehe and dorf.has(x,y):
-                            row += '; color:'
-                            row += format(dorf.get(x,y)['allyfarbe'])
+                            strings.append('; color:%s'
+                                    % format(dorf.get(x,y)['allyfarbe']))
                         if "abgang" in terrain.entry:
-                            row += '; border: 1px solid red'
+                            strings.append('; border: 1px solid red')
                         if "aufgang" in terrain.entry:
-                            row += '; border: 1px solid green'
+                            strings.append('; border: 1px solid green')
                         if "quest" in terrain.entry:
-                            row += '; border: 1px solid yellow'
+                            strings.append('; border: 1px solid yellow')
                         if allow_target and "ziel" in terrain.entry:
-                            row += '; border: 1px solid blue'
-                        row += ';"' # style attribut auf jeden Fall zumachen
+                            strings.append('; border: 1px solid blue')
+                        # style attribut auf jeden Fall zumachen
+                        strings.append(';"')
                         if show_dorf and not is_kraehe and dorf.has(x,y):
                             if util.brightness(dorf.get(x,y)['allyfarbe']) < 55:
-                                row += ' class="dark"'
+                                strings.append(' class="dark"')
                             else:
-                                row += ' class="bright"'
+                                strings.append(' class="bright"')
 
                         # Detail-Mouse-Over
                         if allow_details:
-                            row += ' onmouseover="showPos(\''
-                            row += str(x) + "," + str(y)
+                            strings.append(' onmouseover="showPos(\'%d,%d'
+                                    % (x, y))
                             if is_kraehe and terrain.entry["typ"]:
-                                row += " " + "." * terrain.entry["typ"]
+                                strings.append(
+                                        " %s" % "." * terrain.entry["typ"])
                             # fuer Dorf
+                            details = []
                             if show_dorf and dorf.has(x,y):
                                 dorf.get(x,y)
                                 list = []
-                                for col in ['rittername', 'alliname', 'dorfname',
-                                        'dorflevel', 'mauer', 'aktdatum']:
+                                for col in ['rittername', 'alliname',
+                                        'dorfname', 'dorflevel', 'mauer',
+                                        'aktdatum']:
                                     list.append(format(dorf.entry[col]))
-                                list = '|' + '|'.join(list)
+                                details.append('|%s' % '|'.join(list))
                             else:
-                                list = '|?' * 6
+                                details.append('|?' * 6)
                             # fuer Armeen
                             if show_armeen and armee.has(x,y):
                                 armee.get(x,y)
                                 # Anzahl Infos pro Armee
                                 if len(armee.entry) < viel_armeen:
-                                    list += '|7'
+                                    details.append('|7')
                                 else:
-                                    list += '|4'
+                                    details.append('|4')
                                 # Armeen anhaengen
                                 for entry in armee.entry:
-                                    list += '|' + escape(entry["allyfarbe"])
+                                    details.append(
+                                            '|%s' % escape(entry["allyfarbe"]))
                                     if (entry["rittername"] == "Keiner"
-                                            and len(armee.entry) >= viel_armeen):
-                                        list += '|' + escape(entry["name"])
+                                        and len(armee.entry) >= viel_armeen):
+                                        details.append(
+                                                '|%s' % escape(entry["name"]))
                                     else:
-                                        list += '|' + escape(entry["rittername"])
+                                        details.append('|%s'
+                                                % escape(entry["rittername"]))
                                     if (entry["schiffstyp"] is not None
-                                            and len(armee.entry) >= viel_armeen):
-                                        list += '&br;['
-                                        list += escape(entry["schiffstyp"]) + ']'
-                                    list += '|' + format(entry["size"])
-                                    list += '|' + format(entry["strength"])
+                                        and len(armee.entry) >= viel_armeen):
+                                        details.append('&br;[%s]'
+                                                % escape(entry["schiffstyp"]))
+                                    details.append('|%s|%s'
+                                            % ( format(entry["size"]),
+                                                format(entry["strength"]) ))
                                     # mehr Infos bei wenigen Armeen
                                     if len(armee.entry) < viel_armeen:
-                                        list += '|(' + escape(entry["name"]) + ')'
+                                        details.append(
+                                                '|(%s)' % escape(entry["name"]))
                                         if entry["schiffstyp"] is not None:
-                                            list += '&br;['
-                                            list += escape(entry["schiffstyp"])
-                                            list += ']'
-                                        list += '|' + format(entry["ap"])
-                                        list += '|' + format(entry["bp"])
+                                            details.append('&br;[%s]'
+                                                % escape(entry["schiffstyp"]))
+                                        details.append('|%s|%s'
+                                                % ( format(entry["ap"]),
+                                                    format(entry["bp"]) ))
                             if ((show_dorf and dorf.has(x,y))
                                     or (show_armeen and armee.has(x,y))):
-                                row += list
-                            row += '\')" onmouseout="delPos()"'
-                        row += '>'
+                                strings.append("".join(details))
+                            strings.append('\')" onmouseout="delPos()"')
+                        strings.append('>')
 
                         # Detail-Link
                         # != Details vom Mouse-Over
@@ -479,29 +489,29 @@ if True:
                                 color = dorf.get(x,y)['allyfarbe']
                             else:
                                 color = None
-                            row += detail_link(x, y, level, color)
+                            strings.append(detail_link(x, y, level, color))
 
                         # Dorf
                         if show_dorf and dorf.has(x,y):
-                            row += dorf_output(dorf, x, y, terrain)
+                            strings.append(dorf_output(dorf, x, y, terrain))
 
                         # Armeen
                         if show_armeen:
-                            row += armee_output(armee, x, y)
+                            strings.append(armee_output(armee, x, y))
                         if show_detail_link:
-                            row += '</a>'
-                        row += '</td>'
-                        print row
+                            strings.append('</a>')
+                        strings.append('</td>')
                     else: # not terrain.has(x,y):
-                        print '<td></td>'
+                        strings.append('<td></td>')
                 # y - Achse
-                print '<td>' + str(y) + '</td></tr>'
+                strings.append('<td>%d</td></tr>' % y)
             # X - Achse
-            print '<tr style="height:' + str(size) + 'px;"><td></td>'
+            strings.append('<tr style="height:%dpx;"><td></td>' % size)
             for x in range(terrain.xmin, terrain.xmax + 1):
-                print '<td>' + str(x) + '</td>'
-            print '</table>'
+                strings.append('<td>%d</td>' % x)
+            strings.append('</table>')
 
-        print "\n</body></html>"
+        strings.append("\n</body></html>")
+        print "".join(strings)
 
 # vim:set shiftwidth=4 expandtab smarttab:

@@ -316,7 +316,7 @@ class Armee(Feld):
             return False
 
     def __armeen_ohne_ids(self, x, y):
-        """Listet die Armeen ohne bekannte IDs als sql_string, args
+        """Listet die Armeen ohne bekannte h_id zum exclude als sql_string, args
 
         @param x: X-Koordinate
         @param y: Y-Koordinate
@@ -344,7 +344,8 @@ class Armee(Feld):
             return "", ()
 
     def __deactivate(self, sender_id):
-        """Deaktiviert alle Armeen in der inactive Liste.
+        """Deaktiviert alle Armeen auf Positionen in der inactive Liste,
+	sofern diese nicht als auch in der new-Liste sind.
         
         Gibt die Anzahl der deaktivierten Armeen zurueck.
         Die Werte werden NICHT alle zurueckgesetzt.
@@ -360,7 +361,7 @@ class Armee(Feld):
             args = ()
             for entry in self.__inactive_entries:
                 sql2 = "(level=%s AND x=%s AND y=%s"
-                # Armeen ohne IDs die aber mit name,img und r_id passen
+                # Armeen ohne h_id die aber mit name,img und r_id passen
                 # sollen nicht deaktiviert werden.
                 sql_ohne, args_ohne = self.__armeen_ohne_ids(
                         entry["x"], entry["y"])
@@ -370,8 +371,10 @@ class Armee(Feld):
                 args += args_ohne
             
             sql += "(" + " OR ".join(sqllist) + ") AND "
+
+            # versteckt sieht man keine Armeen
             if "sicht_versteckt" not in entry:
-                # versteckte Armeen nicht deaktivieren
+		# versteckte (S_HIDDEN) Armeen nicht deaktivieren:
                 sql += "( (status is null OR status <> '" + S_HIDDEN + "')"
                 # es sei denn sie gehoeren einem selbst
                 if sender_id is not None:
@@ -379,6 +382,7 @@ class Armee(Feld):
                     args += sender_id,
                 else:
                     sql += " OR FALSE )"
+            # ausser die eigenen
             elif sender_id is not None:
                 sql += "r_id = %s"
                 args += sender_id,
@@ -884,6 +888,8 @@ class Armee(Feld):
     def process_xml(self, node, sender_id):
         """Liest Daten aus einem XML-Dokument ein"""
 
+	# extrahiere sichtbare Felder
+	# um dann alles was dort nicht gesehen wurde zu deaktivieren
         sicht = util.get_view_type(node)
         if sicht == "turm":
             # Feldaten gibt es fuer genau die sichtbaren Felder
@@ -895,13 +901,15 @@ class Armee(Feld):
                 self.queue_inactive(entry)
         elif sicht in ["armee", "versteckt"]:
             # alle Armeen die gleiche Position, deshalb die 1. nehmen
-            position = node.xpathEval('armee/position')[0] 
-            entry = dict()
-            if sicht == "versteckt":
-                entry["sicht_versteckt"] = True
-            entry["level"] = position.prop("level")
-            entry["x"] = position.prop("x"); entry["y"] = position.prop("y")
-            self.queue_inactive(entry)
+            positions = node.xpathEval('armee/position')
+	    if len(positions) > 0:
+                position = node.xpathEval('armee/position')[0] 
+                entry = dict()
+                if sicht == "versteckt":
+                    entry["sicht_versteckt"] = True
+                entry["level"] = position.prop("level")
+                entry["x"] = position.prop("x"); entry["y"] = position.prop("y")
+                self.queue_inactive(entry)
 
         armeen = node.xpathEval('armee')
         for armee in armeen:

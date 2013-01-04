@@ -40,6 +40,28 @@ class Dorf(Feld):
         self.__get_entries()
 
 
+    # can't use the generic crop because of "x,y" being 1 field
+    def crop(self, xmin, xmax, ymin, ymax):
+        """Erstellt die SQL-Bedingung mit der der Bereich festgelegt wird."""
+
+        try:
+            clauses = []
+            if xmin != None and xmax != None:
+                disjunction = []
+                for x in range(xmin, xmax + 1):
+                    disjunction.append(' koords  LIKE "%d,%%" ' % int(x))
+                clauses.append(" OR ".join(disjunction))
+            if ymin != None and ymax != None:
+                disjunction = []
+                for y in range(ymin, ymax + 1):
+                    disjunction.append(' koords  LIKE "%%,%d" ' % int(y))
+                clauses.append(" OR ".join(disjunction))
+            if len(clauses) > 0:
+                self.crop_clause = " AND " + " AND ".join(clauses)
+        except ValueError:
+            print "Die angegebenene Grenzen sind ungueltig <br />"
+
+
     def __get_entries(self):
         """Holt alle Eintraege im Bereich von der Datenbank.
         
@@ -53,7 +75,7 @@ class Dorf(Feld):
         # so dass die andere clauses angehangen werden koennen:
         sql += " WHERE 1"
         #sql += " WHERE level='" + self.level + "'"
-        #sql += self.crop_clause
+        sql += self.crop_clause
         sql += self.add_cond
         try:
             self.cursor.execute(sql)

@@ -11,9 +11,6 @@ from model.armee import Armee
 from model.dorf import Dorf
 
 
-viel_armeen = 8
-"""Gibt an ab welcher Armeezahl auf einem Feld weniger Infos gezeigt werden"""
-
 common_terrain = ["51", "11", "21", "6", "73", "71", "26", "28", "13", "101",
                   "64", "33", "73v1", "78", "41", "1", "52v4", "52", "79", "88"]
 

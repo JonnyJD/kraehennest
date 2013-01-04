@@ -15,11 +15,14 @@ import util
 from model.terrain import Terrain
 from model.armee import Armee
 from model.dorf import Dorf
-from view import format, viel_armeen, common_terrain
+from view import format, common_terrain
 from view.karte import escape
 from view.karte import small_map, create_styles, nav_link, detail_link
 from view.karte import dorf_output, armee_output
 
+
+many_armeen_limit = 8
+"""Gibt an ab welcher Armeezahl auf einem Feld weniger Infos gezeigt werden"""
 
 def __nav_link(text, direction=None, amount=0):
     """Gibt eine Navigationslink zurueck.
@@ -122,26 +125,73 @@ def __print_navi(cross=False):
     print '</table>\n'
 
 
+def __mouseover(x, y, typ, dorf, armeen):
+    """creates the mouseover/mouseout for the map cells
+    """
+
+    details = []
+    # coordinates and terrain type
+    if is_kraehe and terrain.entry["typ"]:
+        details.append("%d,%d %s" % (x, y, "." * terrain.entry["typ"]))
+    else:
+        details.append("%d,%d" % (x, y))
+
+    # Dorf
+    if dorf:
+        cols = ['rittername', 'alliname', 'dorfname', 'dorflevel',
+                'mauer', 'aktdatum']
+        details.extend(map(format, [dorf[col] for col in cols]))
+    else:
+        details.extend(["?" for i in range(6)])
+
+    # Armeen
+    if armeen:
+        # Less infos per armee if there are many armeen
+        if len(armeen) < many_armeen_limit:
+            many_armeen = False
+            details.append('7')
+        else:
+            many_armeen = True
+            details.append('4')
+        # Armeen anhaengen
+        for armee in armeen:
+            details.append(escape(armee["allyfarbe"]))
+            if armee["rittername"] == "Keiner" and many_armeen:
+                armee_str = escape(armee["name"])
+            else:
+                armee_str = escape(armee["rittername"])
+            if armee["schiffstyp"] is not None and many_armeen:
+                armee_str += '&br;[%s]' % escape(armee["schiffstyp"])
+            details.append(armee_str) # name (and possibly schiffstyp)
+            details.append(format(armee["size"]))
+            details.append(format(armee["strength"]))
+            if not many_armeen:
+                if armee["schiffstyp"] is None:
+                    details.append(escape(armee["name"]))
+                else:
+                    details.append('%s&br;[%s]'
+                        % (escape(armee["name"]), escape(armee["schiffstyp"])))
+                details.append(format(armee["ap"]))
+                details.append(format(armee["bp"]))
+    return ' onmouseover="showPos(\'%s\')" onmouseout="delPos()"' % (
+                                                        "|".join(details))
+
 # Aufruf direkt: Karten anzeigen
 # mod_python.cgihandler doesn't count as direct
 #if __name__ == '__main__':
 if True:
     form = cgi.FieldStorage()
 
-    if "list" in form:
-        title = "Kr&auml;henkarten"
-    else:
-        title = "Kr&auml;henkarte"
+    if "list" in form:  title = "Kr&auml;henkarten"
+    else:               title = "Kr&auml;henkarte"
 
     if "HTTP_IF_MODIFIED_SINCE" in os.environ:
         cache_string = os.environ["HTTP_IF_MODIFIED_SINCE"]
         db_string = util.map_last_modified_http(
                 config.allow_doerfer(message=False),
                 config.allow_armeen(message=False))
-        if db_string == cache_string:
-            is_still_valid = True
-        else:
-            is_still_valid = False
+        if db_string == cache_string:   is_still_valid = True
+        else:                           is_still_valid = False
     else:
         is_still_valid = False
 
@@ -423,60 +473,19 @@ if True:
 
                         # Detail-Mouse-Over
                         if allow_details:
-                            strings.append(' onmouseover="showPos(\'%d,%d'
-                                    % (x, y))
-                            if is_kraehe and terrain.entry["typ"]:
-                                strings.append(
-                                        " %s|" % "." * terrain.entry["typ"])
-                            # fuer Dorf
-                            details = []
-                            if show_dorf and dorf.has(x,y):
-                                dorf.get(x,y)
-                                for col in ['rittername', 'alliname',
-                                        'dorfname', 'dorflevel', 'mauer',
-                                        'aktdatum']:
-                                    details.append(format(dorf.entry[col]))
-                            else:
-                                for i in range(6):
-                                    details.append('?')
-                            # fuer Armeen
-                            if show_armeen and armee.has(x,y):
-                                armee.get(x,y)
-                                # Anzahl Infos pro Armee
-                                if len(armee.entry) < viel_armeen:
-                                    details.append('7')
-                                else:
-                                    details.append('4')
-                                # Armeen anhaengen
-                                for entry in armee.entry:
-                                    details.append(escape(entry["allyfarbe"]))
-                                    if (entry["rittername"] == "Keiner"
-                                        and len(armee.entry) >= viel_armeen):
-                                        armee_str = escape(entry["name"])
-                                    else:
-                                        armee_str = escape(entry["rittername"])
-                                    if (entry["schiffstyp"] is not None
-                                        and len(armee.entry) >= viel_armeen):
-                                        armee_str += '&br;[%s]' % (
-                                                escape(entry["schiffstyp"]))
-                                    details.append(armee_str)
-                                    details.append(format(entry["size"]))
-                                    details.append(format(entry["strength"]))
-                                    # mehr Infos bei wenigen Armeen
-                                    if len(armee.entry) < viel_armeen:
-                                        if entry["schiffstyp"] is None:
-                                            details.append(
-                                                    escape(entry["name"]))
-                                        else:
-                                            details.append('%s&br;[%s]'
-                                                % (escape(entry["name"]),
-                                                   escape(entry["schiffstyp"])))
-                                        details.append(format(entry["ap"]))
-                                        details.append(format(entry["bp"]))
-                            if ((show_dorf and dorf.has(x,y))
-                                    or (show_armeen and armee.has(x,y))):
-                                strings.append("|".join(details))
-                            strings.append('\')" onmouseout="delPos()"')
+                            # current dorf
+                            if show_dorf:       this_dorf = dorf.get(x, y)
+                            else:               this_dorf = None
+                            # current armee
+                            if show_armeen:     these_armeen = armee.get(x, y)
+                            else:               these_armeen = None
+                            # current terrain type
+                            if is_kraehe:       this_typ = terrain.entry["typ"]
+                            else:               this_typ = None
+                            # build onmouseover and onmouseout
+                            strings.append(__mouseover(
+                                x, y, this_typ, this_dorf, these_armeen))
+
                         strings.append('>')     # close starting td
 
                         # Detail-Link

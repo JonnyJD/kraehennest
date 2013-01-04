@@ -197,7 +197,10 @@ class Feld:
 
         @rtype: meist C{Dict}
         """
-        self.entry = self.entries[x,y]
+        if self.has(x, y):
+            self.entry = self.entries[x,y]
+        else:
+            self.entry = None
         return self.entry
 
 

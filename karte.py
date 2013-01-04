@@ -510,8 +510,8 @@ if True:
             for x in range(terrain.xmin, terrain.xmax + 1):
                 strings.append('<td>%d</td>' % x)
             strings.append('</table>')
+            print "".join(strings)
 
-        strings.append("\n</body></html>")
-        print "".join(strings)
+        print "\n</body></html>"
 
 # vim:set shiftwidth=4 expandtab smarttab:

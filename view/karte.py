@@ -14,6 +14,9 @@ from model.dorf import Dorf
 viel_armeen = 8
 """Gibt an ab welcher Armeezahl auf einem Feld weniger Infos gezeigt werden"""
 
+common_terrain = ["51", "11", "21", "6", "73", "71", "26", "28", "13", "101",
+                  "64", "33", "73v1", "78", "41", "1", "52v4", "52", "79", "88"]
+
 def nav_link(x1, y1, x2, y2, level, text, direction=None, amount=0,
         layer=["armeen", "doerfer"], size="normal"):
     """Gibt eine Navigationslink zurueck.
@@ -176,6 +179,11 @@ def create_styles(size, fontsize,
     text += '    font-size: ' + str(fontsize) + 'pt;\n'
     text += '    text-align:center;\n'
     text += '}\n'
+
+    for t in common_terrain:
+        text += '#karte tr td.t%s { ' % t
+        text += 'background-image:url(/img/terrain/%d/%s.gif); }\n' % (size, t)
+
     text += 'div.armeen {\n'
     text += '    margin-left: ' + str(fontsize-5) + 'px;\n'
     if show_armeen and not show_dorf:

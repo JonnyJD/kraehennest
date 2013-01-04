@@ -60,7 +60,10 @@ class Dorf(Feld):
             rows = self.cursor.fetchall()
             is_kraehe = config.is_kraehe()
             for row in rows:
-                x, y = row[0].split(",")
+                try:
+                    x, y = map(int, row[0].split(","))
+                except ValueError:
+                    continue
                 self.entries[x,y] = {'dorfname': row[1],
                         'dorflevel': row[2], 'aktdatum': row[3],
                         'mauer': row[4], 'rittername': row[5],

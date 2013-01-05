@@ -115,7 +115,7 @@ def list_by_allianz(a_id):
             row = ausgabe.escape_row(row)
             line = [row[0]]
             line.append(row[1])
-            line.append(ausgabe.link("/show/reich/" + str(row[0]), row[2]))
+            line.append(ausgabe.link("/show/reich/%d" % row[0], row[2]))
             if a_id == -1:
                 line.append(allianz.link(row[3], row[5], row[4]))
             line.append(row[6])

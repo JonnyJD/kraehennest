@@ -47,21 +47,18 @@ def list():
             row = ausgabe.escape_row(row)
             if row[4] > 0: # positive Mitgliederzahl
                 line.append(row[0])
-                zelle = '<a href="allianz/' + str(row[0]) + '">'
-                zelle += '<div style="color:' + row[1] + ';">'
-                zelle += row[2] + '</div></a>'
+                zelle = '<a href="allianz/%d">' % row[0]
+                zelle += '<div style="color:%s;">%s</div></a>' % (
+                        row[1], row[2])
                 line.append(zelle)
                 line.append(row[3])
             else:
-                zelle = '<div style="color:#666666;">'
-                zelle += str(row[0]) + '</div>'
-                line.append(zelle)
-                zelle = '<div style="color:#666666;">'
-                zelle += row[2] + '</div>'
-                line.append(zelle)
-                zelle = '<div style="color:#666666;">'
-                zelle += row[3] + '</div>'
-                line.append(zelle)
+                line.append('<div style="color:#666666;">%d</div>'
+                        % row[0])
+                line.append('<div style="color:#666666;">%s</div>'
+                        % row[2])
+                line.append('<div style="color:#666666;">%s</div>'
+                        % row[3])
             for i in range(4,7):
                 if row[i] > 0:
                     line.append(row[i])

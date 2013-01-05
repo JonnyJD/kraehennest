@@ -6,6 +6,7 @@ import cgi
 from datetime import date, datetime, time, timedelta
 from types import IntType, LongType, StringType
 from decimal import Decimal
+from textwrap import dedent
 
 
 ######################################################################
@@ -72,34 +73,34 @@ def print_header(title=None, styles=None):
     @param styles: Die in den Header zu schreibenden styles
     """
 
+    # http head
     print 'Content-type: text/html; charset=utf-8\n'
-    print '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"'
-    print '          "http://www.w3.org/TR/html4/loose.dtd">'
-    print '<html>'
-    print '<head>'
-    if title:
-        print '<title>' + title + '</title>'
-    print '<meta name="robots" content="noindex, nofollow" />'
-    print'<meta http-equiv="content-type" content="text/html; charset=UTF-8" />'
-    print '<meta http-equiv="expires" content="0" />'
-    print '<link rel="stylesheet" type="text/css" href="',
-    print prefix + '/show/stylesheet" />'
+    if not title:
+        title = "Kr&auml;hennest"
+    html_head = """\
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>%s</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="expires" content="0" />
+    <link rel="stylesheet" type="text/css" href="%s/show/stylesheet" />""" % (
+            title, prefix)
+    print dedent(html_head)
     if styles:
-        print '<style type="text/css">'
-        print styles
-        print '</style>'
-    print '</head>\n'
-    print '<body>'
+        print '<style type="text/css">\n%s\n</style>' % styles
+    print '</head>\n<body>'
     if title:
         if title != "Kr&auml;hennest":
             text = "zur&uuml;ck zum Index"
-            print '<div style="float:right;">' + link("/show", text) + '</div>'
-        print '<h1>' + title + '</h1>'
+            print '<div style="float:right;">%s</div>' % link("/show", text)
+        print '<h1>%s</h1>' % title
 
 def print_footer():
     """Gibt den HTML-Footer aus bzw. schliesst Body und HTML tag
     """
-    print '</body></html>'
+    print '</body>\n</html>'
 
 def link(url, text=None, color=None, br=False):
     """Gibt ein gefuelltes HTML-A-Tag zurueck.
@@ -116,18 +117,18 @@ def link(url, text=None, color=None, br=False):
     @rtype: C{StringType}
     """
 
-    link = ''
+    link = []
     if br:
-        link += '<br />'
-    link += '<a href="' + prefix + url + '"'
+        link.append('<br />')
+    link.append('<a href="%s%s"' % (prefix, url))
     if color is not None:
-        link += ' style="color:' + color + ';"'
+        link.append(' style="color:%s;"' % color)
     if text is None:
         text = prefix + url
     elif type(text) != StringType:
         text = str(text)
-    link += '>' + text + '</a>'
-    return link
+    link.append('>%s</a>' % text)
+    return "".join(link)
 
 def print_important(message):
     """Gibt eine wichtige Nachricht gross und farbig in HTML aus
@@ -214,17 +215,18 @@ class Tabelle:
         """
 
         if self.length() > 0:
-            print '<table class="tabelle">'
-            print '<tr>'
+            strings = []
+            strings.append('<table class="tabelle">')
+            strings.append('<tr>')
             for i in range(0,len(self.__columns)):
                 if self.__colspan[i] > 0:
-                    cell = '<th colspan="' + str(self.__colspan[i]) + '">'
-                    print cell + self.__columns[i] + '</th>'
+                    strings.append('<th colspan="%d">%s</th>'
+                        % (self.__colspan[i], self.__columns[i]))
                 else:
-                    print '<th>' + self.__columns[i] + '</th>'
-            print '</tr>'
+                    strings.append('<th>%s</th>' %  self.__columns[i])
+            strings.append('</tr>\n')
             for line in self.__lines:
-                print '<tr>'
+                strings.append('<tr>')
                 for i in range(0,len(line)):
                     if line[i] is None:
                         line[i] = ""
@@ -236,9 +238,10 @@ class Tabelle:
                         cell = '<td style="padding:0px;">'
                     else:
                         cell = '<td>'
-                    print cell + str(line[i]) + '</td>'
-                print '</tr>'
-            print '</table>'
+                    strings.append("%s%s</td>" % (cell, line[i]))
+                strings.append('</tr>\n')
+            strings.append('</table>')
+            print "".join(strings)
         else:
             print '(keine)'
 
@@ -276,9 +279,9 @@ def __delta_color_string(string, delta, limit1, limit2):
     @rtype: C{StringType}
     """
     if delta > limit2:
-        return '<span style="color:red">' + string + '</span>'
+        return '<span style="color:red">%s</span>' % string
     elif delta > limit1:
-        return '<span style="color:orange">' + string + '</span>'
+        return '<span style="color:orange">%s</span>' % string
     else:
         return string
 
@@ -314,15 +317,15 @@ def date_delta_string(my_date):
         years = days//365
         prefix = "vor "
         if years > 1:
-            return prefix + str(years) + " Jahren"
+            return "%s%d Jahren" % (prefix, years)
         elif years == 1:
-            return prefix + str(years) + " Jahr"
+            return "%s%d Jahr" % (prefix, years)
         elif months > 1:
-            return prefix + str(months) + " Monaten"
+            return "%s%d Monaten" % (prefix, months)
         elif months == 1:
-            return prefix + str(months) + " Monat"
+            return "%s%d Monat" % (prefix, months)
         elif days >= 3:
-            return prefix + str(days) + " Tagen"
+            return "%s%d Tagen" % (prefix, days)
         elif days == 2:
             return "vorgestern"
         elif days == 1:
@@ -367,29 +370,30 @@ def datetime_delta_string(my_datetime):
         years = days//365
         prefix = "vor "
         if years > 1:
-            return prefix + str(years) + " Jahren"
+            return "%s%d Jahren" % (prefix, years)
         elif years == 1:
-            return prefix + str(years) + " Jahr"
+            return "%s%d Jahr" % (prefix, years)
         elif months > 1:
-            return prefix + str(months) + " Monaten"
+            return "%s%d Monaten" % (prefix, months)
         elif months == 1:
-            return prefix + str(months) + " Monat"
+            return "%s%d Monat" % (prefix, months)
         elif days >= 2:
-            return prefix + str(days) + " Tagen"
+            return "%s%d Tagen" % (prefix, days)
         elif days == 1:
-            return prefix + str(24*days+hours) + " Stunden"
+            return "%s%d Stunden" % (prefix, 24 * days + hours)
         elif hours > 1:
-            return prefix + str(hours) + " Stunden"
+            return "%s%d Stunden" % (prefix, hours)
         elif hours == 1:
+            return "%s%d Stunde" % (prefix, hours)
             return prefix + str(hours) + " Stunde"
         elif minutes > 1:
-            return prefix + str(minutes) + " Minuten"
+            return "%s%d Minuten" % (prefix, minutes)
         elif minutes == 1:
-            return prefix + str(minutes) + " Minute"
+            return "%s%d Minute" % (prefix, minutes)
         elif seconds > 1:
-            return prefix + str(seconds) + " Sekunden"
+            return "%s%d Sekunden" % (prefix, seconds)
         else:
-            return prefix + str(seconds) + " Sekunde"
+            return "%s%d Sekunde" % (prefix, seconds)
     else:
         return "(unbekannt)"
 

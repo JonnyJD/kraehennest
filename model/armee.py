@@ -717,21 +717,21 @@ class Armee(Feld):
                     else:
                         line.append('<div style="color:red">Nein</div>')
                 elif cols[i] == "x" and armee[i] != None:
-                    link = "/show/feld/" + str(armee[i]) + "." + str(armee[i+1])
+                    link = "/show/feld/%d.%d" % (armee[i], armee[i+1])
                     if armee[i-1] and armee[i-1] != "N":
-                        link += "/" + armee[i-1]
+                        link += "/%s" % armee[i-1]
                     line.append(ausgabe.link(link, armee[i]))
                 elif cols[i] == "y" and armee[i] != None:
-                    link = "/show/feld/" + str(armee[i-1]) + "." + str(armee[i])
+                    link = "/show/feld/%d.%d" % (armee[i-1], armee[i])
                     if armee[i-2] and armee[i-2] != "N":
-                        link += "/" + armee[i-2]
+                        link += "/%s" % armee[i-2]
                     line.append(ausgabe.link(link, armee[i]))
                 elif cols[i] == "img":
-                    line.append('<img src="/img/armee/' + armee[i] + '.gif" />')
+                    line.append('<img src="/img/armee/%s.gif" />' % armee[i])
                 elif cols[i] == "ritternr":
                     ritter = armee[i]
                     # nachfolgenden Ritternamen verlinken
-                    url = "/show/reich/" + str(ritter)
+                    url = "/show/reich/%s" % ritter
                     if cols[i+1] == "allicolor":
                         if ritter is None:
                             link = "(nicht existent)"
@@ -745,13 +745,11 @@ class Armee(Feld):
                     string = ausgabe.datetime_delta_string(armee[i])
                     delta = datetime.today() - armee[i]
                     if delta > timedelta(hours=30):
-                            zelle = '<div style="color:red">'
-                            zelle += string + '</div>'
-                            line.append(zelle)
+                            line.append('<div style="color:red">%s</div>'
+                                    % string)
                     elif delta > timedelta(hours=6):
-                            zelle = '<div style="color:orange">'
-                            zelle += string + '</div>'
-                            line.append(zelle)
+                            line.append('<div style="color:orange">%s</div>'
+                                    % string)
                     else:
                         line.append(string)
                 elif cols[i] in ["ruf", "max_bp", "max_ap"]:
@@ -765,25 +763,25 @@ class Armee(Feld):
                     line.append(status_string(armee[i]))
                 elif cols[i] == "h_id":
                     if (config.is_kraehe() or user.r_id == ritter):
-                        url = "/deactivate/armee/" + str(armee[i])
+                        url = "/deactivate/armee/%s" % armee[i]
                         cell = '<span style="font-size:8pt;">'
                         deact_string = "[deact]"
                         if active:
                             cell += ausgabe.link(url, deact_string)
                         else:
                             cell += '<span style="color:gray;">'
-                            cell += deact_string + '</span>'
+                            cell += '%s</span>' % deact_string
                         cell += "&nbsp;"
                         if armee[i+1] is None: # keine max_dauer
-                            url = "/delete/armee/" + str(armee[i])
+                            url = "/delete/armee/%s" % armee[i]
                             cell += ausgabe.link(url, "[del]")
                             cell += "&nbsp;"
                         else:
-                            url = "/free/armee/" + str(armee[i])
+                            url = "/free/armee/%s" % armee[i]
                             cell += ausgabe.link(url, "[free]")
                         cell += '</span>'
                     else:
-                        cell = "id: " + str(armee[i])
+                        cell = "id: %s" % armee[i]
                     line.append(cell)
                 elif cols[i-1] in ["ritternr", "allicolor"]:
                     # rittername wurde schon abgehakt

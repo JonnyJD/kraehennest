@@ -127,12 +127,12 @@ class Dorf(Feld):
                 if cols[i] == "koords":
                     x = dorf[i][0:3]
                     y = dorf[i][4:7]
-                    link = "/show/feld/" + x + "." + y
+                    link = "/show/feld/%s.%s" % (x, y)
                     line.append(ausgabe.link(link, x))
                     line.append(ausgabe.link(link, y))
                 elif cols[i] == "ritternr":
                     # nachfolgenden Ritternamen verlinken
-                    url = "/show/reich/" + str(dorf[i])
+                    url = "/show/reich/%s" % dorf[i]
                     if cols[i+1] == "allicolor":
                         if dorf[i] is None:
                             link = "(nicht existent)"
@@ -153,11 +153,10 @@ class Dorf(Feld):
                     else:
                         delta = timedelta(weeks=9999)
                     if delta > timedelta(weeks=104):
-                        zelle = '<div style="color:red">' + string + '</div>'
-                        line.append(zelle)
+                        line.append('<div style="color:red">%s</div>' % string)
                     elif delta > timedelta(weeks=52):
-                        zelle = '<div style="color:orange">' + string + '</div>'
-                        line.append(zelle)
+                        line.append('<div style="color:orange">%s</div>'
+                                % string)
                     else:
                         line.append(string)
                 elif cols[i-1] not in ["ritternr", "allicolor"]:

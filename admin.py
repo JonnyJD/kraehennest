@@ -96,9 +96,9 @@ def list_versions(ver_type=None):
                 else:
                     vers = ""
                 if row[1] is None:
-                    zelle = ausgabe.link(vers+"reich/"+str(row[0]), "?")
+                    zelle = ausgabe.link("%sreich/%d" % (vers, row[0]), "?")
                 else:
-                    zelle = ausgabe.link(vers+"reich/"+str(row[0]),
+                    zelle = ausgabe.link("%sreich/%d" % (vers, row[0]),
                                                         row[1], row[2])
             elif row[1] is None:
                 zelle = "?"

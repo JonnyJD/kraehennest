@@ -9,6 +9,7 @@ if config.debug:
 
 import cgi
 import os
+from textwrap import dedent
 
 import ausgabe
 import util
@@ -203,19 +204,19 @@ if True:
             print 'Last-Modified: ' + util.map_last_modified_http(
                     config.allow_doerfer(message=False),
                     config.allow_armeen(message=False))
+        # http header
         print 'Cache-Control: no-cache,must-revalidate'
         print 'Content-type: text/html; charset=utf-8\n'
-        print '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"'
-        print '          "http://www.w3.org/TR/html4/loose.dtd">'
-        print '<html><head>'
-        print '<title>' + title + '</title>'
-        print '<meta name="robots" content="noindex, nofollow">'
-        print '<meta http-equiv="content-type" content="text/html; charset=UTF-8">'
-        print '<link rel="stylesheet" type="text/css" href="',
-        print ausgabe.prefix + '/show/stylesheet">'
-        print '<script src="' + ausgabe.prefix + '/show/javascript"',
-        print 'type="text/javascript"></script>'
-        print '</head>\n'
+        html_head = """\
+        <!DOCTYPE html>
+        <html><head>
+        <title>%s</title>
+        <meta name="robots" content="noindex, nofollow">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="%s/show/stylesheet">
+        <script src="%s/show/javascript" type="text/javascript"></script>
+        </head>\n""" % (title, ausgabe.prefix, ausgabe.prefix)
+        print dedent(html_head)
         print '<body>\n'
 
         if "list" in form:
@@ -356,16 +357,11 @@ if True:
             # Detailboxen
             if allow_details:
                 # Dorfdetail / Koordinateninfo (deshalb immer)
-                print '<div id="dorfdetail" style="z-index:2; position:fixed;',
-                print 'top:5px; left:38px; width:85em;',
-                print 'padding:5px;"><div>&nbsp;</div></div>'
+                print '<div id="dorfdetail"><div>&nbsp;</div></div>'
                 print '<br /><div></div>'
                 if show_armeen:
                     # Armeedetail
-                    print '<div id="armeedetail" style="z-index:2; position:fixed;',
-                    print 'top:170px; right:5px; width:15em; min-height:10em;',
-                    print 'font-size:9pt; background-color:#333333;',
-                    print 'padding:5px;"><div>&nbsp;</div></div>'
+                    print '<div id="armeedetail"><div>&nbsp;</div></div>'
 
             # Kartennavigation
             cross = int(form["x2"].value) < 999
@@ -375,8 +371,8 @@ if True:
             print '<div style="z-index:2; position:fixed;'
             print ' bottom:10px; right:20px;" class="navi">'
             # Soft-Reload
-            print "<a href=\""+ os.environ["SCRIPT_URL"] +"\">Soft-Reload</a><br />"
-            print "<br />"
+            print "<a href=\"%s\">Soft-Reload</a><br />\n<br />" % (
+                                        os.environ["SCRIPT_URL"])
             # Neu-Schalter
             print "Zeige:<br />"
             if "neu" in layer:
@@ -423,10 +419,10 @@ if True:
             #
             is_kraehe = config.is_kraehe()
             width = size * (terrain.xmax - terrain.xmin + 1 + 2)
-            print '\n\n<table id="karte" style="width:' + str(width) + 'px;">'
-            print '<tr style="height:' + str(size) + 'px;"><td></td>'
-            # X - Achse
             strings = []
+            strings.append('\n\n<table id="karte" style="width:%dpx;">' % width)
+            strings.append('<tr style="height:%dpx;"><td></td>' % size)
+            # X - Achse
             for x in range(terrain.xmin, terrain.xmax + 1):
                 strings.append('<td>%d</td>' % x)
             for y in range(terrain.ymin, terrain.ymax + 1):

@@ -1,49 +1,68 @@
 /* allgemeine Elemente */
 body,input,textarea {
-	color: #FFFFCC;
-	background-color: #000000;
+    color: #FFFFCC;
+    background-color: #000000;
 }
 a:link, a:active, a:visited {
-	color: #FFCC00;
-	text-decoration: none;
+    color: #FFCC00;
+    text-decoration: none;
 }
 a:hover {
-	color: #FFFFCC;
-	text-decoration: underline;
+    color: #FFFFCC;
+    text-decoration: underline;
 }
 th,h1,h2,h3 {
-	color: #996600;
+    color: #996600;
 }
 input,textarea {
-	border: 1px solid #FFCC00;
+    border: 1px solid #FFCC00;
 }
 
 
 /* spezielle Elemente */
 div.box {
-	float:left;
-	margin:25px;
+    float: left;
+    margin: 25px;
 }
 div.right_map {
-	float:right;
-	margin-right:30px;
-	margin-top:-30px;
+    float: right;
+    margin-right: 30px;
+    margin-top: -30px;
 }
 /* "richtige" Tabellenzellen
  * (in der Karte "unrichtige" Zellen benutzt)
  */
 table.tabelle tr td, table.tabelle tr th {
-	padding-left:5px;
-	padding-right:5px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 /* 
  * fuer die Karte direkt
  */
 #karte {
-    table-layout:fixed;
-    margin:0px;
-    border-collapse:collapse;
+    table-layout: fixed;
+    margin: 0px;
+    border-collapse: collapse;
+}
+#dorfdetail {
+    z-index: 2;
+    position: fixed;
+    top: 5px;
+    left: 38px;
+    width: 85em;
+    padding: 5px;
+}
+#armeedetail {
+    z-index: 2;
+    position: fixed;
+    top: 170px;
+    right: 5px;
+    width: 15em;
+    min-height: 10em;
+    font-size: 9pt;
+    background-color: #333333;
+    padding: 5px;
 }
 span.dark {
     border: 1px solid white;
@@ -60,9 +79,11 @@ a.bright, td.bright {
     		black -1px 1px 1px,  black 1px -1px 1px;
 }
 table.detail tr td, #dorfdetail, #armeedetail {
-    font-size:9pt;
-    background-color:#333333;
+    font-size: 9pt;
+    background-color: #333333;
 }
 table.navi tr td {
     text-align:center;
 }
+
+/* vim:set shiftwidth=4 expandtab smarttab: */

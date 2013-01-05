@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Modul um die Karte anzuzeigen und eine Kartenuebersicht zu generieren"""
 
+from textwrap import dedent
 from types import StringType
 
 import config
@@ -168,19 +169,24 @@ def create_styles(size, fontsize,
     """erstellt ein passendes Stylesheet
     """
 
-    text = '#karte tr td {\n'
-    text += '    padding:0px;\n'
-    text += '    height: ' + str(size) + 'px;\n'
-    text += '    width: ' + str(size) + 'px;\n'
-    text += '    background-repeat:no-repeat;\n'
-    text += '    font-size: ' + str(fontsize) + 'pt;\n'
-    text += '    text-align:center;\n'
-    text += '}\n'
+    strings = []
+    karte = """\
+    #karte tr td {
+        padding: 0px;
+        height: %dpx;
+        width: %dpx;
+        background-repeat: no-repeat;
+        font-size: %dpt;
+        text-align: center;
+    }\n""" % (size, size, fontsize)
+    strings.append(dedent(karte))
 
     for t in common_terrain:
-        text += '#karte tr td.t%s { ' % t
-        text += 'background-image:url(/img/terrain/%d/%s.gif); }\n' % (size, t)
-
+        strings.append('#karte tr td.t%s { ' % t)
+        strings.append('background-image:url(/img/terrain/%d/%s.gif); }\n' % (
+                                                                    size, t))
+    text = ""
+    text += "".join(strings)
     text += 'div.armeen {\n'
     text += '    margin-left: ' + str(fontsize-5) + 'px;\n'
     if show_armeen and not show_dorf:

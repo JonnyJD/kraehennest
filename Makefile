@@ -53,7 +53,7 @@ doctest:
 
 clean: normal
 	rm -f serverurl.conf test.xml
-	rm -f *.pyc
+	rm -f *.pyc */*.pyc
 	rm -rf __pycache__
 
 test: test-karte

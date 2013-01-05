@@ -11,9 +11,9 @@ import cgi
 import os
 import util
 import libxml2
-from terrain import Terrain
-from armee import Armee
-import reich
+from model.terrain import Terrain
+from model.armee import Armee
+from control import reich
 
 def process(doc):
     """Reicht bestimmte Knoten zu Modulen weiter
@@ -44,7 +44,8 @@ def process(doc):
         reich.process_xml(nodes[0])
 
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
+if True:
     # Cross-Origin-Resource Sharing
     # noetig fuer cross-site-xmlhttprequest des Auges (einige Browser)
     print "Access-Control-Allow-Origin: http://www.ritterburgwelt.de"

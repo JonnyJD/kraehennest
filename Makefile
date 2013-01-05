@@ -14,7 +14,7 @@ export QUERY_STRING:=group&x1=0&x2=998&y1=0&y2=998
 export SCRIPT_URL:=/show/karte
 
 compile: normal serverconf
-	python -m compileall -l .
+	python -m compileall -l . view model control
 
 normal:
 	sed -i '1s/python2/python/' index.py dispatch.py

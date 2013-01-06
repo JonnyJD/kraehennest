@@ -152,8 +152,8 @@ def armee_output(armee, x, y):
     """
 
     strings = []
-    strings.append('<div class="armeen">')
     if armee.has(x,y):
+        strings.append('<div class="armeen">')
         for entry in armee.get(x,y):
             if util.brightness(entry["allyfarbe"]) < 55:
                 strings.append('<span class="armee_dark"')
@@ -161,7 +161,7 @@ def armee_output(armee, x, y):
                 strings.append('<span class="armee_bright"')
             strings.append(' style="background-color:%s;"></span>'
                     % format(entry["allyfarbe"]))
-    strings.append('</div>')
+        strings.append('</div>')
     return "".join(strings)
 
 def create_styles(size, fontsize,

@@ -142,7 +142,8 @@ def __mouseover(x, y, typ, dorf, armeen):
         cols = ['rittername', 'alliname', 'dorfname', 'dorflevel',
                 'mauer', 'aktdatum']
         details.extend(map(format, [dorf[col] for col in cols]))
-    else:
+    elif armeen:
+        # fill up to the armee part
         details.extend(["?" for i in range(6)])
 
     # Armeen

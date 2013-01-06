@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """Armeedaten"""
 
-import re
 from datetime import datetime, timedelta
 
 import config

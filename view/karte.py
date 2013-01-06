@@ -189,9 +189,10 @@ def create_styles(size, fontsize,
     text += "".join(strings)
     text += 'div.armeen {\n'
     text += '    margin-left: ' + str(fontsize-5) + 'px;\n'
+    text += '    font-size: 0pt;\n'
     if show_armeen and not show_dorf:
-        text += '    margin-top:5px;\n'
-    text += '    text-align:left;\n'
+        text += '    margin-top: 5px;\n'
+    text += '    text-align: left;\n'
     text += '    max-height: ' + str(fontsize-5) + 'px;\n'
     text += '}\n'
     text += 'span.armee_dark {\n'
@@ -216,9 +217,9 @@ def create_styles(size, fontsize,
     text += '}\n'
     text += 'td.navi, div.navi{\n'
     if background:
-        text += '    background-color:#333333;\n'
-    text += '    font-weight:bold;\n'
-    text += '    font-size:12pt;\n'
+        text += '    background-color: #333333;\n'
+    text += '    font-weight: bold;\n'
+    text += '    font-size: 12pt;\n'
     text += '}\n'
     return text
 

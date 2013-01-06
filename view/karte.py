@@ -250,13 +250,6 @@ def small_map(x, y, level="N", sicht=2, imported=False):
     else:
         show_doerfer = False
 
-    if config.allow_armeen(message=False):
-        armee = Armee()
-        armee.fetch_data(level, xmin, xmax, ymin, ymax)
-        show_armeen = True
-    else:
-        show_armeen = False
-
     terrain = Terrain()
     terrain.fetch_data(level, xmin, xmax, ymin, ymax)
 
@@ -266,6 +259,13 @@ def small_map(x, y, level="N", sicht=2, imported=False):
     else:
         achsen = True
         new_window = False
+
+    if config.allow_armeen(message=False):
+        armee = Armee()
+        armee.fetch_data(level, xmin, xmax, ymin, ymax)
+        show_armeen = True
+    else:
+        show_armeen = False
 
     if achsen:
         width = size * (sicht + 2)

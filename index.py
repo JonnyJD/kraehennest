@@ -304,8 +304,8 @@ if True:
 	auge = "/kraehenauge_" + suffix + ".user.js"
     	print ausgabe.link(auge, "Kr&auml;henauge", br=True)
     else:
-	link = "http://svn.kraehen.org/tools/auge/tags"
-	print '<br /><a href="%s">Kr&auml;henauge</a>' % link
+        auge = "/auge/kraehenauge.user.js"
+    	print ausgabe.link(auge, "Kr&auml;henauge", br=True)
     print '</div>'
 
     list_maps()

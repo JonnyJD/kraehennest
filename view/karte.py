@@ -172,6 +172,7 @@ def create_styles(size, fontsize,
     strings = []
     karte = """\
     #karte tr td {
+        -moz-box-sizing: border-box; /* height/width include border */
         padding: 0px;
         height: %dpx;
         width: %dpx;

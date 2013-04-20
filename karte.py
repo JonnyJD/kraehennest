@@ -19,7 +19,7 @@ from model.dorf import Dorf
 from view import format, common_terrain
 from view.karte import escape
 from view.karte import small_map, create_styles, nav_link, detail_link
-from view.karte import dorf_output, armee_output
+from view.karte import dorf_output, armee_output, list_maps
 
 
 many_armeen_limit = 8

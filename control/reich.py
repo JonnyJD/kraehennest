@@ -118,7 +118,9 @@ def process_xml(node):
                 if allianzen[0].hasProp("a_id"):
                     a_id = allianzen[0].prop("a_id")
                 else:
-                    a_tag = allianzen[0].prop("tag")
+                    # we only take the first 5 characters
+                    # because there is only room for 5 in the DB
+                    a_tag = allianzen[0].prop("tag")[0:5]
                     sql2 = "SELECT allinr FROM allis WHERE alli = %s"
                     if util.try_execute_safe(cursor, sql2, (a_tag)) == 1:
                         a_id = cursor.fetchone()[0]

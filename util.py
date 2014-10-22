@@ -45,7 +45,21 @@ def parse_date(rb_date):
     @rtype: C{datetime.date}
     """
 
-    datum = rb_date.split(",")[1].strip().split(".")
+    if rb_date.find("unbekannt") != -1:
+        # like Cornelius
+        return None
+    elif len(rb_date.split(",")) == 1:
+        print "unknown time format: " + rb_date
+        return None
+    if rb_date.split(",")[0].find(":") != -1:
+        # time, date
+        datum = rb_date.split(",")[1].strip().split(".")
+    elif rb_date.split(",")[1].find(":") != -1:
+        # date, time
+        datum = rb_date.split(",")[0].strip().split(".")
+    else:
+        print "unknown time format: " + rb_date
+        return None
     day = int(datum[0])
     if len(datum) == 3:
         month = int(datum[1])
@@ -66,6 +80,7 @@ def parse_date(rb_date):
         elif name == "Lymena":  month = 12
         else:
             print "Monat '" + name + "' ist unbekannt!<br />"
+            return None
         year = int(datum[1].split()[1])
     year += 1653
 

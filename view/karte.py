@@ -135,11 +135,14 @@ def dorf_output(dorf, x, y, terrain=None):
         # translate(None, "<>"),  None erst ab python 2.6
         strings.append(
             dorf.entry['rittername'].replace("<", "").replace(">", "")[0:3])
-    elif terrain is not None and config.is_kraehe() and terrain.entry["typ"]:
-        strings.append("." * terrain.entry["typ"])
-    elif config.is_kraehe():
-        strings.append("_")
+    elif config.is_kraehe() or config.is_tw():
+        # show sub-type (I, II, III)
+        if terrain is not None and terrain.entry["typ"]:
+            strings.append("." * terrain.entry["typ"])
+        else:
+            strings.append("_")
     else:
+        # show generic dot (representing, "no village here")
         strings.append(".")
     strings.append('</div>')
     return "".join(strings)

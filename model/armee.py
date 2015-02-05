@@ -650,7 +650,7 @@ class Armee(Feld):
             row = self.cursor.fetchone()
             while row != None:
                 entry = dict()
-                if row[2] == 174:
+                if row[2] == 174: # Keiner
                     entry["allyfarbe"] = '#00A000'
                 elif row[2] in config.marked_reiche:
                     entry["allyfarbe"] = config.marked_reiche_color

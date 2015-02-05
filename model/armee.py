@@ -930,8 +930,9 @@ class Armee(Feld):
                         entry["strength"] = None
                         entry["ap"] = None
                         entry["bp"] = None
-            entry["img"] = armee.xpathEval('bild')[0].getContent()
-            entry["name"] = armee.xpathEval('held')[0].getContent()
+            # cut to 10/30 chars due to DB field width
+            entry["img"] = armee.xpathEval('bild')[0].getContent()[:10]
+            entry["name"] = armee.xpathEval('held')[0].getContent()[:30]
             ritter_elems = armee.xpathEval('ritter')
             if len(ritter_elems) > 0:
                 if ritter_elems[0].hasProp("r_id"):
@@ -942,7 +943,8 @@ class Armee(Feld):
                         # nur sich selbst als versteckt markieren
                         entry["status"] = S_HIDDEN
                 else:
-                    entry["ritter"] = ritter_elems[0].getContent()
+                    # cut to 80 chars due to DB field width
+                    entry["ritter"] = ritter_elems[0].getContent()[:80]
             sizes = armee.xpathEval('size')
             if len(sizes) == 1:
                 if sizes[0].hasProp("now"):
@@ -968,7 +970,8 @@ class Armee(Feld):
                     entry["max_ap"] = aps[0].prop("max")
             schiffe = armee.xpathEval('schiff') 
             if len(schiffe) == 1:
-                entry["schiffstyp"] = schiffstyp(schiffe[0].prop("typ"))
+                # cut to 15 chars due to DB field width
+                entry["schiffstyp"] = schiffstyp(schiffe[0].prop("typ"))[:15]
                 #entry["schiffslast"] = schiffe[0].prop("last")
             else:
                 entry["schiffstyp"] = None;

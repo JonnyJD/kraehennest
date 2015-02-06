@@ -97,7 +97,7 @@ def list_by_allianz(a_id):
     sql += " WHERE (top10 > 0"
     sql += " OR ritter.alli <> 0" # noetig fuer gesamtliste (-1)
     sql += " OR inaktiv = 'P'" # SL/NPC Reiche? (alte DB)
-    sql += " OR ritter.ritternr IN (2,172,174,175))"
+    sql += " OR ritter.ritternr IN (2,7,172,174,175))"
     if a_id != -1:
         sql += " AND allinr =%s "
     sql += " GROUP BY ritter.ritternr, top10, rittername"

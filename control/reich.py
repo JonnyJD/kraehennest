@@ -145,9 +145,9 @@ def process_xml(node):
                 args += reich.prop("top10"),
             if reich.hasProp("status"):
                 status = reich.prop("status")
-                if status == "Inaktiv":
+                if status.lower() == "inaktiv":
                     sqllist.append("inaktiv='" + S_INAKTIV + "'")
-                elif status == "Schutzliste":
+                elif status.lower() == "schutzliste":
                     sqllist.append("inaktiv='" + S_SCHUTZ + "'")
                 elif status == "":
                     sqllist.append("inaktiv=NULL")

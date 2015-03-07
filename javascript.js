@@ -206,10 +206,13 @@ function showPos(liste) {
     }
     document.getElementById("dorfdetail").innerHTML = descRow;
     if (!coordsOnly && liste.length > 7) {
-        descRow = '<table class="detail">';
+        var rowsPerBox = 25;
         var numFields = parseInt(liste[7],10);
         var mid = Math.ceil(numFields/2);
-        for (var i=8; i < liste.length; i+=numFields) {
+        var fieldsPerBox = rowsPerBox * numFields;
+
+        descRow = '<table class="detail">';
+        for (var i=8; i < Math.min(8+fieldsPerBox,liste.length); i+=numFields) {
             descRow += '<tr><td style="color:' + liste[i] + '">'
                     + liste[i+1] + '</td>';
             for (var j=i+2; j < (i + numFields); j++) {
@@ -227,6 +230,52 @@ function showPos(liste) {
         }
         descRow += '</table>';
         document.getElementById("armeedetail").innerHTML = descRow;
+
+        descRow2 = '<table class="detail">';
+        for (var i=8+fieldsPerBox; i < Math.min(8+fieldsPerBox*2, liste.length); i+=numFields) {
+            descRow2 += '<tr><td style="color:' + liste[i] + '">'
+                    + liste[i+1] + '</td>';
+            for (var j=i+2; j < (i + numFields); j++) {
+                if (numFields > 5 && (j-8) % numFields == mid) {
+                    descRow2 += '</tr><tr>'
+                }
+                if (!isNaN(parseInt(liste[j],10)) || liste[j] == "?") {
+                    descRow2 += '<td style="text-align:right">'
+                            + liste[j] + '</td>';
+                } else {
+                    descRow2 += '<td>' + liste[j] + '</td>';
+                }
+            }
+            descRow2 += '</tr>';
+        }
+        descRow2 += '</table>';
+        if (liste.length > fieldsPerBox + 8) {
+            document.getElementById("armeedetail2").innerHTML = descRow2;
+            document.getElementById("armeedetail2").style.padding = "5px";
+        }
+
+        descRow3 = '<table class="detail">';
+        for (var i=8+(fieldsPerBox*2); i < liste.length; i+=numFields) {
+            descRow3 += '<tr><td style="color:' + liste[i] + '">'
+                    + liste[i+1] + '</td>';
+            for (var j=i+2; j < (i + numFields); j++) {
+                if (numFields > 5 && (j-8) % numFields == mid) {
+                    descRow3 += '</tr><tr>'
+                }
+                if (!isNaN(parseInt(liste[j],10)) || liste[j] == "?") {
+                    descRow3 += '<td style="text-align:right">'
+                            + liste[j] + '</td>';
+                } else {
+                    descRow3 += '<td>' + liste[j] + '</td>';
+                }
+            }
+            descRow3 += '</tr>';
+        }
+        descRow3 += '</table>';
+        if (liste.length > (fieldsPerBox * 2)+8) {
+            document.getElementById("armeedetail3").innerHTML = descRow3;
+            document.getElementById("armeedetail3").style.padding = "5px";
+        }
     }
 }
 
@@ -236,6 +285,14 @@ function delPos() {
     }
     if (document.getElementById("armeedetail")) {
         document.getElementById("armeedetail").innerHTML = "<div>&nbsp;</div>";
+    }
+    if (document.getElementById("armeedetail2")) {
+        document.getElementById("armeedetail2").innerHTML = "";
+        document.getElementById("armeedetail2").style.padding = "0px";
+    }
+    if (document.getElementById("armeedetail3")) {
+        document.getElementById("armeedetail3").innerHTML = "";
+        document.getElementById("armeedetail3").style.padding = "0px";
     }
 }
 

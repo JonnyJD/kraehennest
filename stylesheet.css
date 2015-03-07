@@ -64,6 +64,24 @@ table.tabelle tr td, table.tabelle tr th {
     background-color: #333333;
     padding: 5px;
 }
+#armeedetail2 {
+    z-index: 2;
+    position: fixed;
+    top: 170px;
+    right: 205px;
+    width: 15em;
+    font-size: 9pt;
+    background-color: #333333;
+}
+#armeedetail3 {
+    z-index: 2;
+    position: fixed;
+    top: 170px;
+    right: 405px;
+    width: 15em;
+    font-size: 9pt;
+    background-color: #333333;
+}
 span.dark {
     border: 1px solid white;
 }

@@ -363,6 +363,8 @@ if True:
                 if show_armeen:
                     # Armeedetail
                     print '<div id="armeedetail"><div>&nbsp;</div></div>'
+                    print '<div id="armeedetail2"></div>'
+                    print '<div id="armeedetail3"></div>'
 
             # Kartennavigation
             cross = int(form["x2"].value) < 999

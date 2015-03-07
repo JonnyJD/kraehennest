@@ -4,7 +4,7 @@
 
 import rbdb
 import util
-from model.reich import S_INAKTIV, S_SCHUTZ
+from model.reich import S_INAKTIV, S_SCHUTZ, S_NPC
 
 
 def process_response_xml(node):
@@ -145,10 +145,12 @@ def process_xml(node):
                 args += reich.prop("top10"),
             if reich.hasProp("status"):
                 status = reich.prop("status")
-                if status.lower() == "inaktiv":
-                    sqllist.append("inaktiv='" + S_INAKTIV + "'")
+                if status.lower() == "npc":
+                    sqllist.append("inaktiv='" + S_NPC + "'")
                 elif status.lower() == "schutzliste":
                     sqllist.append("inaktiv='" + S_SCHUTZ + "'")
+                elif status.lower() == "inaktiv":
+                    sqllist.append("inaktiv='" + S_INAKTIV + "'")
                 elif status == "":
                     sqllist.append("inaktiv=NULL")
             if reich.hasProp("last_turn"):

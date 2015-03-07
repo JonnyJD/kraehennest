@@ -83,7 +83,8 @@ if True:
             if reich.status is not None:
                 print '</tr><tr>'
                 print '<td>Status: </td>'
-                print '<td colspan="3">&nbsp;&nbsp;' + reich.status + '</td>'
+                print '<td colspan="3">&nbsp;',
+                print status_string(reich.status) + '</td>'
             print '</tr>'
             print '</table>'
 

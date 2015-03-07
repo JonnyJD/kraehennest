@@ -9,7 +9,7 @@ import util
 import ausgabe
 
 import allianz
-from model.reich import S_INAKTIV, S_SCHUTZ
+from model.reich import S_INAKTIV, S_SCHUTZ, S_NPC
 
 
 def status_string(status):
@@ -19,8 +19,8 @@ def status_string(status):
     @type status: C{StringType}
     @rtype: C{StringType}
     """
-    return {S_INAKTIV: "Inaktiv", S_SCHUTZ: "Schutzliste"
-            ,'': None, None: None}[status]
+    return {S_INAKTIV: "Inaktiv", S_SCHUTZ: "Schutzliste",
+            S_NPC: "NPC", '': None, None: None}[status]
 
 def get_ritter_id_form(rittername):
     """

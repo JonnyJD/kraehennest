@@ -10,6 +10,7 @@ import ausgabe
 # Reichsstati
 S_INAKTIV = 'I' #: Inaktivitaetsliste
 S_SCHUTZ = 'S'  #: Schutzliste
+S_NPC = 'N'     #: NPC
 
 class Reich:
     """Eine Klasse fuer Daten rund um ein Reich, inklusive Ritter."""

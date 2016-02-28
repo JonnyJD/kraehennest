@@ -49,6 +49,7 @@ if True:
     # Cross-Origin-Resource Sharing
     # noetig fuer cross-site-xmlhttprequest des Auges (einige Browser)
     print "Access-Control-Allow-Origin: http://www.ritterburgwelt.de"
+    # note that * is not allowed together with credentials
     print "Access-Control-Allow-Credentials: true"
     if 'REQUEST_METHOD' not in os.environ:
         print "\nKeine REQUEST_METHOD"

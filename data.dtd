@@ -33,7 +33,7 @@
 
 <!-- Felder -->
 <!ELEMENT felder        (feld)*>
-<!ELEMENT feld          (terrain,feldname?)>
+<!ELEMENT feld          (terrain,feldname?,dorf?)>
 <!ATTLIST feld
         level   CDATA   #REQUIRED
         x       CDATA   #REQUIRED
@@ -41,6 +41,12 @@
 >
 <!ELEMENT terrain       (#PCDATA)>
 <!ELEMENT feldname      (#PCDATA)>
+<!ELEMENT dorf          (allianz?)>
+<!ATTLIST dorf
+        level   CDATA   #REQUIRED
+        name    CDATA   #REQUIRED
+        besitzer CDATA  #REQUIRED
+>
 
 <!-- Armeen -->
 <!ELEMENT armeen        (armee)*>

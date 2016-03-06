@@ -48,6 +48,7 @@
         name    CDATA   #REQUIRED
         besitzer CDATA  #REQUIRED
         detail  CDATA   #IMPLIED
+        last_seen CDATA #IMPLIED
 >
 <!ELEMENT features      (#PCDATA)>
 

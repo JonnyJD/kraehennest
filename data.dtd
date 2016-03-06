@@ -57,6 +57,7 @@
                         size?,strength?,bp?,ap?,schiff?,dauer?)>
 <!ATTLIST armee
         h_id    NMTOKEN #IMPLIED
+        last_seen CDATA #IMPLIED
 >
 <!ELEMENT position      (#PCDATA)>
 <!ATTLIST position

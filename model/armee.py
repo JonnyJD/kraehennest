@@ -907,6 +907,9 @@ class Armee(Feld):
                 entry["level"] = position.prop("level")
                 entry["x"] = position.prop("x"); entry["y"] = position.prop("y")
                 self.queue_inactive(entry)
+        elif sicht == "karte":
+            print "Aktualisierung aus dem Kartenraum noch nicht implementiert"
+            return
 
         armeen = node.xpathEval('armee')
         for armee in armeen:

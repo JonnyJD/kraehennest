@@ -46,6 +46,7 @@
         level   CDATA   #REQUIRED
         name    CDATA   #REQUIRED
         besitzer CDATA  #REQUIRED
+        features CDATA  #IMPLIED
 >
 
 <!-- Armeen -->

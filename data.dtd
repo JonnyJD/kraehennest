@@ -41,13 +41,13 @@
 >
 <!ELEMENT terrain       (#PCDATA)>
 <!ELEMENT feldname      (#PCDATA)>
-<!ELEMENT dorf          (allianz?)>
+<!ELEMENT dorf          (allianz?,features?)>
 <!ATTLIST dorf
         level   CDATA   #REQUIRED
         name    CDATA   #REQUIRED
         besitzer CDATA  #REQUIRED
-        features CDATA  #IMPLIED
 >
+<!ELEMENT features      (#PCDATA)>
 
 <!-- Armeen -->
 <!ELEMENT armeen        (armee)*>

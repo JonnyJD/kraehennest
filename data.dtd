@@ -38,14 +38,16 @@
         level   CDATA   #REQUIRED
         x       CDATA   #REQUIRED
         y       CDATA   #REQUIRED
+        detail  CDATA   #IMPLIED
 >
 <!ELEMENT terrain       (#PCDATA)>
 <!ELEMENT feldname      (#PCDATA)>
-<!ELEMENT dorf          (allianz?,features?)>
+<!ELEMENT dorf          (allianz?)>
 <!ATTLIST dorf
         level   CDATA   #REQUIRED
         name    CDATA   #REQUIRED
         besitzer CDATA  #REQUIRED
+        detail  CDATA   #IMPLIED
 >
 <!ELEMENT features      (#PCDATA)>
 

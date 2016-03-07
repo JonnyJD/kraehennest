@@ -245,6 +245,7 @@ class Armee(Feld):
                 and self.__is(INT,entry, OPT, DBCOL, "y", 3)
                 and self.__is(STR,entry, OPT, DBCOL, "level", 2)
                 and self.__is(INT,entry, OPT, DBCOL, "h_id", 8)
+                and self.__is(INT,entry, OPT, NO_DB, "last_seen", 10)
                 and self.__is(STR,entry, OPT, NO_DB, "status", 1)
                 and self.__is(INT,entry, OPT, DBCOL, "r_id", 5)
                 and self.__is(STR,entry, OPT, NO_DB, "ritter", 80)
@@ -475,7 +476,11 @@ class Armee(Feld):
             if key in entry:
                 sqllist.append(key + "=%s")
                 args += entry[key],
-        sqllist.append("last_seen=NOW()")
+        if "timestamp" in entry:
+            sqllist.append("last_seen=FROM_UNIXTIME(%s)")
+            args += entry["timestamp"],
+        else:
+            sqllist.append("last_seen=NOW()")
 
         # Aktivitaet und Status korrekt setzen
         if "pos" in entry and entry["pos"] == "taverne":
@@ -539,7 +544,8 @@ class Armee(Feld):
         new = self.new_entries
         num_updated = 0
         if len(new) > 0:
-            sql = "SELECT h_id, name FROM armeen WHERE "
+            sql = "SELECT h_id, name, UNIX_TIMESTAMP(last_seen)"
+            sql += " FROM armeen WHERE "
             sqllist = []
             args = ()
             for entry in new:
@@ -552,8 +558,10 @@ class Armee(Feld):
                 i = 0
                 while i < len(new):
                     if (new[i]["h_id"] == row[0]):
-                        if self.__update(new[i], sender_id):
-                            num_updated += 1
+                        if ("timestamp" not in entry
+                                or entry["timestamp"] > row[2]):
+                            if self.__update(new[i], sender_id):
+                                num_updated += 1
                         del new[i]
                     else:
                         i += 1
@@ -580,6 +588,9 @@ class Armee(Feld):
                 if key in entry:
                     sqlcols.append(key)
                     args += entry[key],
+            if "timestamp" in entry:
+                sqllist.append("last_seen=FROM_UNIXTIME(%s)")
+                args += entry["timestamp"],
             if "pos" in entry and entry["pos"] == "taverne":
                 sqlcols.append("active");
                 args += 0,
@@ -907,16 +918,14 @@ class Armee(Feld):
                 entry["level"] = position.prop("level")
                 entry["x"] = position.prop("x"); entry["y"] = position.prop("y")
                 self.queue_inactive(entry)
-        elif sicht == "karte":
-            print "Aktualisierung aus dem Kartenraum noch nicht implementiert."
-            print "<br />"
-            return
 
         armeen = node.xpathEval('armee')
         for armee in armeen:
             entry = dict()
             if armee.hasProp("h_id"):
                 entry["h_id"] = armee.prop("h_id")
+            if armee.hasProp("last_seen"):
+                entry["timestamp"] = armee.prop("last_seen");
             positions = armee.xpathEval('position')
             if len(positions) > 0:
                 if positions[0].hasProp("level"):

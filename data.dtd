@@ -14,6 +14,9 @@
 <!ELEMENT sicht         EMPTY>
 <!ATTLIST sicht
         typ    (keine|armee|versteckt|turm|top10|karte)      #REQUIRED
+        x       CDATA   #IMPLIED
+        y       CDATA   #IMPLIED
+        level   CDATA   #IMPLIED
 >
 
 <!-- gemeinsame Grundelemente -->

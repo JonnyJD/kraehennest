@@ -13,6 +13,7 @@ import util
 import libxml2
 from model.terrain import Terrain
 from model.armee import Armee
+from model.dorf import Dorf
 from control import reich
 
 def process(doc):
@@ -38,6 +39,8 @@ def process(doc):
     if len(nodes) > 0:
         terrain = Terrain()
         terrain.process_xml(nodes[0])
+        dorf = Dorf()
+        dorf.process_xml(nodes[0], r_id)
 
     nodes = data.xpathEval('rb/reiche')
     if len(nodes) > 0:

@@ -588,9 +588,6 @@ class Armee(Feld):
                 if key in entry:
                     sqlcols.append(key)
                     args += entry[key],
-            if "timestamp" in entry:
-                sqllist.append("last_seen=FROM_UNIXTIME(%s)")
-                args += entry["timestamp"],
             if "pos" in entry and entry["pos"] == "taverne":
                 sqlcols.append("active");
                 args += 0,
@@ -601,8 +598,14 @@ class Armee(Feld):
                 args += 1,
                 sqlcols.append("status");
                 args += S_HIDDEN,
+            if "timestamp" in entry:
+                sqlcols.append("last_seen");
             sql += ", ".join(sqlcols) + ") VALUES ("
-            sql += ", ".join(["%s" for i in range(0,len(sqlcols))]) + ")"
+            sql += ", ".join(["%s" for i in range(0,len(args))])
+            if "timestamp" in entry:
+                sql += ", FROM_UNIXTIME(%s)"
+                args += entry["timestamp"],
+            sql += ")"
             self.new_entries = []
             num_inserted += self.try_execute_safe(sql, args)
         return num_inserted

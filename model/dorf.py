@@ -395,7 +395,7 @@ class Dorf(Feld):
                 i += 1
 
     def __empty(self, sender_id):
-        num_emptied = 0
+        num_emptied = len(self.__empty_entries)
         if len(self.__empty_entries) > 0:
             sql = "REPLACE INTO dorf"
             sql += " (koords, dorfname, dorflevel, ritternr, aktdatum)"
@@ -406,7 +406,7 @@ class Dorf(Feld):
                 sqllist.append("(%s, 'leer', 0, 0, NOW())")
                 args += str(entry["x"]) + "," + str(entry["y"]),
             sql += ", ".join(sqllist)
-            num_emptied += self.try_execute_safe(sql, args)
+            self.try_execute_safe(sql, args)
         self.__empty_entries = []
         return num_emptied
         
@@ -537,7 +537,7 @@ class Dorf(Feld):
                 self.__empty_entries.append(entry)
             # TODO: eigenes Feld leeren wenn ohne Dorf (armeesicht)
         emptied, updated, added = self.exec_queue(sender_id)
-        if (updated + added) > 0:
+        if (emptied + updated + added) > 0:
             print "Es wurden", emptied, "D&ouml;rfer geleert,"
             print updated, "aktualisiert und",
             print added, "neu hinzugef&uuml;gt.", "<br />"

@@ -493,6 +493,16 @@ class Dorf(Feld):
         """Liest Daten aus einem XML-Dockument ein"""
 
         sicht = util.get_view_type(node)
+        sichtpos = {"x": 0, "y": 0, "level": "N"}
+        if sicht != "keine":
+            sicht_elems = node.xpathEval('/data/auge/sicht')
+            sicht_elem = sicht_elems[0]
+            if sicht_elem.hasProp("x"):
+                sichtpos["x"] = sicht_elem.prop("x")
+            if sicht_elem.hasProp("y"):
+                sichtpos["y"] = sicht_elem.prop("y")
+            if sicht_elem.hasProp("level"):
+                sichtpos["level"] = sicht_elem.prop("level")
         felder = node.xpathEval('feld')
         for feld in felder:
             entry = dict()
@@ -527,15 +537,17 @@ class Dorf(Feld):
                 # 2048 Taverne
                 if dorf.hasProp("last_seen"):
                     entry["last_seen"] = dorf.prop("last_seen")
-                # TODO; aber eigenes Feld geht immer!
-                # --> update auge to only send that one?
-                if sicht == "turm" or "last_seen" in entry:
+                if ((sicht == "turm" or "last_seen" in entry)
+                        or (sicht == "armee"
+                            and entry["x"] == sichtpos["x"]
+                            and entry["y"] == sichtpos["y"])):
                     if not self.queue_entry(entry):
                         print entry, "<br />"
                         print "enthielt Fehler <br />"
-            elif sicht == "turm":
+            elif sicht == "turm" or (sicht == "armee"
+                            and entry["x"] == sichtpos["x"]
+                            and entry["y"] == sichtpos["y"]):
                 self.__empty_entries.append(entry)
-            # TODO: eigenes Feld leeren wenn ohne Dorf (armeesicht)
         emptied, updated, added = self.exec_queue(sender_id)
         if (emptied + updated + added) > 0:
             print "Es wurden", emptied, "D&ouml;rfer geleert,"

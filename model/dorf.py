@@ -510,8 +510,6 @@ class Dorf(Feld):
             doerfer = feld.xpathEval('dorf')
             if len(doerfer) > 0:
                 dorf = doerfer[0]
-                if dorf.hasProp("type"):
-                    entry["type"] = dorf.prop("type")
                 entry["dorflevel"] = dorf.prop("level")
                 entry["dorfname"] = dorf.prop("name")
                 entry["besitzer"] = dorf.prop("besitzer")
@@ -539,6 +537,9 @@ class Dorf(Feld):
                     # 512 weitsichtturm
                     # 1024 Kriegsakademie
                     # 2048 Taverne
+                if dorf.hasProp("type"):
+                    entry["type"] = dorf.prop("type")
+                    entry["mauer"] = 'n'
                 if dorf.hasProp("last_seen"):
                     entry["last_seen"] = dorf.prop("last_seen")
                 if ((sicht == "turm" or "last_seen" in entry)

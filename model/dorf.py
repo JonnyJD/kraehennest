@@ -510,31 +510,35 @@ class Dorf(Feld):
             doerfer = feld.xpathEval('dorf')
             if len(doerfer) > 0:
                 dorf = doerfer[0]
+                if dorf.hasProp("type"):
+                    entry["type"] = dorf.prop("type")
                 entry["dorflevel"] = dorf.prop("level")
                 entry["dorfname"] = dorf.prop("name")
                 entry["besitzer"] = dorf.prop("besitzer")
-                entry["detail"] = dorf.prop("detail")
-                try:
-                    detail = int(dorf.prop("detail"))
-                    if detail & 16 == 16:
-                        entry["mauer"] = 'u'
-                    elif detail & 8 == 8:
-                        entry["mauer"] = 'g'
-                    elif detail & 4 == 4:
-                        entry["mauer"] = 'm'
-                    elif detail & 2 == 2:
-                        entry["mauer"] = 'k'
-                    elif detail & 1 == 1:
-                        entry["mauer"] = 'o'
-                    else:
-                        entry["mauer"] = 'n'
-                except ValueError:
-                    print dorf.prop("detail"), "ung&uuml;ltig als Detail <br />"
-                entry["bemerkung"] = dorf.prop("detail")
-                # 256 sichtturm
-                # 512 weitsichtturm
-                # 1024 Kriegsakademie
-                # 2048 Taverne
+                if dorf.hasProp("detail"):
+                    entry["detail"] = dorf.prop("detail")
+                    try:
+                        detail = int(dorf.prop("detail"))
+                        if detail & 16 == 16:
+                            entry["mauer"] = 'u'
+                        elif detail & 8 == 8:
+                            entry["mauer"] = 'g'
+                        elif detail & 4 == 4:
+                            entry["mauer"] = 'm'
+                        elif detail & 2 == 2:
+                            entry["mauer"] = 'k'
+                        elif detail & 1 == 1:
+                            entry["mauer"] = 'o'
+                        else:
+                            entry["mauer"] = 'n'
+                    except ValueError:
+                        print dorf.prop("detail")
+                        print " ung&uuml;ltig als Detail <br />"
+                    entry["bemerkung"] = dorf.prop("detail")
+                    # 256 sichtturm
+                    # 512 weitsichtturm
+                    # 1024 Kriegsakademie
+                    # 2048 Taverne
                 if dorf.hasProp("last_seen"):
                     entry["last_seen"] = dorf.prop("last_seen")
                 if ((sicht == "turm" or "last_seen" in entry)

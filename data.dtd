@@ -50,6 +50,7 @@
         level   CDATA   #REQUIRED
         name    CDATA   #REQUIRED
         besitzer CDATA  #REQUIRED
+        type    (dorf|ap)   #IMPLIED
         detail  CDATA   #IMPLIED
         last_seen CDATA #IMPLIED
 >

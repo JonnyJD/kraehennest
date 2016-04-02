@@ -489,9 +489,7 @@ if True:
 
                         # Detail-Link
                         # != Details vom Mouse-Over
-                        if not is_kraehe:
-                            show_detail_link = False
-                        elif show_armeen and armee.has(x,y):
+                        if show_armeen and armee.has(x,y):
                             show_detail_link = True
                         elif (show_dorf and dorf.has(x,y)
                                 and dorf.get(x,y)["rittername"] != "."):

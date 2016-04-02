@@ -51,17 +51,23 @@ if True:
         print ausgabe.link("/show/armeen", "Armeen", br=True)
         print '</div>'
     # Direktlinks
+    print '<div class="box">'
+    print '<h2>Direktlinks</h2>'
     if config.is_kraehe():
-        print '<div class="box">'
-        print '<h2>Direktlinks</h2>'
         print ausgabe.link("/show/allianz/60", "Kr&auml;hen")
-        if user and user.r_id:
-            url = "/show/reich/" + str(user.r_id)
-            rittername = cgi.escape(user.rittername)
-            print ausgabe.link(url, rittername, br=True)
-        print ausgabe.link("/show/reich/174", "Keiner", br=True)
-        print ausgabe.link("/show/reich/113", "Plunkett", br=True)
-        print '</div>'
+    if config.is_tw():
+        print ausgabe.link("/show/allianz/59", "Tempelw&auml;chter")
+    if config.is_dr():
+        print ausgabe.link("/show/allianz/31", "Drachenritter")
+    if config.is_p():
+        print ausgabe.link("/show/allianz/38", "Piraten")
+    if user and user.r_id:
+        url = "/show/reich/" + str(user.r_id)
+        rittername = cgi.escape(user.rittername)
+        print ausgabe.link(url, rittername, br=True)
+    print ausgabe.link("/show/reich/174", "Keiner", br=True)
+    print ausgabe.link("/show/reich/113", "Plunkett", br=True)
+    print '</div>'
     # Adminbereich
     print '<div class="box">'
     print '<h2>Administration</h2>'
